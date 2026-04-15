@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#050507"/>
+  <meta name="description" content="EvZero — projects and experiments."/>
+  <title>EvZero / Projects</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/projects.css"/>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../" class="nav-brand" data-transition>evzero</a>
+      <ul class="nav-links">
+        <li><a href="../" data-transition>Home</a></li>
+        <li><a href="./" class="active" data-transition>Projects</a></li>
+        <li><a href="../solren/" data-transition>Solren</a></li>
+        <li><a href="../contact/" data-transition>Contact</a></li>
+      </ul>
+      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+    </div>
+  </nav>
+
+  <div class="section-indicator" aria-hidden="true"></div>
+
+  <main class="page">
+
+    <section class="section" data-event="projects-head">
+      <div class="section-inner">
+        <div class="projects-head">
+          <div class="eyebrow centered reveal">Shop / Workshop</div>
+          <h1 class="display-lg reveal d1">The<br/><span class="accent">Workshop</span></h1>
+          <p class="reveal d2">A small shelf of side projects and experiments.</p>
+        </div>
+
+        <div class="projects-grid">
+
+          <div class="project-card" data-cat="wip" data-project="evzero-org" data-cover-type="wave" data-cover-color="#8b5cf6">
+            <div class="project-cover">
+              <span class="project-stock-badge wip">In dev</span>
+              <span class="project-price">v1.1</span>
+            </div>
+            <div class="project-body">
+              <div class="project-index">/ 01</div>
+              <div class="project-title">evzero.org</div>
+              <div class="project-desc">Personal site with snap-scroll sections, a pixel cat, and obsessive purple theming. Built from scratch.</div>
+              <div class="project-tags"><span>html</span><span>css</span><span>js</span></div>
+              <div class="project-foot">
+                <span class="project-year">2026</span>
+                <span class="project-go">View files <span class="arr">&rarr;</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card" data-cat="wip" data-project="pixel-cat" data-cover-type="cat">
+            <div class="project-cover">
+              <span class="project-stock-badge wip">In dev</span>
+              <span class="project-price">Open</span>
+            </div>
+            <div class="project-body">
+              <div class="project-index">/ 02</div>
+              <div class="project-title">pixel-cat</div>
+              <div class="project-desc">The cat roaming this page, as a standalone drop-in web component. Cursor-aware, state-machine driven.</div>
+              <div class="project-tags"><span>widget</span><span>ts</span><span>svg</span></div>
+              <div class="project-foot">
+                <span class="project-year">2026</span>
+                <span class="project-go">View files <span class="arr">&rarr;</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card mystery" data-cat="wip" data-project="mystery" data-cover-type="mystery">
+            <div class="project-cover">
+              <span class="project-stock-badge wip">Classified</span>
+              <span class="project-price">? ? ?</span>
+            </div>
+            <div class="project-body">
+              <div class="project-index">/ 03</div>
+              <div class="project-title">???</div>
+              <div class="project-desc">Work in progress. Something quiet, cooking in the background. More when it's ready.</div>
+              <div class="project-tags"><span>classified</span><span>soon</span></div>
+              <div class="project-foot">
+                <span class="project-year">soon</span>
+                <span class="project-go">Locked <span class="arr">&rarr;</span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Project modal -->
+  <div class="project-modal" role="dialog" aria-modal="true">
+    <div class="project-modal-backdrop"></div>
+    <div class="project-modal-panel">
+      <button class="project-modal-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="project-modal-cover pm-cover"></div>
+      <div class="project-modal-body">
+        <div class="pm-eyebrow">// Case file</div>
+        <h3 class="pm-title">...</h3>
+        <div class="meta pm-meta"></div>
+        <div class="pm-desc"></div>
+        <div class="file-list pm-files"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-mini">evzero.org / projects</div>
+  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/cat.js"></script>
+  <script src="../js/projects.js"></script>
+</body>
+</html>

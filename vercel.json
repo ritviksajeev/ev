@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/projects", "destination": "/projects/", "permanent": true },
+    { "source": "/solren",   "destination": "/solren/",   "permanent": true },
+    { "source": "/contact",  "destination": "/contact/",  "permanent": true }
+  ]
+}

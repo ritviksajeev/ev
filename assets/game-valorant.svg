@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="valGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a0a1a"/>
+      <stop offset="50%" stop-color="#3a0820"/>
+      <stop offset="100%" stop-color="#1a0510"/>
+    </linearGradient>
+    <linearGradient id="valRed" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff4557"/>
+      <stop offset="100%" stop-color="#8b0014"/>
+    </linearGradient>
+    <linearGradient id="valPurple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#5a14a8"/>
+    </linearGradient>
+    <filter id="valGlow">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="800" height="500" fill="url(#valGrad)"/>
+
+  <!-- hex grid backdrop -->
+  <g stroke="#5a14a8" stroke-opacity="0.18" stroke-width="1" fill="none">
+    <polygon points="100,80 130,60 160,80 160,120 130,140 100,120"/>
+    <polygon points="180,80 210,60 240,80 240,120 210,140 180,120"/>
+    <polygon points="260,80 290,60 320,80 320,120 290,140 260,120"/>
+    <polygon points="100,160 130,140 160,160 160,200 130,220 100,200"/>
+    <polygon points="180,160 210,140 240,160 240,200 210,220 180,200"/>
+    <polygon points="260,160 290,140 320,160 320,200 290,220 260,200"/>
+  </g>
+
+  <!-- big V shape (valorant-style) -->
+  <g transform="translate(400 250)">
+    <!-- glow -->
+    <path d="M -180 -100 L 0 120 L 180 -100 L 120 -100 L 0 30 L -120 -100 Z"
+          fill="url(#valRed)" filter="url(#valGlow)" opacity="0.5"/>
+    <!-- main -->
+    <path d="M -180 -100 L 0 120 L 180 -100 L 120 -100 L 0 30 L -120 -100 Z"
+          fill="url(#valRed)"/>
+    <!-- inner accent -->
+    <path d="M -100 -60 L 0 60 L 100 -60 L 70 -60 L 0 20 L -70 -60 Z"
+          fill="#2a0a1a" opacity="0.55"/>
+  </g>
+
+  <!-- spark particles -->
+  <g fill="#ff4557">
+    <circle cx="120" cy="380" r="2"/>
+    <circle cx="180" cy="420" r="1.5"/>
+    <circle cx="240" cy="360" r="1"/>
+    <circle cx="680" cy="120" r="2"/>
+    <circle cx="720" cy="180" r="1.5"/>
+    <circle cx="640" cy="90" r="1"/>
+  </g>
+  <g fill="#a855f7">
+    <circle cx="150" cy="440" r="1.5"/>
+    <circle cx="650" cy="150" r="1.5"/>
+    <circle cx="700" cy="220" r="1"/>
+  </g>
+
+  <!-- side streak -->
+  <rect x="0" y="240" width="800" height="2" fill="url(#valRed)" opacity="0.4"/>
+  <rect x="0" y="258" width="800" height="1" fill="#a855f7" opacity="0.3"/>
+
+  <!-- text watermark -->
+  <text x="40" y="460" font-family="Space Grotesk, sans-serif" font-size="72" font-weight="900" fill="#ffffff" fill-opacity="0.05" letter-spacing="-3">VALORANT</text>
+</svg>

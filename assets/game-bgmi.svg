@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgmiGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2a10"/>
+      <stop offset="50%" stop-color="#1a1005"/>
+      <stop offset="100%" stop-color="#0a0712"/>
+    </linearGradient>
+    <linearGradient id="bgmiGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffcc6a"/>
+      <stop offset="100%" stop-color="#b8862d"/>
+    </linearGradient>
+    <linearGradient id="skyFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff8c42"/>
+      <stop offset="50%" stop-color="#a8561c"/>
+      <stop offset="100%" stop-color="#3a0820"/>
+    </linearGradient>
+  </defs>
+
+  <!-- base background -->
+  <rect width="800" height="500" fill="url(#bgmiGrad)"/>
+
+  <!-- sky glow -->
+  <rect width="800" height="320" fill="url(#skyFade)" opacity="0.4"/>
+
+  <!-- sun -->
+  <circle cx="600" cy="220" r="60" fill="#ffcc6a" opacity="0.7"/>
+  <circle cx="600" cy="220" r="40" fill="#fff8dc" opacity="0.9"/>
+
+  <!-- distant mountains -->
+  <path d="M 0 320 L 120 230 L 220 290 L 340 210 L 460 280 L 580 220 L 700 260 L 800 240 L 800 340 L 0 340 Z" fill="#1a0f20" opacity="0.9"/>
+  <path d="M 0 340 L 80 290 L 180 340 L 280 280 L 400 340 L 500 300 L 640 340 L 800 310 L 800 380 L 0 380 Z" fill="#0a0712"/>
+
+  <!-- ground silhouette -->
+  <rect x="0" y="380" width="800" height="120" fill="#060408"/>
+
+  <!-- scattered grass tufts -->
+  <g stroke="#3a2a10" stroke-width="2" stroke-linecap="round">
+    <line x1="60"  y1="400" x2="60" y2="390"/>
+    <line x1="120" y1="410" x2="120" y2="402"/>
+    <line x1="200" y1="395" x2="200" y2="385"/>
+    <line x1="340" y1="400" x2="340" y2="392"/>
+    <line x1="440" y1="408" x2="440" y2="398"/>
+    <line x1="560" y1="395" x2="560" y2="388"/>
+    <line x1="680" y1="400" x2="680" y2="392"/>
+  </g>
+
+  <!-- helmet silhouette (center) -->
+  <g transform="translate(400 290)">
+    <!-- helmet dome -->
+    <path d="M -70 0 Q -70 -70 0 -70 Q 70 -70 70 0 L 60 10 L -60 10 Z"
+          fill="#0a0712" stroke="url(#bgmiGold)" stroke-width="2"/>
+    <!-- visor -->
+    <rect x="-50" y="-20" width="100" height="20" rx="4" fill="#1a0510" stroke="url(#bgmiGold)" stroke-width="1"/>
+    <!-- visor highlight -->
+    <rect x="-42" y="-16" width="84" height="4" rx="1" fill="#ffcc6a" opacity="0.6"/>
+    <!-- front strap -->
+    <rect x="-25" y="10" width="50" height="6" rx="1" fill="#0a0712" stroke="url(#bgmiGold)" stroke-width="1"/>
+  </g>
+
+  <!-- parachute silhouettes in distance -->
+  <g fill="#ffcc6a" opacity="0.35">
+    <g transform="translate(140 140)">
+      <path d="M -12 0 Q -12 -14 0 -14 Q 12 -14 12 0 Z"/>
+      <line x1="-8" y1="0" x2="0" y2="14" stroke="#ffcc6a" stroke-width="1"/>
+      <line x1="8" y1="0" x2="0" y2="14" stroke="#ffcc6a" stroke-width="1"/>
+      <rect x="-2" y="14" width="4" height="6"/>
+    </g>
+    <g transform="translate(720 100) scale(0.7)">
+      <path d="M -12 0 Q -12 -14 0 -14 Q 12 -14 12 0 Z"/>
+      <line x1="-8" y1="0" x2="0" y2="14" stroke="#ffcc6a" stroke-width="1"/>
+      <line x1="8" y1="0" x2="0" y2="14" stroke="#ffcc6a" stroke-width="1"/>
+      <rect x="-2" y="14" width="4" height="6"/>
+    </g>
+  </g>
+
+  <!-- orange dust particles -->
+  <g fill="#ff8c42">
+    <circle cx="90" cy="370" r="1.5"/>
+    <circle cx="180" cy="360" r="1"/>
+    <circle cx="500" cy="380" r="1.5"/>
+    <circle cx="620" cy="370" r="1"/>
+    <circle cx="720" cy="380" r="1.5"/>
+  </g>
+
+  <!-- text watermark -->
+  <text x="40" y="470" font-family="Space Grotesk, sans-serif" font-size="72" font-weight="900" fill="#ffffff" fill-opacity="0.06" letter-spacing="-3">BATTLEGROUNDS</text>
+</svg>
