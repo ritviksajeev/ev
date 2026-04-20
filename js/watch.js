@@ -8,7 +8,7 @@
   // Swap the prod URL for your Railway domain after deploy (https → wss).
   const SERVER = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
     ? { http: 'http://localhost:8787', ws: 'ws://localhost:8787' }
-    : { http: 'https://evzero-watchparty.up.railway.app', ws: 'wss://evzero-watchparty.up.railway.app' };
+    : { http: 'https://ev-production.up.railway.app', ws: 'wss://ev-production.up.railway.app' };
 
   const $ = (id) => document.getElementById(id);
   const btnCreate = $('btn-create');

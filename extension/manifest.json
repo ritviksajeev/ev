@@ -17,7 +17,7 @@
     "*://*.netflix.com/*",
     "*://*.twitch.tv/*",
     "http://localhost:8787/*",
-    "https://*.up.railway.app/*"
+    "https://ev-production.up.railway.app/*"
   ],
   "content_scripts": [
     {

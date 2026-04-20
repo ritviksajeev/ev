@@ -5,8 +5,8 @@ const LOCAL_SERVER = {
   ws: 'ws://localhost:8787',
 };
 const HOSTED_SERVER = {
-  http: 'https://evzero-watchparty.up.railway.app',
-  ws: 'wss://evzero-watchparty.up.railway.app',
+  http: 'https://ev-production.up.railway.app',
+  ws: 'wss://ev-production.up.railway.app',
 };
 
 let ws = null;
