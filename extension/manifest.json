@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "EvZero Watchparty",
+  "version": "0.1.0",
+  "description": "Sync YouTube, Netflix, and Twitch playback across browsers.",
+  "action": {
+    "default_title": "EvZero Watchparty",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.netflix.com/*",
+    "*://*.twitch.tv/*",
+    "http://localhost:8787/*",
+    "https://*.up.railway.app/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.netflix.com/*",
+        "*://*.twitch.tv/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#050507"/>
+  <meta name="description" content="EvZero Watchparty — sync video across browsers."/>
+  <title>EvZero / Watchparty</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/watch.css"/>
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../" class="nav-brand" data-transition>evzero</a>
+      <ul class="nav-links">
+        <li><a href="../" data-transition>Home</a></li>
+        <li><a href="../projects/" class="active" data-transition>Projects</a></li>
+        <li><a href="../solren/" data-transition>Solren</a></li>
+        <li><a href="../contact/" data-transition>Contact</a></li>
+      </ul>
+      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+    </div>
+  </nav>
+
+  <div class="section-indicator" aria-hidden="true"></div>
+
+  <main class="page">
+
+    <section class="section" data-event="watch-hero">
+      <div class="section-inner watch-hero">
+        <div class="eyebrow centered reveal">Projects / Watchparty</div>
+        <h1 class="display-lg reveal d1">Watch<br/><span class="accent">together.</span></h1>
+        <p class="reveal d2">Sync play, pause, and seek across two browsers. No screenshare. Just the video, in lockstep.</p>
+      </div>
+    </section>
+
+    <section class="section" data-event="watch-room">
+      <div class="section-inner">
+        <div class="watch-grid">
+
+          <div class="watch-panel reveal">
+            <div class="panel-head">
+              <span class="panel-num">/ 01</span>
+              <span class="panel-lbl">Room</span>
+            </div>
+
+            <div class="room-actions">
+              <button id="btn-create" class="btn-primary">Create room</button>
+              <div class="or">or</div>
+              <div class="join-row">
+                <input id="input-room" class="input" placeholder="room code" maxlength="12" spellcheck="false"/>
+                <button id="btn-join" class="btn-ghost">Join</button>
+              </div>
+            </div>
+
+            <div class="name-row">
+              <label for="input-name" class="lbl">Your name</label>
+              <input id="input-name" class="input" placeholder="anon" maxlength="24" spellcheck="false"/>
+            </div>
+
+            <div class="room-status" id="room-status">
+              <div class="status-dot idle"></div>
+              <div class="status-text">Not connected</div>
+            </div>
+
+            <div class="room-link hidden" id="room-link">
+              <div class="lbl">Share link</div>
+              <div class="link-row">
+                <code id="share-url"></code>
+                <button id="btn-copy" class="btn-ghost small">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="watch-panel reveal d1">
+            <div class="panel-head">
+              <span class="panel-num">/ 02</span>
+              <span class="panel-lbl">Peers</span>
+            </div>
+            <ul class="peer-list" id="peer-list">
+              <li class="peer-empty">No one here yet.</li>
+            </ul>
+
+            <div class="panel-head" style="margin-top: 28px;">
+              <span class="panel-num">/ 03</span>
+              <span class="panel-lbl">Activity</span>
+            </div>
+            <ul class="event-log" id="event-log">
+              <li class="log-empty">Events will appear here.</li>
+            </ul>
+          </div>
+
+          <div class="watch-panel reveal d2 span-2">
+            <div class="panel-head">
+              <span class="panel-num">/ 04</span>
+              <span class="panel-lbl">Extension</span>
+            </div>
+            <p class="panel-text">
+              Install the EvZero Watchparty extension, then open Netflix / YouTube / Disney+. The extension will pick up the room from this page and start syncing playback automatically.
+            </p>
+            <div class="steps">
+              <div class="step"><span class="step-num">1</span><span>Create or join a room above.</span></div>
+              <div class="step"><span class="step-num">2</span><span>Click the extension icon on your video tab.</span></div>
+              <div class="step"><span class="step-num">3</span><span>Press play. Your friend presses play. Same frame.</span></div>
+            </div>
+            <div class="ext-cta">
+              <a class="btn-ghost" href="#" id="btn-ext" aria-disabled="true">Extension — coming soon</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="footer-mini">evzero.org / watchparty</div>
+  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/cat.js"></script>
+  <script src="../js/watch.js"></script>
+</body>
+</html>

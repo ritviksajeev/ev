@@ -15,6 +15,7 @@
   const modalDesc = modal.querySelector('.pm-desc');
   const modalFiles = modal.querySelector('.pm-files');
   const modalCover = modal.querySelector('.pm-cover');
+  const modalActions = modal.querySelector('.pm-actions');
 
   const PROJECTS = {
     'evzero-org': {
@@ -36,6 +37,17 @@
       files: ['src/cat.ts', 'sprites/', 'README.md'],
       cover: coverCat(),
     },
+    'watchparty': {
+      title: 'watchparty',
+      meta: ['extension', 'ws relay', '2026'],
+      desc: [
+        'Two browsers, one video, same frame. Chrome/Firefox extension hooks the HTML5 video element on Netflix / YouTube / Disney+ and pipes play/pause/seek events through a tiny Node WebSocket relay.',
+        'Rooms are created from the site — share a link, join, press play. No screenshare, no quality loss.',
+      ],
+      files: ['server/server.js', 'watch/index.html', 'extension/content.js (wip)'],
+      cover: coverWatch(),
+      actions: [{ label: 'Open watchparty →', href: '../watch/' }],
+    },
     'mystery': {
       title: '???',
       meta: ['classified', 'wip', 'soon'],
@@ -56,6 +68,9 @@
     modalDesc.innerHTML = data.desc.map((p) => `<p>${p}</p>`).join('');
     modalFiles.innerHTML = data.files.map((f) => `<div class="file-line">${f}</div>`).join('');
     modalCover.innerHTML = data.cover;
+    modalActions.innerHTML = (data.actions || [])
+      .map((a) => `<a class="pm-btn" href="${a.href}" data-transition>${a.label}</a>`)
+      .join('');
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -121,6 +136,26 @@
       </svg>
     `;
   }
+  function coverWatch() {
+    return `
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wpg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="250" fill="#050507"/>
+        <rect x="60" y="55" width="130" height="80" rx="4" fill="none" stroke="url(#wpg)" stroke-width="2"/>
+        <polygon points="115,80 115,110 140,95" fill="#a78bfa"/>
+        <rect x="210" y="115" width="130" height="80" rx="4" fill="none" stroke="url(#wpg)" stroke-width="2"/>
+        <polygon points="265,140 265,170 290,155" fill="#a78bfa"/>
+        <path d="M 190 95 Q 200 125 210 155" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 4" fill="none"/>
+        <circle cx="190" cy="95" r="3" fill="#a78bfa"/>
+        <circle cx="210" cy="155" r="3" fill="#a78bfa"/>
+      </svg>
+    `;
+  }
   function coverMystery() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
@@ -146,6 +181,7 @@
     switch (type) {
       case 'wave':    svg = coverWave(color); break;
       case 'cat':     svg = coverCat(); break;
+      case 'watch':   svg = coverWatch(); break;
       case 'mystery': svg = coverMystery(); break;
       default:        svg = coverWave(color);
     }

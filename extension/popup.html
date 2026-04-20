@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>EvZero Watchparty</title>
+  <link rel="stylesheet" href="popup.css"/>
+</head>
+<body>
+  <header>
+    <div class="brand">evzero <span class="brand-sub">/ watchparty</span></div>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <label for="name">Name</label>
+      <input id="name" maxlength="24" placeholder="anon"/>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="status" id="status">
+      <span class="dot idle"></span>
+      <span class="status-text">Not connected</span>
+    </div>
+
+    <div id="room-controls">
+      <button id="btn-create" class="primary">Create room</button>
+      <div class="or">or</div>
+      <div class="join-row">
+        <input id="room" placeholder="room code" maxlength="12" spellcheck="false"/>
+        <button id="btn-join" class="ghost">Join</button>
+      </div>
+    </div>
+
+    <div id="room-active" class="hidden">
+      <div class="room-id">Room <code id="room-code"></code></div>
+      <div class="peers" id="peers">No peers yet.</div>
+      <button id="btn-leave" class="ghost">Leave</button>
+    </div>
+  </section>
+
+  <section class="card footer">
+    <label class="inline">
+      <input type="checkbox" id="use-fly"/>
+      <span>Use hosted server (Railway)</span>
+    </label>
+    <div class="hint">Open a tab on YouTube, Netflix, or Twitch before joining.</div>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>
