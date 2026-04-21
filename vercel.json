@@ -5,6 +5,6 @@
     { "source": "/projects", "destination": "/projects/", "permanent": true },
     { "source": "/solren",   "destination": "/solren/",   "permanent": true },
     { "source": "/contact",  "destination": "/contact/",  "permanent": true },
-    { "source": "/watch",    "destination": "/watch/",    "permanent": true }
+    { "source": "/watchparty", "destination": "/watchparty/", "permanent": true }
   ]
 }

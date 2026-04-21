@@ -1,10 +1,6 @@
 // Service worker — owns the WebSocket, relays between popup and content script.
 
-const LOCAL_SERVER = {
-  http: 'http://localhost:8787',
-  ws: 'ws://localhost:8787',
-};
-const HOSTED_SERVER = {
+const SERVER = {
   http: 'https://ev-production.up.railway.app',
   ws: 'wss://ev-production.up.railway.app',
 };
@@ -16,18 +12,16 @@ let state = {
   connected: false,
   peers: [],
   lastError: null,
-  useHosted: false,
 };
 
 async function loadState() {
-  const stored = await chrome.storage.local.get(['name', 'useHosted']);
+  const stored = await chrome.storage.local.get(['name']);
   if (stored.name) state.name = stored.name;
-  if (typeof stored.useHosted === 'boolean') state.useHosted = stored.useHosted;
 }
 loadState();
 
 function server() {
-  return state.useHosted ? HOSTED_SERVER : LOCAL_SERVER;
+  return SERVER;
 }
 
 function broadcastState() {
@@ -138,12 +132,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'set-name':
         state.name = (msg.name || 'anon').slice(0, 24);
         await chrome.storage.local.set({ name: state.name });
-        broadcastState();
-        sendResponse({ ok: true });
-        break;
-      case 'set-server':
-        state.useHosted = !!msg.useHosted;
-        await chrome.storage.local.set({ useHosted: state.useHosted });
         broadcastState();
         sendResponse({ ok: true });
         break;

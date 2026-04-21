@@ -46,7 +46,7 @@
       ],
       files: ['server/server.js', 'watch/index.html', 'extension/content.js (wip)'],
       cover: coverWatch(),
-      actions: [{ label: 'Open watchparty →', href: '../watch/' }],
+      actions: [{ label: 'Open watchparty →', href: '../watchparty/' }],
     },
     'mystery': {
       title: '???',

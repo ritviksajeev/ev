@@ -4,7 +4,6 @@ const roomInput = $('room');
 const btnCreate = $('btn-create');
 const btnJoin = $('btn-join');
 const btnLeave = $('btn-leave');
-const useHosted = $('use-fly');
 const statusEl = $('status');
 const statusDot = statusEl.querySelector('.dot');
 const statusText = statusEl.querySelector('.status-text');
@@ -15,7 +14,6 @@ const peersEl = $('peers');
 
 function render(state) {
   nameInput.value = state.name || '';
-  useHosted.checked = !!state.useHosted;
 
   if (state.roomId && state.connected) {
     statusDot.className = 'dot connected';
@@ -57,9 +55,6 @@ async function refresh() {
 
 nameInput.addEventListener('change', async () => {
   await send({ type: 'set-name', name: nameInput.value.trim() });
-});
-useHosted.addEventListener('change', async () => {
-  await send({ type: 'set-server', useHosted: useHosted.checked });
 });
 btnCreate.addEventListener('click', async () => {
   btnCreate.disabled = true;
