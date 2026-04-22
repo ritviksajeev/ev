@@ -13,6 +13,14 @@
   padding-bottom: 120px;
 }
 
+/* common.js section-observer only runs on .page (scroll-snap) layouts — the val
+   page opts out, so .reveal children would otherwise stay at opacity 0. Show
+   them by default here. */
+.val-page .reveal {
+  opacity: 1;
+  transform: none;
+}
+
 /* ============================================
    Hero + search
    ============================================ */
