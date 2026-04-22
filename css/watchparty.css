@@ -72,7 +72,11 @@
   border-color: var(--purple);
 }
 .btn-primary:hover { background: var(--purple-bright); border-color: var(--purple-bright); }
-.btn-primary:disabled { opacity: 0.4; }
+.btn-primary:disabled,
+.btn-ghost:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
 .btn-ghost {
   background: transparent;
   color: var(--white);

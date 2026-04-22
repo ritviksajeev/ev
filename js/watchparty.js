@@ -13,6 +13,7 @@
   const btnCreate = $('btn-create');
   const btnJoin = $('btn-join');
   const btnCopy = $('btn-copy');
+  const btnLeave = $('btn-leave');
   const inputRoom = $('input-room');
   const inputName = $('input-name');
   const statusEl = $('room-status');
@@ -30,9 +31,21 @@
   if (storedName) inputName.value = storedName;
   const urlRoom = new URLSearchParams(location.search).get('room');
   if (urlRoom) inputRoom.value = urlRoom;
+
+  // ---- username validation ----
+  function cleanName() { return inputName.value.trim(); }
+  function validName() { return cleanName().length >= 2; }
+  function updateGate() {
+    const ok = validName();
+    btnCreate.disabled = !ok;
+    btnJoin.disabled = !ok;
+  }
+  inputName.addEventListener('input', updateGate);
   inputName.addEventListener('change', () => {
-    localStorage.setItem('evz-watch-name', inputName.value.trim());
+    localStorage.setItem('evz-watch-name', cleanName());
+    updateGate();
   });
+  updateGate();
 
   function setStatus(kind, text) {
     statusDot.className = 'status-dot ' + kind;
@@ -66,7 +79,7 @@
     peers.clear();
     renderPeers();
 
-    const name = (inputName.value.trim() || 'anon').slice(0, 24);
+    const name = cleanName().slice(0, 24);
     setStatus('connecting', `Connecting…`);
 
     const url = `${SERVER.ws}/?room=${encodeURIComponent(roomId)}&name=${encodeURIComponent(name)}`;
@@ -121,9 +134,10 @@
       currentRoom = null;
       if (e.code === 4004) setStatus('error', 'Room not found');
       else if (e.code === 4001) setStatus('error', 'Room full');
-      else setStatus('idle', 'Disconnected');
+      else setStatus('idle', 'Not connected');
       peers.clear();
       renderPeers();
+      linkWrap.classList.add('hidden');
       if (playerPanel) playerPanel.classList.add('hidden');
       if (window.__webplayer) window.__webplayer.reset();
     });
@@ -134,6 +148,7 @@
   }
 
   async function createRoom() {
+    if (!validName()) { inputName.focus(); return; }
     setStatus('connecting', 'Creating room…');
     btnCreate.disabled = true;
     try {
@@ -145,16 +160,25 @@
     } catch {
       setStatus('error', 'Could not reach server');
     } finally {
-      btnCreate.disabled = false;
+      updateGate();
     }
+  }
+
+  function leaveRoom() {
+    if (ws) try { ws.close(); } catch {}
+    linkWrap.classList.add('hidden');
+    history.replaceState(null, '', location.pathname);
+    inputRoom.value = '';
   }
 
   btnCreate.addEventListener('click', createRoom);
   btnJoin.addEventListener('click', () => {
+    if (!validName()) { inputName.focus(); return; }
     const id = inputRoom.value.trim();
     if (!id) return;
     connect(id);
   });
+  btnLeave.addEventListener('click', leaveRoom);
   inputRoom.addEventListener('keydown', (e) => { if (e.key === 'Enter') btnJoin.click(); });
 
   btnCopy.addEventListener('click', async () => {
@@ -165,7 +189,16 @@
     } catch {}
   });
 
-  if (urlRoom) setTimeout(() => connect(urlRoom), 200);
+  // Auto-connect if ?room=XXX in URL — but only if we have a valid name.
+  // Otherwise focus the name input so the user knows what's needed.
+  if (urlRoom) {
+    if (validName()) {
+      setTimeout(() => connect(urlRoom), 200);
+    } else {
+      inputName.focus();
+      setStatus('idle', 'Enter a name to join');
+    }
+  }
 
   // install instructions toggle
   const btnHow = $('btn-how');
