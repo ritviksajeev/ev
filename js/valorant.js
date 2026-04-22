@@ -14,8 +14,11 @@
 
   const AGENT_CDN = (uuid) =>
     uuid ? `https://media.valorant-api.com/agents/${uuid}/displayicon.png` : '';
+  // Use largeart (268x640, crisp portrait) rather than wideart (452x128, too low-res
+  // to upscale to a banner without blur). We position it on the right and fade the
+  // left side for text contrast — see .val-profile-bg in valorant.css.
   const CARD_CDN = (uuid) =>
-    uuid ? `https://media.valorant-api.com/playercards/${uuid}/wideart.png` : '';
+    uuid ? `https://media.valorant-api.com/playercards/${uuid}/largeart.png` : '';
   // Current competitive tiers table on valorant-api.com — tier id 0..27 maps to a rank icon.
   // Episode 5 table; update if Riot rotates to Episode 6+ (check https://valorant-api.com/v1/competitivetiers).
   const TIER_TABLE = '03621f52-342b-cf4e-4f86-9350a49c6d04';
@@ -291,9 +294,9 @@
     const cardUuid = typeof account?.card === 'string'
       ? account.card
       : (account?.card?.id || '');
-    const cardWide = cardUuid ? CARD_CDN(cardUuid)
-      : (account?.card?.wide || account?.card?.large || account?.card?.small || '');
-    profileBg.style.backgroundImage = cardWide ? `url("${cardWide}")` : 'none';
+    const cardUrl = cardUuid ? CARD_CDN(cardUuid)
+      : (account?.card?.large || account?.card?.wide || account?.card?.small || '');
+    profileBg.style.backgroundImage = cardUrl ? `url("${cardUrl}")` : 'none';
 
     nameDisplay.textContent = account?.name || '—';
     tagDisplay.textContent  = account?.tag ? `#${account.tag}` : '';

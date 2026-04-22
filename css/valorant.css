@@ -211,9 +211,11 @@
 .val-profile-bg {
   position: absolute;
   inset: 0;
-  background-size: cover;
-  background-position: center;
-  opacity: 0.85;
+  background-repeat: no-repeat;
+  /* Portrait largeart is 268x640 — show it crisp on the right, no stretching. */
+  background-size: auto 140%;
+  background-position: right -20px center;
+  opacity: 1;
   filter: saturate(115%) contrast(105%);
   transition: opacity 0.6s var(--ease-out);
 }
@@ -221,15 +223,24 @@
   content: "";
   position: absolute;
   inset: 0;
+  /* Strong fade on the left so the name/rank text stays readable, soft on the right so
+     the portrait art stays visible. */
   background:
-    linear-gradient(90deg, rgba(5,5,7,0.82) 0%, rgba(5,5,7,0.45) 40%, rgba(5,5,7,0.10) 75%, rgba(5,5,7,0.35) 100%),
-    linear-gradient(180deg, rgba(5,5,7,0.15) 0%, rgba(5,5,7,0.55) 100%);
+    linear-gradient(90deg,
+      rgba(5,5,7,0.95) 0%,
+      rgba(5,5,7,0.88) 35%,
+      rgba(5,5,7,0.55) 60%,
+      rgba(5,5,7,0.15) 85%,
+      rgba(5,5,7,0.00) 100%),
+    linear-gradient(180deg, rgba(5,5,7,0.12) 0%, rgba(5,5,7,0.50) 100%);
 }
 
 .val-profile-content {
   position: relative;
   z-index: 1;
-  padding: 36px 40px;
+  /* Extra right padding reserves space for the portrait art on the right edge
+     so rank text never overlaps the card image. */
+  padding: 36px 170px 36px 40px;
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 40px;
@@ -910,9 +921,28 @@
   .val-profile-content {
     grid-template-columns: 1fr;
     gap: 28px;
-    padding: 28px;
+    /* On mobile the portrait compresses; cut the reserved right space in half. */
+    padding: 28px 90px 28px 24px;
   }
-  .val-ranks { gap: 24px; }
+  /* Push the portrait further right and shrink it so it reads as accent art
+     rather than competing with the rank text. */
+  .val-profile-bg {
+    background-size: auto 110%;
+    background-position: calc(100% + 40px) center;
+    opacity: 0.7;
+  }
+  .val-profile-bg::after {
+    background:
+      linear-gradient(90deg,
+        rgba(5,5,7,0.95) 0%,
+        rgba(5,5,7,0.92) 55%,
+        rgba(5,5,7,0.70) 80%,
+        rgba(5,5,7,0.40) 100%),
+      linear-gradient(180deg, rgba(5,5,7,0.12) 0%, rgba(5,5,7,0.50) 100%);
+  }
+  /* Stack ranks vertically so the peak block doesn't crash into the portrait
+     on narrow screens. */
+  .val-ranks { gap: 16px; flex-direction: column; align-items: flex-start; }
   .val-rank-block { min-width: 0; }
 
   .val-match {
