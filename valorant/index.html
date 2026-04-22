@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#050507"/>
+  <meta name="description" content="EvZero Valorant Tracker — search a Riot ID and see rank, stats, and recent matches."/>
+  <title>EvZero / Valorant Tracker</title>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css"/>
+  <link rel="stylesheet" href="../css/valorant.css"/>
+</head>
+<body>
+
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-base"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
+    <div class="bg-noise"></div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../" class="nav-brand" data-transition>evzero</a>
+      <ul class="nav-links">
+        <li><a href="../" data-transition>Home</a></li>
+        <li><a href="../projects/" class="active" data-transition>Projects</a></li>
+        <li><a href="../solren/" data-transition>Solren</a></li>
+        <li><a href="../contact/" data-transition>Contact</a></li>
+      </ul>
+      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+    </div>
+  </nav>
+
+  <main class="val-page">
+
+    <!-- ============================================
+         Hero + search
+         ============================================ -->
+    <section class="section val-hero">
+      <div class="section-inner val-hero-inner">
+        <div class="eyebrow centered reveal">Projects / Tracker</div>
+        <h1 class="display-lg reveal d1">Valorant<br/><span class="accent">Tracker.</span></h1>
+        <p class="val-tagline reveal d2">
+          Search a Riot ID. See rank, recent form, and a full match log.
+          <span class="val-tagline-dim">Data via Henrik&rsquo;s API.</span>
+        </p>
+
+        <form class="val-search reveal d3" id="val-search" autocomplete="off">
+          <div class="val-search-row">
+            <div class="val-input-wrap val-input-name">
+              <span class="val-input-label">Name</span>
+              <input
+                id="val-name"
+                class="input val-input"
+                type="text"
+                placeholder="Player"
+                maxlength="16"
+                spellcheck="false"
+                required
+              />
+            </div>
+            <div class="val-input-hash">#</div>
+            <div class="val-input-wrap val-input-tag">
+              <span class="val-input-label">Tag</span>
+              <input
+                id="val-tag"
+                class="input val-input"
+                type="text"
+                placeholder="NA1"
+                maxlength="5"
+                spellcheck="false"
+                required
+              />
+            </div>
+            <div class="val-input-wrap val-input-region">
+              <span class="val-input-label">Region</span>
+              <select id="val-region" class="input val-input val-select">
+                <option value="ap">AP</option>
+                <option value="na">NA</option>
+                <option value="eu">EU</option>
+                <option value="kr">KR</option>
+                <option value="latam">LATAM</option>
+                <option value="br">BR</option>
+              </select>
+            </div>
+            <button id="val-search-btn" class="btn val-search-btn" type="submit">
+              <span class="btn-label">Search</span>
+              <span class="arrow">&rarr;</span>
+            </button>
+          </div>
+
+          <div class="val-status" id="val-status" role="status" aria-live="polite">
+            <span class="val-status-dot idle"></span>
+            <span class="val-status-text">Idle</span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================
+         Dashboard (profile + stats + matches) — hidden until a search lands
+         ============================================ -->
+    <div class="val-dashboard hidden" id="val-dashboard">
+      <div class="val-dashboard-inner">
+
+        <!-- Profile / rank card -->
+        <div class="val-profile glass" id="val-profile">
+          <div class="val-profile-bg" id="val-profile-bg"></div>
+          <div class="val-profile-content">
+
+            <div class="val-identity">
+              <div class="val-identity-label eyebrow plain">Profile</div>
+              <div class="val-identity-name">
+                <span class="val-name" id="val-name-display">&mdash;</span><span class="val-tag" id="val-tag-display"></span>
+              </div>
+              <div class="val-identity-meta" id="val-identity-meta">
+                <span class="val-meta-chip" id="val-level">Level &mdash;</span>
+                <span class="val-meta-chip" id="val-region-display">Region &mdash;</span>
+              </div>
+            </div>
+
+            <div class="val-ranks">
+              <div class="val-rank-block">
+                <div class="val-rank-label">Current</div>
+                <div class="val-rank-body">
+                  <img class="val-rank-icon" id="val-rank-icon" alt="" width="72" height="72"/>
+                  <div class="val-rank-text">
+                    <div class="val-rank-tier" id="val-rank-tier">Unranked</div>
+                    <div class="val-rank-rr" id="val-rank-rr">&mdash; RR</div>
+                  </div>
+                </div>
+              </div>
+              <div class="val-rank-block">
+                <div class="val-rank-label">Peak</div>
+                <div class="val-rank-body">
+                  <img class="val-rank-icon dim" id="val-peak-icon" alt="" width="56" height="56"/>
+                  <div class="val-rank-text">
+                    <div class="val-rank-tier" id="val-peak-tier">&mdash;</div>
+                    <div class="val-rank-rr dim" id="val-peak-meta">&mdash;</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Stat tiles -->
+        <div class="val-stats-head">
+          <div class="eyebrow plain">Recent form <span class="val-stats-range" id="val-stats-range">/ last 20 matches</span></div>
+        </div>
+        <div class="val-stats" id="val-stats">
+          <div class="val-stat"><div class="val-stat-label">Win rate</div><div class="val-stat-value" data-stat="winrate">&mdash;</div></div>
+          <div class="val-stat"><div class="val-stat-label">K / D / A</div><div class="val-stat-value" data-stat="kda">&mdash;</div></div>
+          <div class="val-stat"><div class="val-stat-label">Headshot %</div><div class="val-stat-value" data-stat="hs">&mdash;</div></div>
+          <div class="val-stat"><div class="val-stat-label">ACS</div><div class="val-stat-value" data-stat="acs">&mdash;</div></div>
+          <div class="val-stat"><div class="val-stat-label">Damage / round</div><div class="val-stat-value" data-stat="dpr">&mdash;</div></div>
+          <div class="val-stat"><div class="val-stat-label">Kills</div><div class="val-stat-value" data-stat="kills">&mdash;</div></div>
+        </div>
+
+        <!-- Top agents / maps -->
+        <div class="val-breakdown">
+          <div class="val-breakdown-block">
+            <div class="eyebrow plain">Top agents</div>
+            <div class="val-breakdown-list" id="val-top-agents">
+              <div class="val-breakdown-empty">No match data.</div>
+            </div>
+          </div>
+          <div class="val-breakdown-block">
+            <div class="eyebrow plain">Top maps</div>
+            <div class="val-breakdown-list" id="val-top-maps">
+              <div class="val-breakdown-empty">No match data.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Match history -->
+        <div class="val-matches-head">
+          <div class="eyebrow plain">Match history</div>
+          <div class="val-matches-count" id="val-matches-count">&mdash;</div>
+        </div>
+        <div class="val-matches" id="val-matches">
+          <div class="val-matches-empty">No matches loaded yet.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <div class="footer-mini">evzero.org / valorant</div>
+  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
+
+  <script src="../js/common.js"></script>
+  <script src="../js/cat.js"></script>
+  <script src="../js/valorant.js"></script>
+</body>
+</html>

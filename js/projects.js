@@ -55,6 +55,22 @@
       cover: coverWatch(),
       actions: [{ label: 'Open watchparty →', href: '../watchparty/' }],
     },
+    'valorant-tracker': {
+      title: 'valorant-tracker',
+      meta: ['web', 'henrik api', '2026'],
+      desc: [
+        'Type a Riot ID, get a rank card, recent form, and a full match log. Data is pulled live from Henrik\'s community Valorant API through a small proxy so the key never hits the browser.',
+        'Landing pad for a bigger companion app in the works — same identity and stats will carry across both.',
+      ],
+      files: [
+        'valorant/index.html',
+        'css/valorant.css',
+        'js/valorant.js',
+        'server/valorant.js',
+      ],
+      cover: coverValorant(),
+      actions: [{ label: 'Open tracker →', href: '../valorant/' }],
+    },
     'mystery': {
       title: '???',
       meta: ['classified', 'wip', 'soon'],
@@ -163,6 +179,39 @@
       </svg>
     `;
   }
+  function coverValorant() {
+    return `
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+          <radialGradient id="vgr" cx="0.5" cy="0.5" r="0.6">
+            <stop offset="0%" stop-color="rgba(167,139,250,0.35)"/>
+            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
+            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
+          </radialGradient>
+        </defs>
+        <rect width="400" height="250" fill="#050507"/>
+        <rect width="400" height="250" fill="url(#vgr)"/>
+        <g stroke="rgba(255,255,255,0.06)" stroke-width="1">
+          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
+          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
+        </g>
+        <g stroke="url(#vg)" stroke-width="2.5" fill="none" stroke-linecap="round">
+          <line x1="200" y1="95"  x2="200" y2="115"/>
+          <line x1="200" y1="135" x2="200" y2="155"/>
+          <line x1="160" y1="125" x2="180" y2="125"/>
+          <line x1="220" y1="125" x2="240" y2="125"/>
+        </g>
+        <circle cx="200" cy="125" r="2.5" fill="#a78bfa"/>
+        <circle cx="200" cy="125" r="44" stroke="rgba(167,139,250,0.18)" stroke-width="1" fill="none" stroke-dasharray="3 5"/>
+        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">TRACKER</text>
+        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// VAL</text>
+      </svg>
+    `;
+  }
   function coverMystery() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
@@ -186,11 +235,12 @@
     const color = card.dataset.coverColor || '#a78bfa';
     let svg = '';
     switch (type) {
-      case 'wave':    svg = coverWave(color); break;
-      case 'cat':     svg = coverCat(); break;
-      case 'watch':   svg = coverWatch(); break;
-      case 'mystery': svg = coverMystery(); break;
-      default:        svg = coverWave(color);
+      case 'wave':     svg = coverWave(color); break;
+      case 'cat':      svg = coverCat(); break;
+      case 'watch':    svg = coverWatch(); break;
+      case 'valorant': svg = coverValorant(); break;
+      case 'mystery':  svg = coverMystery(); break;
+      default:         svg = coverWave(color);
     }
     coverEl.insertAdjacentHTML('afterbegin', svg);
   });

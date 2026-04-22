@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { WebSocketServer } from 'ws';
 import { randomBytes } from 'node:crypto';
+import { handleValorant } from './valorant.js';
 
 const PORT = process.env.PORT || 8787;
 const MAX_ROOM_SIZE = 8;
@@ -9,8 +10,12 @@ const ROOM_TTL_MS = 1000 * 60 * 60 * 6;
 /** @type {Map<string, { clients: Set<WebSocket>, createdAt: number, lastLoad: any, lastPlayback: any }>} */
 const rooms = new Map();
 
-const http_server = http.createServer((req, res) => {
+const http_server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Valorant proxy routes — handled in its own module, returns true if served.
+  if (await handleValorant(req, res)) return;
+
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, rooms: rooms.size }));
