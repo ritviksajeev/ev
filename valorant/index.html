@@ -132,6 +132,18 @@
                 <span class="val-meta-chip" id="val-level">Level &mdash;</span>
                 <span class="val-meta-chip" id="val-region-display">Region &mdash;</span>
               </div>
+              <div class="val-identity-actions">
+                <button type="button" class="val-chip-btn" id="val-share" title="Copy link to this profile">
+                  <span class="val-chip-btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M11.5 1.5a2.5 2.5 0 1 0 -2.48 2.76L5.97 5.97A2.5 2.5 0 1 0 5.97 10.03l3.05 1.71A2.5 2.5 0 1 0 9.62 10.76L6.57 9.05a2.5 2.5 0 0 0 0 -2.1l3.05 -1.71a2.5 2.5 0 0 0 1.88 .76Z"/></svg>
+                  </span>
+                  <span class="val-chip-btn-label" id="val-share-label">Share</span>
+                </button>
+                <button type="button" class="val-chip-btn val-live-btn" id="val-live-toggle" title="Auto-refresh every 30s">
+                  <span class="val-live-dot" aria-hidden="true"></span>
+                  <span class="val-chip-btn-label" id="val-live-label">Go Live</span>
+                </button>
+              </div>
             </div>
 
             <div class="val-ranks">
@@ -157,6 +169,21 @@
               </div>
             </div>
 
+          </div>
+        </div>
+
+        <!-- Session summary -->
+        <div class="val-session glass" id="val-session" hidden>
+          <div class="val-session-head">
+            <div class="eyebrow plain">Today&rsquo;s session</div>
+            <span class="val-session-sub" id="val-session-sub">&mdash;</span>
+          </div>
+          <div class="val-session-row">
+            <div class="val-session-stat"><div class="val-session-label">Games</div><div class="val-session-value" id="val-session-games">&mdash;</div></div>
+            <div class="val-session-stat"><div class="val-session-label">W&ndash;L</div><div class="val-session-value" id="val-session-wl">&mdash;</div></div>
+            <div class="val-session-stat"><div class="val-session-label">Net RR</div><div class="val-session-value" id="val-session-rr">&mdash;</div></div>
+            <div class="val-session-stat"><div class="val-session-label">Streak</div><div class="val-session-value" id="val-session-streak">&mdash;</div></div>
+            <div class="val-session-stat val-session-form"><div class="val-session-label">Form</div><div class="val-session-value" id="val-session-form">&mdash;</div></div>
           </div>
         </div>
 
@@ -197,10 +224,27 @@
           </div>
         </div>
 
+        <!-- Weapon usage -->
+        <div class="val-weapons-head">
+          <div class="eyebrow plain">Top weapons <span class="val-weapons-range" id="val-weapons-range">/ kills + headshot %</span></div>
+        </div>
+        <div class="val-weapons" id="val-weapons">
+          <div class="val-weapons-empty">No weapon data yet.</div>
+        </div>
+
         <!-- Match history -->
         <div class="val-matches-head">
           <div class="eyebrow plain">Match history</div>
           <div class="val-matches-count" id="val-matches-count">&mdash;</div>
+          <div class="val-live-indicator" id="val-live-indicator" hidden>
+            <span class="val-live-indicator-dot"></span>
+            <span class="val-live-indicator-text">Live &middot; refreshing</span>
+          </div>
+        </div>
+
+        <!-- Tiny floating toast for share / live feedback -->
+        <div class="val-toast" id="val-toast" role="status" aria-live="polite" hidden>
+          <span id="val-toast-text">Link copied</span>
         </div>
         <div class="val-matches" id="val-matches">
           <div class="val-matches-empty">No matches loaded yet.</div>

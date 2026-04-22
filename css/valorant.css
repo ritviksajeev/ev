@@ -336,6 +336,64 @@
   color: var(--white-dim);
 }
 
+/* Share + Go Live buttons — identical chip sizing so they sit flush. */
+.val-identity-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.val-chip-btn {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out), transform 0.1s var(--ease-out);
+}
+.val-chip-btn:hover {
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.38);
+}
+.val-chip-btn:active { transform: translateY(1px); }
+.val-chip-btn-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  color: var(--purple-bright);
+}
+.val-chip-btn.copied .val-chip-btn-icon { color: #7ed99d; }
+.val-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04);
+  transition: background 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+}
+.val-live-btn.active {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.55);
+}
+.val-live-btn.active .val-live-dot {
+  background: #f87171;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.28);
+  animation: val-pulse 1.6s ease-in-out infinite;
+}
+@keyframes val-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.9); }
+}
+
 /* Ranks */
 .val-ranks {
   display: flex;
@@ -390,6 +448,76 @@
   color: var(--white-dim);
 }
 .val-rank-rr.dim { color: var(--white-faint); }
+
+/* ============================================
+   Session summary (today's games, net RR, streak)
+   ============================================ */
+.val-session {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+.val-session[hidden] { display: none; }
+.val-session-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.val-session-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.val-session-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.val-session-stat { min-width: 0; }
+.val-session-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  margin-bottom: 4px;
+}
+.val-session-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.val-session-value.pos { color: #7ed99d; }
+.val-session-value.neg { color: #e38686; }
+.val-session-form-pills {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: nowrap;
+}
+.val-session-form-pill {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.val-session-form-pill.win  { background: rgba(126, 217, 157, 0.18); color: #7ed99d; }
+.val-session-form-pill.loss { background: rgba(227, 134, 134, 0.18); color: #e38686; }
+.val-session-form-pill.draw { background: rgba(255, 255, 255, 0.08); color: var(--white-dim); }
 
 /* ============================================
    Stat tiles
@@ -566,6 +694,90 @@
 }
 
 /* ============================================
+   Weapons block — top weapons by kills / headshot %
+   ============================================ */
+.val-weapons-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.val-weapons-range {
+  color: var(--white-faint);
+  font-weight: 400;
+  letter-spacing: 1.5px;
+}
+.val-weapons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.val-weapons-empty {
+  grid-column: 1 / -1;
+  padding: 18px;
+  background: var(--bg-1);
+  border: 1px dashed var(--white-line);
+  border-radius: var(--radius-sm);
+  color: var(--white-faint);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-align: center;
+}
+.val-weapon {
+  padding: 14px 16px;
+  background: var(--bg-1);
+  border: 1px solid var(--white-line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+}
+.val-weapon-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.val-weapon-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+}
+.val-weapon-kills {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+}
+.val-weapon-hs {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.2px;
+  color: var(--white-faint);
+}
+.val-weapon-hs.hot { color: #f5b96a; }
+.val-weapon-hs.elite { color: #7ed99d; }
+.val-weapon-img {
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+  width: auto;
+  opacity: 0.18;
+  pointer-events: none;
+  filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3));
+}
+
+/* ============================================
    Match history
    ============================================ */
 .val-matches-head {
@@ -573,6 +785,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 .val-matches-count {
   font-family: var(--font-mono);
@@ -580,6 +793,62 @@
   letter-spacing: 1.5px;
   color: var(--white-faint);
   text-transform: uppercase;
+}
+.val-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.42);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #fda4a4;
+}
+.val-live-indicator[hidden] { display: none; }
+.val-live-indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: val-pulse 1.6s ease-in-out infinite;
+}
+
+/* Toast — small floating confirmation popup (share copied, new match, etc). */
+.val-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 40px;
+  transform: translate(-50%, 12px);
+  z-index: 40;
+  padding: 10px 18px;
+  background: rgba(20, 14, 36, 0.95);
+  border: 1px solid rgba(167, 139, 250, 0.38);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--white);
+  box-shadow: 0 18px 42px -18px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
+}
+.val-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.val-toast[hidden] { display: none; }
+.val-match-wrap.fresh .val-match {
+  animation: val-match-fresh 2s var(--ease-out) 1;
+}
+@keyframes val-match-fresh {
+  0%   { background: rgba(167, 139, 250, 0.22); }
+  100% { background: transparent; }
 }
 
 .val-matches {
@@ -898,6 +1167,8 @@
 @media (max-width: 1024px) {
   .val-stats { grid-template-columns: repeat(3, 1fr); }
   .val-breakdown { grid-template-columns: 1fr; gap: 24px; }
+  .val-weapons { grid-template-columns: repeat(3, 1fr); }
+  .val-session-row { grid-template-columns: repeat(5, 1fr); gap: 14px; }
 }
 
 @media (max-width: 780px) {
@@ -964,10 +1235,21 @@
   .val-scoreboard { grid-template-columns: auto 1fr auto auto; }
   .val-sb-hs, .val-scoreboard-head > span:nth-child(5) { display: none; }
   .val-recent-agent-label { display: none; }
+
+  .val-weapons { grid-template-columns: repeat(2, 1fr); }
+  .val-session-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .val-session-form { grid-column: 1 / -1; }
+  .val-session-value { font-size: 18px; }
 }
 
 @media (max-width: 520px) {
   .val-stats { grid-template-columns: repeat(2, 1fr); }
+  .val-weapons { grid-template-columns: repeat(2, 1fr); }
+  .val-session-row { grid-template-columns: repeat(2, 1fr); }
+  .val-session-form { grid-column: 1 / -1; }
   .val-name  { font-size: 32px; }
   .val-tag   { font-size: 18px; }
   .val-stat-value { font-size: 22px; }

@@ -27,6 +27,56 @@
 
   const STORAGE_REGION = 'evz-val-region';
   const STORAGE_LAST = 'evz-val-last';
+  const STORAGE_MAPS = 'evz-val-maps-v1';
+  const STORAGE_WEAPONS = 'evz-val-weapons-v1';
+  const META_CACHE_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
+
+  // Henrik returns map + weapon as display names or UUIDs depending on endpoint
+  // version. valorant-api.com has the canonical metadata — fetch once and cache
+  // in localStorage so icons render without another network hop on repeat loads.
+  const metaCache = { maps: null, weapons: null };
+
+  async function loadMeta(key, url, storageKey) {
+    if (metaCache[key]) return metaCache[key];
+    try {
+      const cached = JSON.parse(localStorage.getItem(storageKey) || 'null');
+      if (cached && cached.at && (Date.now() - cached.at) < META_CACHE_MS && cached.data) {
+        metaCache[key] = cached.data;
+        return metaCache[key];
+      }
+    } catch { /* ignore */ }
+    try {
+      const res = await fetch(url);
+      const j = await res.json();
+      const data = j?.data || [];
+      metaCache[key] = data;
+      try { localStorage.setItem(storageKey, JSON.stringify({ at: Date.now(), data })); } catch { /* quota */ }
+      return data;
+    } catch (err) {
+      console.warn('[val] meta fetch failed', key, err);
+      metaCache[key] = [];
+      return [];
+    }
+  }
+
+  function mapSplash(nameOrUuid) {
+    const list = metaCache.maps;
+    if (!list || !list.length || !nameOrUuid) return '';
+    const needle = String(nameOrUuid).toLowerCase();
+    const hit = list.find((m) =>
+      (m.uuid && m.uuid.toLowerCase() === needle) ||
+      (m.displayName && m.displayName.toLowerCase() === needle) ||
+      (m.mapUrl && m.mapUrl.toLowerCase().endsWith('/' + needle))
+    );
+    return hit ? (hit.splash || hit.listViewIcon || '') : '';
+  }
+
+  function weaponInfo(uuid) {
+    const list = metaCache.weapons;
+    if (!list || !list.length || !uuid) return null;
+    const needle = String(uuid).toLowerCase();
+    return list.find((w) => w.uuid && w.uuid.toLowerCase() === needle) || null;
+  }
 
   // ---- DOM refs -------------------------------------------------------
   const $ = (id) => document.getElementById(id);
@@ -61,6 +111,22 @@
   const topMaps = $('val-top-maps');
   const matchesEl = $('val-matches');
   const matchesCount = $('val-matches-count');
+  const sessionEl = $('val-session');
+  const sessionSub = $('val-session-sub');
+  const sessionGames = $('val-session-games');
+  const sessionWl = $('val-session-wl');
+  const sessionRr = $('val-session-rr');
+  const sessionStreak = $('val-session-streak');
+  const sessionForm = $('val-session-form');
+  const weaponsEl = $('val-weapons');
+  const weaponsRange = $('val-weapons-range');
+  const shareBtn = $('val-share');
+  const shareLabel = $('val-share-label');
+  const liveBtn = $('val-live-toggle');
+  const liveLabel = $('val-live-label');
+  const liveIndicator = $('val-live-indicator');
+  const toastEl = $('val-toast');
+  const toastText = $('val-toast-text');
 
   // Year marker in footer
   const yearEl = document.querySelector('[data-year]');
@@ -104,6 +170,40 @@
   function fmtNum(n, digits = 0) {
     if (!Number.isFinite(n)) return '—';
     return n.toFixed(digits);
+  }
+  function fmtRr(n) {
+    if (!Number.isFinite(n)) return '—';
+    return `${n >= 0 ? '+' : ''}${n} RR`;
+  }
+
+  // Match start time in milliseconds — tolerant of Henrik's shape changes.
+  function matchStartMs(m) {
+    const md = m && m.metadata || {};
+    if (typeof md.game_start === 'number')   return md.game_start * 1000;
+    if (typeof md.started_at === 'string')   return Date.parse(md.started_at) || 0;
+    if (typeof md.game_start_iso === 'string') return Date.parse(md.game_start_iso) || 0;
+    if (typeof md.started_at_ms === 'number')  return md.started_at_ms;
+    return 0;
+  }
+
+  function matchId(m) {
+    const md = m && m.metadata || {};
+    return md.matchid || md.match_id || md.game_id || (typeof matchStartMs(m) === 'number' ? String(matchStartMs(m)) : '');
+  }
+
+  let toastTimer = null;
+  function toast(text, opts = {}) {
+    if (!toastEl) return;
+    toastText.textContent = text;
+    toastEl.hidden = false;
+    // Force reflow so the transition fires even on rapid consecutive calls.
+    void toastEl.offsetWidth;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+      setTimeout(() => { if (!toastEl.classList.contains('show')) toastEl.hidden = true; }, 300);
+    }, opts.duration || 1800);
   }
 
   // ---- URL + storage state -------------------------------------------
@@ -224,7 +324,8 @@
     let rounds = 0;
     let kills = 0;
     const agentMap = new Map();   // agent -> { games, wins, k, d, a }
-    const mapMap = new Map();     // map -> { games, wins }
+    const mapMap = new Map();     // map -> { games, wins, id }
+    const weaponMap = new Map();  // weapon uuid -> { id, kills, hs, bs, ls }
 
     for (const m of matches) {
       const self = findSelf(m, puuid);
@@ -259,11 +360,39 @@
       aRec.rounds += roundCount(m);
       agentMap.set(agentName, aRec);
 
-      const mapName = (m.metadata && (m.metadata.map?.name || m.metadata.map)) || 'Unknown';
-      const mRec = mapMap.get(mapName) || { name: mapName, games: 0, wins: 0 };
+      // Map — Henrik v4 returns metadata.map as { id, name } object, older as string.
+      const md = m.metadata || {};
+      const mapName = (md.map?.name || md.map || 'Unknown');
+      const mapId   = (md.map?.id   || md.map || '');
+      const mKey = String(mapName).toLowerCase() || mapId;
+      const mRec = mapMap.get(mKey) || { name: mapName, id: mapId, games: 0, wins: 0 };
       mRec.games++;
       if (r === 'win') mRec.wins++;
-      mapMap.set(mapName, mRec);
+      mapMap.set(mKey, mRec);
+
+      // Weapons — walk each round's player_stats kill events. Not all shapes
+      // expose this; stay tolerant.
+      const rds = Array.isArray(m.rounds) ? m.rounds : [];
+      for (const rd of rds) {
+        const ps = Array.isArray(rd.player_stats) ? rd.player_stats : [];
+        const mine = ps.find((x) => x && x.player_puuid === puuid);
+        if (!mine) continue;
+        const kills = Array.isArray(mine.kill_events) ? mine.kill_events : [];
+        for (const ke of kills) {
+          const wid = ke.damage_weapon_id || ke.weapon_id;
+          if (!wid) continue;
+          const rec = weaponMap.get(wid) || { id: wid, kills: 0, hs: 0, bs: 0, ls: 0 };
+          rec.kills++;
+          // Sum damage events within this kill to infer bodypart — if present.
+          const dmgs = Array.isArray(ke.damage_events) ? ke.damage_events : [];
+          for (const de of dmgs) {
+            rec.hs += de.headshots || 0;
+            rec.bs += de.bodyshots || 0;
+            rec.ls += de.legshots || 0;
+          }
+          weaponMap.set(wid, rec);
+        }
+      }
     }
 
     const played = wins + losses + draws;
@@ -283,7 +412,15 @@
       topAgents: [...agentMap.values()]
         .map((r) => ({ ...r, acs: r.rounds ? r.score / r.rounds : NaN, kda: r.d ? (r.k + r.a) / r.d : NaN }))
         .sort((x, y) => y.games - x.games),
-      topMaps: [...mapMap.values()].sort((x, y) => y.games - x.games).slice(0, 3),
+      topMaps: [...mapMap.values()]
+        .sort((x, y) => y.games - x.games),
+      topWeapons: [...weaponMap.values()]
+        .map((w) => {
+          const total = w.hs + w.bs + w.ls;
+          return { ...w, hsPct: total ? w.hs / total : NaN };
+        })
+        .sort((x, y) => y.kills - x.kills)
+        .slice(0, 8),
     };
   }
 
@@ -412,23 +549,64 @@
     }).join('');
   }
 
-  function renderBreakdown(listEl, rows, { withIcon } = {}) {
+  function renderMapBreakdown(listEl, rows) {
     if (!rows.length) {
       listEl.innerHTML = '<div class="val-breakdown-empty">No match data.</div>';
       return;
     }
-    listEl.innerHTML = rows.map((r) => {
-      const wr = r.wins / r.games;
+    listEl.innerHTML = rows.slice(0, 6).map((r) => {
+      const wr = r.games ? r.wins / r.games : 0;
       const wrClass = wr >= 0.55 ? 'pos' : wr <= 0.45 ? 'neg' : '';
-      const icon = withIcon && r.id
-        ? `<img src="${esc(AGENT_CDN(r.id))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>`
+      const fillClass = wr < 0.5 ? 'neg' : '';
+      const fillWidth = Math.max(4, Math.min(100, Math.round(wr * 100)));
+      const splash = mapSplash(r.name) || mapSplash(r.id);
+      const icon = splash
+        ? `<img src="${esc(splash)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>`
         : `<div style="width:32px;height:32px;background:var(--bg-0);border-radius:var(--radius-sm);"></div>`;
       return `
-        <div class="val-breakdown-row">
+        <div class="val-breakdown-row rich">
           ${icon}
           <div class="val-breakdown-name">${esc(r.name)}</div>
-          <div class="val-breakdown-wr ${wrClass}">${fmtPct(wr)}</div>
-          <div class="val-breakdown-games">${r.games}G</div>
+          <div class="val-agent-stats">
+            <div class="val-agent-kda">${r.wins}<span class="sep">W</span>${r.games - r.wins}<span class="sep">L</span></div>
+            <div class="val-agent-acs">${r.games} match${r.games === 1 ? '' : 'es'}</div>
+          </div>
+          <div class="val-wr-bar" title="${fmtPct(wr)} winrate">
+            <div class="val-wr-bar-fill ${fillClass}" style="width:${fillWidth}%"></div>
+          </div>
+          <div class="val-breakdown-wr ${wrClass}">${fmtPct(wr)}<br/><span class="val-breakdown-games" style="min-width:0;">${r.games}G</span></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderWeapons(weapons) {
+    if (!weapons || !weapons.length) {
+      weaponsEl.innerHTML = '<div class="val-weapons-empty">Weapon-level data isn\u2019t available for these matches.</div>';
+      if (weaponsRange) weaponsRange.textContent = '/ kills + headshot %';
+      return;
+    }
+    const top = weapons.slice(0, 8);
+    const totalKills = top.reduce((s, w) => s + w.kills, 0);
+    weaponsRange.textContent = `/ ${totalKills} tracked kills`;
+    weaponsEl.innerHTML = top.map((w) => {
+      const info = weaponInfo(w.id);
+      const name = info?.displayName || 'Unknown';
+      const killIcon = info?.killStreamIcon || info?.displayIcon || '';
+      const hsPct = w.hsPct;
+      const hsText = Number.isFinite(hsPct) ? fmtPct(hsPct, 0) + ' HS' : 'HS —';
+      const hsClass = !Number.isFinite(hsPct) ? '' : hsPct >= 0.30 ? 'elite' : hsPct >= 0.22 ? 'hot' : '';
+      const imgTag = killIcon
+        ? `<img class="val-weapon-img" src="${esc(killIcon)}" alt="" loading="lazy" onerror="this.style.display='none'"/>`
+        : '';
+      return `
+        <div class="val-weapon">
+          <div class="val-weapon-name" title="${esc(name)}">${esc(name)}</div>
+          <div class="val-weapon-row">
+            <div class="val-weapon-kills">${w.kills}</div>
+            <div class="val-weapon-hs ${hsClass}">${esc(hsText)}</div>
+          </div>
+          ${imgTag}
         </div>
       `;
     }).join('');
@@ -534,7 +712,7 @@
     }).join('');
   }
 
-  function renderMatches(matches, puuid) {
+  function renderMatches(matches, puuid, freshIds = new Set()) {
     if (!matches.length) {
       matchesEl.innerHTML = '<div class="val-matches-empty">No matches found for this player.</div>';
       matchesCount.textContent = '0';
@@ -555,9 +733,10 @@
       const agentId   = (self.agent && self.agent.id)   || self.character_id || '';
       const rnd = roundCount(m);
       const acs = rnd && s.score ? Math.round(s.score / rnd) : null;
+      const isFresh = freshIds.has(matchId(m));
 
       return `
-        <div class="val-match-wrap" data-match-idx="${idx}">
+        <div class="val-match-wrap${isFresh ? ' fresh' : ''}" data-match-idx="${idx}">
           <div class="val-match" data-result="${r}" role="button" tabindex="0" aria-expanded="false">
             <span aria-hidden="true"></span>
             <div>
@@ -612,6 +791,98 @@
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
     });
+  }
+
+  // ---- Session summary (today's games) ------------------------------
+  function startOfToday() {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+
+  function computeSession(matches, history, puuid) {
+    const todayStart = startOfToday();
+    const todays = matches.filter((m) => matchStartMs(m) >= todayStart);
+
+    let wins = 0, losses = 0, draws = 0;
+    const form = []; // oldest→newest
+    for (const m of [...todays].reverse()) {
+      const self = findSelf(m, puuid);
+      const r = matchResult(m, self);
+      if (r === 'win') wins++;
+      else if (r === 'loss') losses++;
+      else if (r === 'draw') draws++;
+      form.push(r === 'win' ? 'W' : r === 'loss' ? 'L' : r === 'draw' ? 'D' : '?');
+    }
+
+    // Streak — consecutive W's or L's at the most recent end.
+    let streakCount = 0, streakKind = '';
+    for (let i = todays.length - 1; i >= 0; i--) {
+      const self = findSelf(todays[i], puuid);
+      const r = matchResult(todays[i], self);
+      if (!streakKind) streakKind = r;
+      if (r !== streakKind || (r !== 'win' && r !== 'loss')) break;
+      streakCount++;
+    }
+
+    // Net RR today — sum deltas from history entries with timestamps ≥ todayStart.
+    let netRr = 0;
+    if (Array.isArray(history)) {
+      for (const h of history) {
+        const t = (h.date && Date.parse(h.date)) || (typeof h.date_raw === 'number' ? h.date_raw * 1000 : 0);
+        if (t && t >= todayStart) {
+          const delta = h.mmr_change_to_last_game ?? h.last_mmr_change ?? h.mmr_change ?? 0;
+          netRr += Number(delta) || 0;
+        }
+      }
+    }
+
+    return {
+      games: todays.length,
+      wins, losses, draws,
+      netRr,
+      streakCount,
+      streakKind,
+      form,
+    };
+  }
+
+  function renderSession(sess) {
+    if (!sess || !sess.games) {
+      sessionEl.hidden = true;
+      return;
+    }
+    sessionEl.hidden = false;
+    const fmtDate = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+    sessionSub.textContent = fmtDate;
+    sessionGames.textContent = String(sess.games);
+    sessionGames.className = 'val-session-value';
+    sessionWl.textContent = `${sess.wins}\u2013${sess.losses}`;
+    sessionWl.className = 'val-session-value ' + (sess.wins > sess.losses ? 'pos' : sess.losses > sess.wins ? 'neg' : '');
+
+    sessionRr.textContent = fmtRr(sess.netRr);
+    sessionRr.className = 'val-session-value ' + (sess.netRr > 0 ? 'pos' : sess.netRr < 0 ? 'neg' : '');
+
+    if (sess.streakCount >= 2 && (sess.streakKind === 'win' || sess.streakKind === 'loss')) {
+      const prefix = sess.streakKind === 'win' ? 'W' : 'L';
+      sessionStreak.textContent = `${sess.streakCount}${prefix}`;
+      sessionStreak.className = 'val-session-value ' + (sess.streakKind === 'win' ? 'pos' : 'neg');
+    } else {
+      sessionStreak.textContent = '—';
+      sessionStreak.className = 'val-session-value';
+    }
+
+    sessionForm.innerHTML = '';
+    const pills = document.createElement('div');
+    pills.className = 'val-session-form-pills';
+    sess.form.slice(-7).forEach((r) => {
+      const pill = document.createElement('span');
+      const kind = r === 'W' ? 'win' : r === 'L' ? 'loss' : 'draw';
+      pill.className = `val-session-form-pill ${kind}`;
+      pill.textContent = r;
+      pills.appendChild(pill);
+    });
+    sessionForm.appendChild(pills);
   }
 
   // ---- RR history chart ---------------------------------------------
@@ -685,13 +956,26 @@
 
   // ---- main flow ------------------------------------------------------
   let inFlight = 0;
+  // Context of the last successful search — used by live-mode polling and
+  // new-match detection so we know what to refetch.
+  let lastCtx = null; // { name, tag, region, puuid, matchIds: Set<string> }
 
-  async function runSearch(name, tag, region) {
+  async function runSearch(name, tag, region, opts = {}) {
+    const { silent = false, fromLive = false } = opts;
     const token = ++inFlight;
-    setStatus('loading', 'Fetching…');
-    disableForm(true);
+    if (!silent) {
+      setStatus('loading', 'Fetching…');
+      disableForm(true);
+    } else {
+      liveIndicator.hidden = false;
+    }
 
     try {
+      // Kick off meta fetches in the background — they only matter for map /
+      // weapon icons, so we render without blocking on them.
+      loadMeta('maps', 'https://valorant-api.com/v1/maps', STORAGE_MAPS);
+      loadMeta('weapons', 'https://valorant-api.com/v1/weapons', STORAGE_WEAPONS);
+
       const accountRes = await proxy('/val/account', { name, tag });
       if (token !== inFlight) return;
       const account = accountRes?.data;
@@ -713,6 +997,27 @@
       const matches = (matchesRes && !matchesRes.__err && Array.isArray(matchesRes.data)) ? matchesRes.data : [];
       const history = (historyRes && !historyRes.__err && Array.isArray(historyRes.data)) ? historyRes.data : [];
 
+      // Wait a tick for meta (maps/weapons) if it's about to land — max ~300ms.
+      if (!metaCache.maps || !metaCache.weapons) {
+        await Promise.race([
+          Promise.all([
+            loadMeta('maps', 'https://valorant-api.com/v1/maps', STORAGE_MAPS),
+            loadMeta('weapons', 'https://valorant-api.com/v1/weapons', STORAGE_WEAPONS),
+          ]),
+          new Promise((r) => setTimeout(r, 300)),
+        ]);
+      }
+
+      // Detect new matches vs previous state so we can pulse them.
+      const prevIds = fromLive && lastCtx ? lastCtx.matchIds : null;
+      const freshIds = new Set();
+      if (prevIds) {
+        for (const m of matches) {
+          const id = matchId(m);
+          if (id && !prevIds.has(id)) freshIds.add(id);
+        }
+      }
+
       renderProfile(account, mmr, matches);
       renderMmrHistory(history);
 
@@ -720,14 +1025,18 @@
         const agg = aggregateStats(matches, account.puuid);
         renderStats(agg);
         renderAgentBreakdown(topAgents, agg.topAgents);
-        renderBreakdown(topMaps, agg.topMaps);
-        renderMatches(matches, account.puuid);
+        renderMapBreakdown(topMaps, agg.topMaps);
+        renderWeapons(agg.topWeapons);
+        renderSession(computeSession(matches, history, account.puuid));
+        renderMatches(matches, account.puuid, freshIds);
       } else {
         // Wipe to empty state so a previous search doesn't linger.
         renderStats({ played: 0, wins: 0, losses: 0, winrate: NaN, kda: NaN, k:0, d:0, a:0, hsPct: NaN, acs: NaN, dpr: NaN, kills: 0, rounds: 0 });
         renderAgentBreakdown(topAgents, []);
-        renderBreakdown(topMaps, []);
-        renderMatches([], account.puuid);
+        renderMapBreakdown(topMaps, []);
+        renderWeapons([]);
+        renderSession(null);
+        renderMatches([], account.puuid, new Set());
       }
 
       dashboard.classList.remove('hidden');
@@ -735,27 +1044,84 @@
       // eslint-disable-next-line no-unused-expressions
       dashboard.offsetWidth;
 
-      setStatus('ok', `Loaded ${account.name}#${account.tag}`);
+      // Track context for future polls.
+      lastCtx = {
+        name: account.name,
+        tag: account.tag,
+        region: resolvedRegion,
+        puuid: account.puuid,
+        matchIds: new Set(matches.map(matchId).filter(Boolean)),
+      };
+
+      if (fromLive && freshIds.size > 0) {
+        toast(`${freshIds.size} new match${freshIds.size === 1 ? '' : 'es'}`);
+      }
+
+      if (!silent) {
+        setStatus('ok', `Loaded ${account.name}#${account.tag}`);
+      }
       writeUrlState(account.name, account.tag, resolvedRegion);
       localStorage.setItem(STORAGE_LAST, `${account.name}#${account.tag}`);
       localStorage.setItem(STORAGE_REGION, resolvedRegion);
     } catch (err) {
       if (token !== inFlight) return;
-      const msg = err.status === 0
-        ? 'Cannot reach tracker backend — is the server awake?'
-        : err.status === 404
-          ? (err.body?.errors?.[0]?.message || 'Player not found — check spelling, tag, and region')
-          : err.status === 503
-            ? 'Tracker not configured — API key missing on server'
-            : err.status === 429
-              ? 'Rate limited — try again in a moment'
-              : (err.message || 'Something went wrong');
-      setStatus('error', msg);
-      console.error('[val] search failed', err);
+      if (silent) {
+        console.warn('[val] silent refresh failed', err);
+      } else {
+        const msg = err.status === 0
+          ? 'Cannot reach tracker backend — is the server awake?'
+          : err.status === 404
+            ? (err.body?.errors?.[0]?.message || 'Player not found — check spelling, tag, and region')
+            : err.status === 503
+              ? 'Tracker not configured — API key missing on server'
+              : err.status === 429
+                ? 'Rate limited — try again in a moment'
+                : (err.message || 'Something went wrong');
+        setStatus('error', msg);
+        console.error('[val] search failed', err);
+      }
     } finally {
-      if (token === inFlight) disableForm(false);
+      if (token === inFlight) {
+        if (!silent) disableForm(false);
+        // Hide the refreshing indicator on the next tick so users see at least
+        // a brief pulse even on very fast responses.
+        setTimeout(() => { liveIndicator.hidden = !liveMode; }, 400);
+      }
     }
   }
+
+  // ---- Live mode: poll matches every 30s while tab is visible --------
+  let liveMode = false;
+  let livePollTimer = null;
+  const LIVE_INTERVAL_MS = 30_000;
+
+  function livePollTick() {
+    if (!liveMode || !lastCtx) return;
+    if (document.hidden) return; // pause while tab is backgrounded
+    runSearch(lastCtx.name, lastCtx.tag, lastCtx.region, { silent: true, fromLive: true });
+  }
+
+  function setLiveMode(on) {
+    liveMode = !!on;
+    clearInterval(livePollTimer);
+    if (liveMode) {
+      liveBtn.classList.add('active');
+      liveLabel.textContent = 'Live';
+      liveIndicator.hidden = false;
+      livePollTimer = setInterval(livePollTick, LIVE_INTERVAL_MS);
+      toast('Live tracking on');
+    } else {
+      liveBtn.classList.remove('active');
+      liveLabel.textContent = 'Go Live';
+      liveIndicator.hidden = true;
+      toast('Live tracking off');
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    // Fire an immediate refresh when the user returns to the tab if live.
+    if (liveMode && !document.hidden) livePollTick();
+  });
 
   // ---- event wiring ---------------------------------------------------
   form.addEventListener('submit', (e) => {
@@ -768,6 +1134,40 @@
       return;
     }
     runSearch(name, tag, region);
+  });
+
+  shareBtn.addEventListener('click', async () => {
+    if (!lastCtx) {
+      // No search yet — build URL from current form state.
+      const nm = nameInput.value.trim();
+      const tg = tagInput.value.trim();
+      if (!nm || !tg) {
+        toast('Search for a player first');
+        return;
+      }
+      writeUrlState(nm, tg, regionSelect.value);
+    }
+    const url = location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      shareBtn.classList.add('copied');
+      shareLabel.textContent = 'Copied';
+      toast('Link copied');
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        shareLabel.textContent = 'Share';
+      }, 1500);
+    } catch {
+      toast('Copy failed — select the URL manually');
+    }
+  });
+
+  liveBtn.addEventListener('click', () => {
+    if (!lastCtx) {
+      toast('Search for a player first');
+      return;
+    }
+    setLiveMode(!liveMode);
   });
 
   regionSelect.addEventListener('change', () => {
