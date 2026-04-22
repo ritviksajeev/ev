@@ -39,12 +39,19 @@
     },
     'watchparty': {
       title: 'watchparty',
-      meta: ['extension', 'ws relay', '2026'],
+      meta: ['web + extension', 'ws relay', '2026'],
       desc: [
-        'Two browsers, one video, same frame. Chrome/Firefox extension hooks the HTML5 video element on Netflix / YouTube / Disney+ and pipes play/pause/seek events through a tiny Node WebSocket relay.',
-        'Rooms are created from the site — share a link, join, press play. No screenshare, no quality loss.',
+        'Two browsers, one video, same frame. The site embeds YouTube and Twitch directly and keeps every player in lockstep through a small Node WebSocket relay.',
+        'The extension picks up where embedding can\'t — Netflix, Disney+, HBO, anywhere a site blocks framing. Same wire protocol, so a web peer and an extension peer sync with each other.',
+        'Create a room, share the link, press play. No screenshare, no quality loss.',
       ],
-      files: ['server/server.js', 'watch/index.html', 'extension/content.js (wip)'],
+      files: [
+        'server/server.js',
+        'js/player-web.js',
+        'watchparty/index.html',
+        'extension/content.js',
+        'extension/background.js',
+      ],
       cover: coverWatch(),
       actions: [{ label: 'Open watchparty →', href: '../watchparty/' }],
     },

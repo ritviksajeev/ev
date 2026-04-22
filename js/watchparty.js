@@ -5,7 +5,6 @@
 (function () {
   'use strict';
 
-  // Swap the prod URL for your Railway domain after deploy (https → wss).
   const SERVER = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
     ? { http: 'http://localhost:8787', ws: 'ws://localhost:8787' }
     : { http: 'https://ev-production.up.railway.app', ws: 'wss://ev-production.up.railway.app' };
@@ -19,15 +18,14 @@
   const statusEl = $('room-status');
   const statusDot = statusEl.querySelector('.status-dot');
   const statusText = statusEl.querySelector('.status-text');
+  const peerChips = $('peer-chips');
   const linkWrap = $('room-link');
   const shareUrl = $('share-url');
-  const peerList = $('peer-list');
-  const eventLog = $('event-log');
+  const playerPanel = $('player-panel');
 
   let ws = null;
   let currentRoom = null;
 
-  // restore name from storage, hydrate room from URL (?room=abc)
   const storedName = localStorage.getItem('evz-watch-name');
   if (storedName) inputName.value = storedName;
   const urlRoom = new URLSearchParams(location.search).get('room');
@@ -41,27 +39,14 @@
     statusText.textContent = text;
   }
 
-  function renderPeers(names) {
-    peerList.innerHTML = '';
-    if (names.length === 0) {
-      peerList.innerHTML = '<li class="peer-empty">Just you in here.</li>';
-      return;
-    }
-    for (const n of names) {
-      const li = document.createElement('li');
-      li.innerHTML = `<span class="peer-dot"></span>${escapeHtml(n)}`;
-      peerList.appendChild(li);
-    }
+  function lobbyLabel() {
+    const n = peers.size + 1; // +1 for self (server's peer list excludes us)
+    return n === 1 ? 'just you' : `${n} in lobby`;
   }
-
-  function logEvent(type, detail) {
-    const first = eventLog.querySelector('.log-empty');
-    if (first) first.remove();
-    const li = document.createElement('li');
-    const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    li.innerHTML = `<span class="ev-time">${t}</span><span class="ev-type">${escapeHtml(type)}</span>${escapeHtml(detail || '')}`;
-    eventLog.insertBefore(li, eventLog.firstChild);
-    while (eventLog.children.length > 50) eventLog.removeChild(eventLog.lastChild);
+  function refreshConnected() {
+    if (currentRoom && ws && ws.readyState === WebSocket.OPEN) {
+      setStatus('connected', `Room ${currentRoom} · ${lobbyLabel()}`);
+    }
   }
 
   function escapeHtml(s) {
@@ -69,26 +54,32 @@
   }
 
   const peers = new Set();
+  function renderPeers() {
+    peerChips.innerHTML = [...peers]
+      .map((n) => `<span class="peer-chip" title="${escapeHtml(n)}">${escapeHtml(n)}</span>`)
+      .join('');
+    refreshConnected();
+  }
 
   function connect(roomId) {
     if (ws) try { ws.close(); } catch {}
     peers.clear();
-    renderPeers([]);
+    renderPeers();
 
     const name = (inputName.value.trim() || 'anon').slice(0, 24);
-    setStatus('connecting', `Connecting to ${roomId}…`);
+    setStatus('connecting', `Connecting…`);
 
     const url = `${SERVER.ws}/?room=${encodeURIComponent(roomId)}&name=${encodeURIComponent(name)}`;
     ws = new WebSocket(url);
 
     ws.addEventListener('open', () => {
-      setStatus('connected', `Connected — room ${roomId}`);
       currentRoom = roomId;
+      refreshConnected();
       const share = `${location.origin}${location.pathname}?room=${roomId}`;
       shareUrl.textContent = share;
       linkWrap.classList.remove('hidden');
+      if (playerPanel) playerPanel.classList.remove('hidden');
       history.replaceState(null, '', `?room=${roomId}`);
-      logEvent('joined', `room ${roomId} as ${name}`);
     });
 
     ws.addEventListener('message', (e) => {
@@ -96,51 +87,50 @@
       try { msg = JSON.parse(e.data); } catch { return; }
       switch (msg.type) {
         case 'welcome':
-          msg.peers.forEach((n) => peers.add(n));
-          renderPeers([...peers]);
+          (msg.peers || []).forEach((n) => peers.add(n));
+          renderPeers();
+          // catch-up for late joiners
+          if (msg.load && window.__webplayer) {
+            window.__webplayer.applyLoad(msg.load);
+            if (msg.playback && msg.playback.type) {
+              setTimeout(() => window.__webplayer.applyRemote(msg.playback), 1500);
+            }
+          }
           break;
         case 'peer-join':
           peers.add(msg.name);
-          renderPeers([...peers]);
-          logEvent('peer join', msg.name);
+          renderPeers();
           break;
         case 'peer-leave':
           peers.delete(msg.name);
-          renderPeers([...peers]);
-          logEvent('peer leave', msg.name);
+          renderPeers();
+          break;
+        case 'load':
+          if (window.__webplayer) window.__webplayer.applyLoad({ kind: msg.kind, id: msg.id });
           break;
         case 'play':
-          logEvent('play', `${msg.from} @ ${fmtTime(msg.time)}`);
-          break;
         case 'pause':
-          logEvent('pause', `${msg.from} @ ${fmtTime(msg.time)}`);
-          break;
         case 'seek':
-          logEvent('seek', `${msg.from} → ${fmtTime(msg.time)}`);
-          break;
-        case 'chat':
-          logEvent('chat', `${msg.from}: ${msg.text}`);
+        case 'rate':
+          if (window.__webplayer) window.__webplayer.applyRemote(msg);
           break;
       }
     });
 
     ws.addEventListener('close', (e) => {
+      currentRoom = null;
       if (e.code === 4004) setStatus('error', 'Room not found');
       else if (e.code === 4001) setStatus('error', 'Room full');
       else setStatus('idle', 'Disconnected');
-      currentRoom = null;
+      peers.clear();
+      renderPeers();
+      if (playerPanel) playerPanel.classList.add('hidden');
+      if (window.__webplayer) window.__webplayer.reset();
     });
 
     ws.addEventListener('error', () => {
-      setStatus('error', 'Connection error — is the server running?');
+      setStatus('error', 'Connection error');
     });
-  }
-
-  function fmtTime(s) {
-    if (typeof s !== 'number') return '—';
-    const m = Math.floor(s / 60);
-    const r = Math.floor(s % 60).toString().padStart(2, '0');
-    return `${m}:${r}`;
   }
 
   async function createRoom() {
@@ -148,13 +138,12 @@
     btnCreate.disabled = true;
     try {
       const res = await fetch(`${SERVER.http}/room`, { method: 'POST' });
-      if (!res.ok) throw new Error('server returned ' + res.status);
+      if (!res.ok) throw new Error('server ' + res.status);
       const { roomId } = await res.json();
       inputRoom.value = roomId;
       connect(roomId);
-    } catch (err) {
+    } catch {
       setStatus('error', 'Could not reach server');
-      logEvent('error', err.message);
     } finally {
       btnCreate.disabled = false;
     }
@@ -176,8 +165,27 @@
     } catch {}
   });
 
-  if (urlRoom) {
-    // auto-connect if arriving with ?room=...
-    setTimeout(() => connect(urlRoom), 200);
+  if (urlRoom) setTimeout(() => connect(urlRoom), 200);
+
+  // install instructions toggle
+  const btnHow = $('btn-how');
+  const howEl = $('install-how');
+  if (btnHow && howEl) {
+    btnHow.addEventListener('click', () => {
+      const nowHidden = howEl.classList.toggle('hidden');
+      btnHow.textContent = nowHidden ? 'Install steps' : 'Hide steps';
+    });
   }
+
+  // Exposed for player-web.js to push video events to the server
+  window.__watchparty = {
+    sendEvent(ev) {
+      if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(ev));
+    },
+    sendLoad(parsed) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'load', kind: parsed.kind, id: parsed.id }));
+      }
+    },
+  };
 })();

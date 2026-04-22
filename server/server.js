@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 8787;
 const MAX_ROOM_SIZE = 8;
 const ROOM_TTL_MS = 1000 * 60 * 60 * 6;
 
-/** @type {Map<string, { clients: Set<WebSocket>, createdAt: number, lastState: any }>} */
+/** @type {Map<string, { clients: Set<WebSocket>, createdAt: number, lastLoad: any, lastPlayback: any }>} */
 const rooms = new Map();
 
 const http_server = http.createServer((req, res) => {
@@ -18,7 +18,7 @@ const http_server = http.createServer((req, res) => {
   }
   if (req.url === '/room' && req.method === 'POST') {
     const id = randomBytes(3).toString('hex');
-    rooms.set(id, { clients: new Set(), createdAt: Date.now(), lastState: null });
+    rooms.set(id, { clients: new Set(), createdAt: Date.now(), lastLoad: null, lastPlayback: null });
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ roomId: id }));
     return;
@@ -50,7 +50,13 @@ wss.on('connection', (ws, req) => {
   room.clients.add(ws);
 
   broadcast(roomId, { type: 'peer-join', name }, ws);
-  send(ws, { type: 'welcome', roomId, peers: peerNames(roomId, ws), state: room.lastState });
+  send(ws, {
+    type: 'welcome',
+    roomId,
+    peers: peerNames(roomId, ws),
+    load: room.lastLoad,
+    playback: room.lastPlayback,
+  });
 
   ws.on('message', (buf) => {
     let msg;
@@ -62,8 +68,15 @@ wss.on('connection', (ws, req) => {
       case 'pause':
       case 'seek':
       case 'rate':
-        room.lastState = { type: msg.type, time: msg.time, rate: msg.rate, at: Date.now() };
+        room.lastPlayback = { type: msg.type, time: msg.time, rate: msg.rate, at: Date.now() };
         broadcast(roomId, { ...msg, from: name }, ws);
+        break;
+      case 'load':
+        if (typeof msg.kind === 'string' && typeof msg.id === 'string') {
+          room.lastLoad = { kind: msg.kind, id: msg.id, at: Date.now() };
+          room.lastPlayback = null; // new video resets playback state
+          broadcast(roomId, { type: 'load', kind: msg.kind, id: msg.id, from: name }, ws);
+        }
         break;
       case 'chat':
         if (typeof msg.text === 'string' && msg.text.length <= 500) {
