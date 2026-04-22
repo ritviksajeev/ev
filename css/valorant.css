@@ -13,13 +13,10 @@
   padding-bottom: 120px;
 }
 
-/* common.js section-observer only runs on .page (scroll-snap) layouts — the val
-   page opts out, so .reveal children would otherwise stay at opacity 0. Show
-   them by default here. */
-.val-page .reveal {
-  opacity: 1;
-  transform: none;
-}
+/* common.js section-observer only runs on .page (scroll-snap) layouts. The val
+   page opts out of scroll-snap, so valorant.js fires .is-active on .val-hero
+   once at load to kick the reveal animations (search matches the rest of the
+   site). The dashboard is shown manually after search — no reveal on it. */
 
 /* ============================================
    Hero + search
@@ -240,6 +237,51 @@
 }
 
 .val-identity-label { margin-bottom: 14px; }
+.val-identity-head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.val-identity-heading { min-width: 0; flex: 1 1 auto; }
+
+.val-recent-agent {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px 8px 8px;
+  background: rgba(15, 10, 24, 0.55);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.val-recent-agent[hidden] { display: none; }
+.val-recent-agent-img {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--bg-0);
+  flex: none;
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.25), 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+.val-recent-agent-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.val-recent-agent-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.val-recent-agent-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  text-transform: uppercase;
+}
 .val-identity-name {
   display: flex;
   align-items: baseline;
@@ -466,6 +508,52 @@
   color: var(--white-faint);
 }
 
+/* Enhanced agent breakdown — richer row with KDA, ACS, WR bar */
+.val-breakdown-row.rich {
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  gap: 14px;
+}
+.val-agent-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+  min-width: 86px;
+}
+.val-agent-kda {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.4px;
+  color: var(--white);
+}
+.val-agent-kda .sep { color: var(--white-faint); padding: 0 2px; }
+.val-agent-acs {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.val-wr-bar {
+  width: 64px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  position: relative;
+}
+.val-wr-bar-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: linear-gradient(90deg, var(--purple-bright), #60d394);
+  border-radius: 3px;
+  transition: width 0.5s var(--ease-out);
+}
+.val-wr-bar-fill.neg {
+  background: linear-gradient(90deg, #8b5cf6, #e06464);
+}
+
 /* ============================================
    Match history
    ============================================ */
@@ -502,17 +590,38 @@
   text-align: center;
 }
 
+.val-match-wrap {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-1);
+}
+
 .val-match {
   display: grid;
-  grid-template-columns: 4px 1.5fr 1fr 1fr 1fr 0.8fr auto;
+  grid-template-columns: 4px 1.5fr 1fr 1fr 1fr 0.8fr auto auto;
   gap: 18px;
   align-items: center;
   padding: 14px 16px 14px 22px;
   background: var(--bg-1);
   transition: background 0.25s var(--ease-out);
   position: relative;
+  cursor: pointer;
+  user-select: none;
 }
 .val-match:hover { background: var(--bg-2); }
+.val-match-wrap.open .val-match { background: var(--bg-2); }
+
+.val-match-toggle {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white-faint);
+  transition: transform 0.25s var(--ease-out), color 0.2s var(--ease-out);
+}
+.val-match-wrap.open .val-match-toggle { transform: rotate(180deg); color: var(--purple-bright); }
+.val-match-toggle svg { display: block; }
 
 .val-match::before {
   content: "";
@@ -612,6 +721,166 @@
   white-space: nowrap;
 }
 
+/* Expanded scoreboard under a match row */
+.val-match-details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s var(--ease-out);
+  background: var(--bg-0);
+}
+.val-match-wrap.open .val-match-details { grid-template-rows: 1fr; }
+.val-match-details-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.val-match-details-body {
+  padding: 16px 22px 22px;
+  border-top: 1px solid var(--white-line);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.val-team {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.val-team-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 4px;
+}
+.val-team-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-dim);
+}
+.val-team-name.win  { color: #7ed99d; }
+.val-team-name.loss { color: #e38686; }
+.val-team-score {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+
+.val-scoreboard {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto auto;
+  column-gap: 10px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--bg-1);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--white-line);
+}
+.val-scoreboard-head {
+  display: contents;
+}
+.val-scoreboard-head > span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--white-line);
+}
+.val-scoreboard-head > span:nth-child(1) { text-align: center; }
+.val-scoreboard-head > span:nth-child(3),
+.val-scoreboard-head > span:nth-child(4),
+.val-scoreboard-head > span:nth-child(5) { text-align: right; }
+
+.val-sb-row {
+  display: contents;
+}
+.val-sb-row > * {
+  padding: 6px 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--white-dim);
+  min-width: 0;
+}
+.val-sb-row.self > * {
+  color: var(--white);
+  font-weight: 600;
+}
+.val-sb-agent {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  object-fit: cover;
+  background: var(--bg-0);
+  justify-self: center;
+}
+.val-sb-name {
+  font-family: var(--font);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.val-sb-name .sb-tag {
+  color: var(--white-faint);
+  margin-left: 2px;
+  font-size: 11px;
+}
+.val-sb-row.self .sb-tag { color: var(--purple-bright); }
+.val-sb-acs, .val-sb-kda, .val-sb-hs { text-align: right; }
+
+/* RR history chart */
+.val-rr-head {
+  display: flex;
+  align-items: baseline;
+}
+.val-rr-range {
+  color: var(--white-faint);
+  font-weight: 400;
+  letter-spacing: 1.5px;
+}
+.val-rr-chart {
+  position: relative;
+  background: var(--bg-1);
+  border: 1px solid var(--white-line);
+  border-radius: var(--radius-md);
+  padding: 20px 22px 22px;
+  min-height: 180px;
+  overflow: hidden;
+}
+.val-rr-chart svg { width: 100%; height: 160px; display: block; }
+.val-rr-empty {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--white-faint);
+  text-align: center;
+  padding: 24px 0 8px;
+}
+.val-rr-summary {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--white-dim);
+}
+.val-rr-summary strong {
+  font-weight: 600;
+  color: var(--white);
+  margin-right: 4px;
+}
+.val-rr-summary .pos { color: #7ed99d; }
+.val-rr-summary .neg { color: #e38686; }
+
 /* ============================================
    Responsive
    ============================================ */
@@ -647,7 +916,7 @@
   .val-rank-block { min-width: 0; }
 
   .val-match {
-    grid-template-columns: 4px 1fr 1fr auto;
+    grid-template-columns: 4px 1fr 1fr auto auto;
     grid-template-rows: auto auto;
     row-gap: 6px;
     padding: 12px 12px 12px 18px;
@@ -655,10 +924,16 @@
   .val-match-result { grid-column: 2; grid-row: 1; }
   .val-match-score  { grid-column: 3; grid-row: 1; }
   .val-match-time   { grid-column: 4; grid-row: 1; text-align: right; }
+  .val-match-toggle { grid-column: 5; grid-row: 1 / span 2; align-self: center; }
   .val-match-map    { grid-column: 2; grid-row: 2; }
   .val-match-agent  { grid-column: 3; grid-row: 2; }
   .val-match-kda    { grid-column: 4; grid-row: 2; text-align: right; }
   .val-match-acs    { display: none; }
+
+  .val-match-details-body { grid-template-columns: 1fr; gap: 18px; }
+  .val-scoreboard { grid-template-columns: auto 1fr auto auto; }
+  .val-sb-hs, .val-scoreboard-head > span:nth-child(5) { display: none; }
+  .val-recent-agent-label { display: none; }
 }
 
 @media (max-width: 520px) {

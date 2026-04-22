@@ -130,6 +130,22 @@ async function handleMmr(url, res) {
   passThrough(res, upstream);
 }
 
+async function handleMmrHistory(url, res) {
+  const region = safe(url.searchParams.get('region'), 6).toLowerCase();
+  const name = safe(url.searchParams.get('name'), 24);
+  const tag = safe(url.searchParams.get('tag'), 6);
+  if (!VALID_REGIONS.has(region)) return jsonResponse(res, 400, { error: 'bad region' });
+  if (!validRiot(name, tag)) return jsonResponse(res, 400, { error: 'bad riot id' });
+  if (!requireKey(res)) return;
+
+  const enc = (s) => encodeURIComponent(s);
+  const upstream = await fetchHenrik(
+    `/valorant/v1/mmr-history/${region}/${enc(name)}/${enc(tag)}`,
+    CACHE_TTL_MS,
+  );
+  passThrough(res, upstream);
+}
+
 async function handleMatches(url, res) {
   const region = safe(url.searchParams.get('region'), 6).toLowerCase();
   const platform = safe(url.searchParams.get('platform'), 8).toLowerCase() || 'pc';
@@ -183,6 +199,7 @@ export async function handleValorant(req, res) {
     if (route === '/val/account')  { await handleAccount(url, res); return true; }
     if (route === '/val/mmr')      { await handleMmr(url, res);     return true; }
     if (route === '/val/matches')  { await handleMatches(url, res); return true; }
+    if (route === '/val/mmr-history') { await handleMmrHistory(url, res); return true; }
     if (route === '/val/health')   {
       jsonResponse(res, 200, { ok: true, hasKey: !!process.env.HENRIK_API_KEY, cacheSize: cache.size });
       return true;

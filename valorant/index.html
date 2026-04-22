@@ -113,9 +113,20 @@
           <div class="val-profile-content">
 
             <div class="val-identity">
-              <div class="val-identity-label eyebrow plain">Profile</div>
-              <div class="val-identity-name">
-                <span class="val-name" id="val-name-display">&mdash;</span><span class="val-tag" id="val-tag-display"></span>
+              <div class="val-identity-head">
+                <div class="val-identity-heading">
+                  <div class="val-identity-label eyebrow plain">Profile</div>
+                  <div class="val-identity-name">
+                    <span class="val-name" id="val-name-display">&mdash;</span><span class="val-tag" id="val-tag-display"></span>
+                  </div>
+                </div>
+                <div class="val-recent-agent" id="val-recent-agent" hidden>
+                  <img class="val-recent-agent-img" id="val-recent-agent-img" alt="" width="64" height="64"/>
+                  <div class="val-recent-agent-meta">
+                    <div class="val-recent-agent-label">Last played</div>
+                    <div class="val-recent-agent-name" id="val-recent-agent-name">&mdash;</div>
+                  </div>
+                </div>
               </div>
               <div class="val-identity-meta" id="val-identity-meta">
                 <span class="val-meta-chip" id="val-level">Level &mdash;</span>
@@ -160,6 +171,14 @@
           <div class="val-stat"><div class="val-stat-label">ACS</div><div class="val-stat-value" data-stat="acs">&mdash;</div></div>
           <div class="val-stat"><div class="val-stat-label">Damage / round</div><div class="val-stat-value" data-stat="dpr">&mdash;</div></div>
           <div class="val-stat"><div class="val-stat-label">Kills</div><div class="val-stat-value" data-stat="kills">&mdash;</div></div>
+        </div>
+
+        <!-- RR history chart -->
+        <div class="val-rr-head">
+          <div class="eyebrow plain">RR trend <span class="val-rr-range" id="val-rr-range">/ recent competitive</span></div>
+        </div>
+        <div class="val-rr-chart" id="val-rr-chart">
+          <div class="val-rr-empty">No RR history yet.</div>
         </div>
 
         <!-- Top agents / maps -->

@@ -48,6 +48,10 @@
   const peakIcon = $('val-peak-icon');
   const peakTier = $('val-peak-tier');
   const peakMeta = $('val-peak-meta');
+  const recentAgentWrap = $('val-recent-agent');
+  const recentAgentImg = $('val-recent-agent-img');
+  const recentAgentName = $('val-recent-agent-name');
+  const rrChartEl = $('val-rr-chart');
   const statsGrid = $('val-stats');
   const statsRange = $('val-stats-range');
   const topAgents = $('val-top-agents');
@@ -241,12 +245,15 @@
 
       const agentName = (self.agent && self.agent.name) || self.character || 'Unknown';
       const agentId   = (self.agent && self.agent.id)   || self.character_id || '';
-      const aRec = agentMap.get(agentName) || { name: agentName, id: agentId, games: 0, wins: 0, k: 0, d: 0, a: 0 };
+      const aRec = agentMap.get(agentName)
+        || { name: agentName, id: agentId, games: 0, wins: 0, k: 0, d: 0, a: 0, score: 0, rounds: 0 };
       aRec.games++;
       if (r === 'win') aRec.wins++;
       aRec.k += s.kills || 0;
       aRec.d += s.deaths || 0;
       aRec.a += s.assists || 0;
+      aRec.score  += s.score || 0;
+      aRec.rounds += roundCount(m);
       agentMap.set(agentName, aRec);
 
       const mapName = (m.metadata && (m.metadata.map?.name || m.metadata.map)) || 'Unknown';
@@ -270,13 +277,15 @@
       dpr: rounds ? damageDealt / rounds : NaN,
       kills,
       rounds,
-      topAgents: [...agentMap.values()].sort((x, y) => y.games - x.games).slice(0, 3),
-      topMaps:   [...mapMap.values()].sort((x, y) => y.games - x.games).slice(0, 3),
+      topAgents: [...agentMap.values()]
+        .map((r) => ({ ...r, acs: r.rounds ? r.score / r.rounds : NaN, kda: r.d ? (r.k + r.a) / r.d : NaN }))
+        .sort((x, y) => y.games - x.games),
+      topMaps: [...mapMap.values()].sort((x, y) => y.games - x.games).slice(0, 3),
     };
   }
 
   // ---- render ---------------------------------------------------------
-  function renderProfile(account, mmr) {
+  function renderProfile(account, mmr, matches) {
     // Card background — Henrik returns `card` as a UUID string. Build the CDN URL ourselves.
     // Fall back to the old object shape just in case they roll it back later.
     const cardUuid = typeof account?.card === 'string'
@@ -290,6 +299,24 @@
     tagDisplay.textContent  = account?.tag ? `#${account.tag}` : '';
     levelEl.textContent     = `Level ${account?.account_level ?? '—'}`;
     regionDisplay.textContent = `Region ${(account?.region || '—').toUpperCase()}`;
+
+    // Recent-agent portrait — use the most recent match the player appears in.
+    const recent = Array.isArray(matches)
+      ? matches.map((m) => ({ m, self: findSelf(m, account?.puuid) })).find((x) => x.self)
+      : null;
+    if (recent && recent.self) {
+      const rid = (recent.self.agent && recent.self.agent.id) || recent.self.character_id || '';
+      const rname = (recent.self.agent && recent.self.agent.name) || recent.self.character || '';
+      if (rid) {
+        recentAgentImg.src = AGENT_CDN(rid);
+        recentAgentName.textContent = rname || '—';
+        recentAgentWrap.hidden = false;
+      } else {
+        recentAgentWrap.hidden = true;
+      }
+    } else {
+      recentAgentWrap.hidden = true;
+    }
 
     // current rank
     const cur = mmr?.current;
@@ -350,6 +377,38 @@
     set('kills', fmtNum(agg.kills, 0));
   }
 
+  function renderAgentBreakdown(listEl, rows) {
+    if (!rows.length) {
+      listEl.innerHTML = '<div class="val-breakdown-empty">No match data.</div>';
+      return;
+    }
+    listEl.innerHTML = rows.slice(0, 6).map((r) => {
+      const wr = r.games ? r.wins / r.games : 0;
+      const wrClass = wr >= 0.55 ? 'pos' : wr <= 0.45 ? 'neg' : '';
+      const fillClass = wr < 0.5 ? 'neg' : '';
+      const fillWidth = Math.max(4, Math.min(100, Math.round(wr * 100)));
+      const icon = r.id
+        ? `<img src="${esc(AGENT_CDN(r.id))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>`
+        : `<div style="width:32px;height:32px;background:var(--bg-0);border-radius:var(--radius-sm);"></div>`;
+      const acs = Number.isFinite(r.acs) ? fmtNum(r.acs, 0) + ' ACS' : '—';
+      const kda = Number.isFinite(r.kda) ? fmtNum(r.kda, 2) : '—';
+      return `
+        <div class="val-breakdown-row rich">
+          ${icon}
+          <div class="val-breakdown-name">${esc(r.name)}</div>
+          <div class="val-agent-stats">
+            <div class="val-agent-kda">${r.k}<span class="sep">/</span>${r.d}<span class="sep">/</span>${r.a}  ·  ${kda}</div>
+            <div class="val-agent-acs">${esc(acs)}</div>
+          </div>
+          <div class="val-wr-bar" title="${fmtPct(wr)} winrate">
+            <div class="val-wr-bar-fill ${fillClass}" style="width:${fillWidth}%"></div>
+          </div>
+          <div class="val-breakdown-wr ${wrClass}">${fmtPct(wr)}<br/><span class="val-breakdown-games" style="min-width:0;">${r.games}G</span></div>
+        </div>
+      `;
+    }).join('');
+  }
+
   function renderBreakdown(listEl, rows, { withIcon } = {}) {
     if (!rows.length) {
       listEl.innerHTML = '<div class="val-breakdown-empty">No match data.</div>';
@@ -372,6 +431,106 @@
     }).join('');
   }
 
+  // All players in a match — normalises v2 (players.all_players) and v4 (players array).
+  function allPlayers(match) {
+    const p = match && match.players;
+    if (!p) return [];
+    if (Array.isArray(p)) return p;
+    if (Array.isArray(p.all_players)) return p.all_players;
+    return [];
+  }
+
+  function playerTeamId(p) {
+    return String(p.team_id || p.team || '').toLowerCase();
+  }
+
+  function playerAcs(p, totalRounds) {
+    const score = p.stats?.score;
+    if (!Number.isFinite(score) || !totalRounds) return null;
+    return Math.round(score / totalRounds);
+  }
+
+  function playerHsPct(p) {
+    const s = p.stats || {};
+    const hs = s.headshots || 0, bs = s.bodyshots || 0, ls = s.legshots || 0;
+    const total = hs + bs + ls;
+    return total ? hs / total : null;
+  }
+
+  function renderScoreboard(match, puuid) {
+    const players = allPlayers(match);
+    if (!players.length) return '<div class="val-rr-empty">No scoreboard data for this match.</div>';
+
+    const teams = Array.isArray(match.teams) ? match.teams : (match.teams ? Object.values(match.teams) : []);
+    const totalRounds = roundCount(match) || 1;
+
+    // Group + sort by ACS desc.
+    const groups = new Map(); // team_id -> { players[], team obj, won, rounds }
+    for (const p of players) {
+      const key = playerTeamId(p) || 'unknown';
+      if (!groups.has(key)) groups.set(key, { key, players: [] });
+      groups.get(key).players.push(p);
+    }
+    for (const t of teams) {
+      const key = String(t.team_id || t.team || '').toLowerCase();
+      const g = groups.get(key);
+      if (!g) continue;
+      g.team = t;
+      g.won = typeof t.won === 'boolean' ? t.won : null;
+      g.rounds = (t.rounds?.won ?? t.rounds_won) ?? null;
+    }
+    const groupList = [...groups.values()];
+    // Sort so the self-team appears first.
+    const selfTeam = playerTeamId(players.find((p) => p.puuid === puuid) || {});
+    groupList.sort((a, b) => {
+      if (a.key === selfTeam && b.key !== selfTeam) return -1;
+      if (b.key === selfTeam && a.key !== selfTeam) return 1;
+      return (b.rounds ?? 0) - (a.rounds ?? 0);
+    });
+
+    return groupList.map((g) => {
+      g.players.sort((x, y) => (y.stats?.score ?? 0) - (x.stats?.score ?? 0));
+      const teamLabel = g.key ? g.key.toUpperCase() : 'TEAM';
+      const isWin = g.won === true;
+      const isLoss = g.won === false;
+      const resultClass = isWin ? 'win' : isLoss ? 'loss' : '';
+      const rounds = g.rounds != null ? g.rounds : '';
+
+      const rows = g.players.map((p) => {
+        const aid = (p.agent && p.agent.id) || p.character_id || '';
+        const aname = (p.agent && p.agent.name) || p.character || '';
+        const self = p.puuid === puuid;
+        const s = p.stats || {};
+        const acs = playerAcs(p, totalRounds);
+        const hs = playerHsPct(p);
+        return `
+          <div class="val-sb-row ${self ? 'self' : ''}">
+            ${aid ? `<img class="val-sb-agent" src="${esc(AGENT_CDN(aid))}" alt="${esc(aname)}" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div class="val-sb-agent"></div>'}
+            <div class="val-sb-name">${esc(p.name || '—')}<span class="sb-tag">#${esc(p.tag || '')}</span></div>
+            <div class="val-sb-acs">${acs != null ? acs : '—'}</div>
+            <div class="val-sb-kda">${s.kills ?? 0}/${s.deaths ?? 0}/${s.assists ?? 0}</div>
+            <div class="val-sb-hs">${hs != null ? fmtPct(hs, 0) : '—'}</div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="val-team">
+          <div class="val-team-head">
+            <div class="val-team-name ${resultClass}">${esc(teamLabel)}${isWin ? ' · Win' : isLoss ? ' · Loss' : ''}</div>
+            <div class="val-team-score">${rounds}</div>
+          </div>
+          <div class="val-scoreboard">
+            <div class="val-scoreboard-head">
+              <span></span><span>Player</span><span>ACS</span><span>K/D/A</span><span>HS%</span>
+            </div>
+            ${rows}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   function renderMatches(matches, puuid) {
     if (!matches.length) {
       matchesEl.innerHTML = '<div class="val-matches-empty">No matches found for this player.</div>';
@@ -380,7 +539,7 @@
     }
     matchesCount.textContent = String(matches.length);
 
-    const rows = matches.map((m) => {
+    const wraps = matches.map((m, idx) => {
       const self = findSelf(m, puuid);
       if (!self) return '';
       const s = self.stats || {};
@@ -395,30 +554,130 @@
       const acs = rnd && s.score ? Math.round(s.score / rnd) : null;
 
       return `
-        <div class="val-match" data-result="${r}">
-          <span aria-hidden="true"></span>
-          <div>
-            <div class="val-match-result">${r}</div>
-            <div class="val-match-score">${esc(score)}</div>
+        <div class="val-match-wrap" data-match-idx="${idx}">
+          <div class="val-match" data-result="${r}" role="button" tabindex="0" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <div>
+              <div class="val-match-result">${r}</div>
+              <div class="val-match-score">${esc(score)}</div>
+            </div>
+            <div class="val-match-map">
+              <div class="val-match-map-name">${esc(mapName)}</div>
+              <div class="val-match-mode">${esc(mode)}</div>
+            </div>
+            <div class="val-match-agent">
+              ${agentId ? `<img src="${esc(AGENT_CDN(agentId))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div style="width:34px;height:34px;background:var(--bg-0);border-radius:var(--radius-sm);"></div>'}
+              <div class="val-match-agent-name">${esc(agentName)}</div>
+            </div>
+            <div class="val-match-kda">
+              ${s.kills ?? 0}<span class="sep">/</span>${s.deaths ?? 0}<span class="sep">/</span>${s.assists ?? 0}
+            </div>
+            <div class="val-match-acs">${acs != null ? acs + ' ACS' : '—'}</div>
+            <div class="val-match-time">${timeAgo(started)}</div>
+            <span class="val-match-toggle" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
           </div>
-          <div class="val-match-map">
-            <div class="val-match-map-name">${esc(mapName)}</div>
-            <div class="val-match-mode">${esc(mode)}</div>
+          <div class="val-match-details">
+            <div class="val-match-details-inner">
+              <div class="val-match-details-body" data-rendered="0"></div>
+            </div>
           </div>
-          <div class="val-match-agent">
-            ${agentId ? `<img src="${esc(AGENT_CDN(agentId))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div style="width:34px;height:34px;background:var(--bg-0);border-radius:var(--radius-sm);"></div>'}
-            <div class="val-match-agent-name">${esc(agentName)}</div>
-          </div>
-          <div class="val-match-kda">
-            ${s.kills ?? 0}<span class="sep">/</span>${s.deaths ?? 0}<span class="sep">/</span>${s.assists ?? 0}
-          </div>
-          <div class="val-match-acs">${acs != null ? acs + ' ACS' : '—'}</div>
-          <div class="val-match-time">${timeAgo(started)}</div>
         </div>
       `;
     }).join('');
 
-    matchesEl.innerHTML = rows || '<div class="val-matches-empty">No matches found for this player.</div>';
+    matchesEl.innerHTML = wraps || '<div class="val-matches-empty">No matches found for this player.</div>';
+
+    // Lazy-render scoreboard on first open so we don't chew DOM up-front.
+    matchesEl.querySelectorAll('.val-match-wrap').forEach((wrap) => {
+      const header = wrap.querySelector('.val-match');
+      const body = wrap.querySelector('.val-match-details-body');
+      const toggle = () => {
+        const willOpen = !wrap.classList.contains('open');
+        if (willOpen && body.dataset.rendered !== '1') {
+          const idx = Number(wrap.dataset.matchIdx);
+          const m = matches[idx];
+          body.innerHTML = renderScoreboard(m, puuid);
+          body.dataset.rendered = '1';
+        }
+        wrap.classList.toggle('open', willOpen);
+        header.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      };
+      header.addEventListener('click', toggle);
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    });
+  }
+
+  // ---- RR history chart ---------------------------------------------
+  function renderMmrHistory(history) {
+    if (!Array.isArray(history) || history.length < 2) {
+      rrChartEl.innerHTML = '<div class="val-rr-empty">Not enough RR history yet — play a few competitive games.</div>';
+      return;
+    }
+
+    // Henrik returns newest-first; chart left-to-right = oldest-first.
+    const data = history.slice(0, 20).slice().reverse();
+
+    const points = data.map((g) => ({
+      rr: g.elo ?? (g.ranking_in_tier ?? 0) + (g.currenttier ?? 0) * 100,
+      delta: g.mmr_change_to_last_game ?? 0,
+      tier: g.currenttierpatched || g.currenttier_patched || '',
+    }));
+
+    const minRr = Math.min(...points.map((p) => p.rr));
+    const maxRr = Math.max(...points.map((p) => p.rr));
+    const span = Math.max(maxRr - minRr, 1);
+
+    const W = 720, H = 160, PL = 12, PR = 12, PT = 18, PB = 18;
+    const chartW = W - PL - PR;
+    const chartH = H - PT - PB;
+
+    const x = (i) => PL + (points.length === 1 ? chartW / 2 : (i / (points.length - 1)) * chartW);
+    const y = (rr) => PT + chartH - ((rr - minRr) / span) * chartH;
+
+    const linePts = points.map((p, i) => `${x(i).toFixed(1)},${y(p.rr).toFixed(1)}`).join(' ');
+    const area = `M ${x(0).toFixed(1)},${(PT + chartH).toFixed(1)} L ${linePts.split(' ').join(' L ')} L ${x(points.length - 1).toFixed(1)},${(PT + chartH).toFixed(1)} Z`;
+
+    const dots = points.map((p, i) => {
+      const cx = x(i).toFixed(1);
+      const cy = y(p.rr).toFixed(1);
+      const col = p.delta > 0 ? '#7ed99d' : p.delta < 0 ? '#e38686' : '#a78bfa';
+      return `<circle cx="${cx}" cy="${cy}" r="2.8" fill="${col}"><title>${p.tier}  ·  ${p.delta >= 0 ? '+' : ''}${p.delta} RR</title></circle>`;
+    }).join('');
+
+    const totalDelta = points.reduce((s, p) => s + (p.delta || 0), 0);
+    const last5 = points.slice(-5).reduce((s, p) => s + (p.delta || 0), 0);
+    const wins = points.filter((p) => p.delta > 0).length;
+    const losses = points.filter((p) => p.delta < 0).length;
+
+    const fmt = (n) => `${n >= 0 ? '+' : ''}${n}`;
+    const clsDelta = (n) => n > 0 ? 'pos' : n < 0 ? 'neg' : '';
+
+    rrChartEl.innerHTML = `
+      <div class="val-rr-summary">
+        <div><strong>Net</strong><span class="${clsDelta(totalDelta)}">${fmt(totalDelta)} RR</span></div>
+        <div><strong>Last 5</strong><span class="${clsDelta(last5)}">${fmt(last5)} RR</span></div>
+        <div><strong>W–L</strong><span>${wins}–${losses}</span></div>
+        <div><strong>Games</strong><span>${points.length}</span></div>
+      </div>
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rrArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#a78bfa" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- baseline grid -->
+        <line x1="${PL}" y1="${PT + chartH}" x2="${W - PR}" y2="${PT + chartH}" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <line x1="${PL}" y1="${PT}" x2="${W - PR}" y2="${PT}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <path d="${area}" fill="url(#rrArea)"/>
+        <polyline points="${linePts}" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+      </svg>
+    `;
   }
 
   // ---- main flow ------------------------------------------------------
@@ -438,28 +697,32 @@
       // Account data can tell us the authoritative region — prefer it over the form.
       const resolvedRegion = (account.region || region).toLowerCase();
 
-      // Parallel: MMR + matches (competitive only for cleaner stats)
-      const [mmrRes, matchesRes] = await Promise.all([
+      // Parallel: MMR + matches + MMR history (competitive only for cleaner stats).
+      // History is best-effort — a missing/rate-limited history shouldn't block the rest.
+      const [mmrRes, matchesRes, historyRes] = await Promise.all([
         proxy('/val/mmr', { region: resolvedRegion, platform: 'pc', name, tag }).catch((e) => ({ __err: e })),
         proxy('/val/matches', { region: resolvedRegion, platform: 'pc', name, tag, size: 20, mode: 'competitive' }).catch((e) => ({ __err: e })),
+        proxy('/val/mmr-history', { region: resolvedRegion, name, tag }).catch((e) => ({ __err: e })),
       ]);
       if (token !== inFlight) return;
 
       const mmr = mmrRes && !mmrRes.__err ? mmrRes.data : null;
       const matches = (matchesRes && !matchesRes.__err && Array.isArray(matchesRes.data)) ? matchesRes.data : [];
+      const history = (historyRes && !historyRes.__err && Array.isArray(historyRes.data)) ? historyRes.data : [];
 
-      renderProfile(account, mmr);
+      renderProfile(account, mmr, matches);
+      renderMmrHistory(history);
 
       if (matches.length) {
         const agg = aggregateStats(matches, account.puuid);
         renderStats(agg);
-        renderBreakdown(topAgents, agg.topAgents, { withIcon: true });
+        renderAgentBreakdown(topAgents, agg.topAgents);
         renderBreakdown(topMaps, agg.topMaps);
         renderMatches(matches, account.puuid);
       } else {
         // Wipe to empty state so a previous search doesn't linger.
         renderStats({ played: 0, wins: 0, losses: 0, winrate: NaN, kda: NaN, k:0, d:0, a:0, hsPct: NaN, acs: NaN, dpr: NaN, kills: 0, rounds: 0 });
-        renderBreakdown(topAgents, []);
+        renderAgentBreakdown(topAgents, []);
         renderBreakdown(topMaps, []);
         renderMatches([], account.puuid);
       }
@@ -516,6 +779,13 @@
   });
 
   // ---- bootstrap ------------------------------------------------------
+  // common.js's section-observer only runs on .page (scroll-snap) layouts.
+  // The val page uses natural scroll (.val-page), so we manually activate the
+  // hero section so its .reveal children animate in consistently with the rest
+  // of the site. Dashboard content appears after search — no reveal on it.
+  const heroSection = document.querySelector('.val-hero');
+  if (heroSection) heroSection.classList.add('is-active');
+
   readInitialState();
 
   // Auto-search if URL carries a riot param.
