@@ -49,11 +49,12 @@
   color: var(--white-dim);
 }
 .val-tagline-dim {
+  display: block;
+  margin-top: 8px;
   color: var(--white-faint);
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 1px;
-  margin-left: 6px;
 }
 
 /* Search form */
@@ -215,8 +216,8 @@
   inset: 0;
   background-size: cover;
   background-position: center;
-  opacity: 0.32;
-  filter: saturate(120%) contrast(105%);
+  opacity: 0.85;
+  filter: saturate(115%) contrast(105%);
   transition: opacity 0.6s var(--ease-out);
 }
 .val-profile-bg::after {
@@ -224,8 +225,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(5,5,7,0.95) 0%, rgba(5,5,7,0.75) 35%, rgba(5,5,7,0.55) 70%, rgba(5,5,7,0.80) 100%),
-    linear-gradient(180deg, rgba(5,5,7,0.4) 0%, rgba(5,5,7,0.85) 100%);
+    linear-gradient(90deg, rgba(5,5,7,0.82) 0%, rgba(5,5,7,0.45) 40%, rgba(5,5,7,0.10) 75%, rgba(5,5,7,0.35) 100%),
+    linear-gradient(180deg, rgba(5,5,7,0.15) 0%, rgba(5,5,7,0.55) 100%);
 }
 
 .val-profile-content {
