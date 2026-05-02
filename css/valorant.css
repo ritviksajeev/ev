@@ -1262,6 +1262,22 @@
 }
 .val-sb-acs, .val-sb-kda, .val-sb-hs { text-align: right; }
 
+/* Notice shown above team scoreboards when Riot/Henrik anonymised the
+   match — explains why every name reads as "<Agent> player". */
+.val-sb-notice {
+  grid-column: 1 / -1;
+  padding: 10px 14px;
+  background: rgba(245, 185, 106, 0.08);
+  border: 1px solid rgba(245, 185, 106, 0.32);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: #f5b96a;
+  line-height: 1.5;
+}
+
 /* RR history chart */
 .val-rr-head {
   display: flex;

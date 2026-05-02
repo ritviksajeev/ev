@@ -765,6 +765,14 @@
     const totalRounds = roundCount(match) || 1;
     const timeline = renderRoundTimeline(match, puuid);
 
+    // If literally every player in this match has an empty name field, Riot
+    // (or Henrik upstream) anonymised the response. Show a small explainer
+    // so users don't think the tracker is broken.
+    const allAnon = players.every((p) => !resolvePlayerIdentity(p));
+    const anonNotice = allAnon
+      ? '<div class="val-sb-notice">Player names are hidden by Riot for this match. Your row is identified from the search you ran.</div>'
+      : '';
+
     // Group + sort by ACS desc.
     const groups = new Map(); // team_id -> { players[], team obj, won, rounds }
     for (const p of players) {
@@ -849,7 +857,7 @@
       `;
     }).join('');
 
-    return `${timeline}${teamsHtml}`;
+    return `${timeline}${anonNotice}${teamsHtml}`;
   }
 
   function renderMatches(matches, puuid, freshIds = new Set()) {
