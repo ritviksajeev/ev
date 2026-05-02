@@ -1399,7 +1399,14 @@
     currentMode = next;
     localStorage.setItem(STORAGE_MODE, currentMode);
     applyModeUI();
-    if (lastCtx) runSearch(lastCtx.name, lastCtx.tag, lastCtx.region);
+    if (lastCtx) {
+      // Visible feedback so the switch doesn't feel like a no-op.
+      const label = pill.textContent.trim();
+      toast(`Loading ${label}…`);
+      runSearch(lastCtx.name, lastCtx.tag, lastCtx.region);
+    } else {
+      toast('Search for a player first');
+    }
   });
   applyModeUI();
 

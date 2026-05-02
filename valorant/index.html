@@ -118,24 +118,20 @@
           <div class="val-profile-content">
 
             <div class="val-identity">
-              <div class="val-identity-head">
-                <div class="val-identity-heading">
-                  <div class="val-identity-label eyebrow plain">Profile</div>
-                  <div class="val-identity-name">
-                    <span class="val-name" id="val-name-display">&mdash;</span><span class="val-tag" id="val-tag-display"></span>
-                  </div>
-                </div>
-                <div class="val-recent-agent" id="val-recent-agent" hidden>
-                  <img class="val-recent-agent-img" id="val-recent-agent-img" alt="" width="64" height="64"/>
-                  <div class="val-recent-agent-meta">
-                    <div class="val-recent-agent-label">Last played</div>
-                    <div class="val-recent-agent-name" id="val-recent-agent-name">&mdash;</div>
-                  </div>
-                </div>
+              <div class="val-identity-label eyebrow plain">Profile</div>
+              <div class="val-identity-name">
+                <span class="val-name" id="val-name-display">&mdash;</span><span class="val-tag" id="val-tag-display"></span>
               </div>
               <div class="val-identity-meta" id="val-identity-meta">
                 <span class="val-meta-chip" id="val-level">Level &mdash;</span>
                 <span class="val-meta-chip" id="val-region-display">Region &mdash;</span>
+                <span class="val-meta-chip val-recent-agent" id="val-recent-agent" hidden>
+                  <img class="val-recent-agent-img" id="val-recent-agent-img" alt="" width="20" height="20"/>
+                  <span class="val-recent-agent-text">
+                    <span class="val-recent-agent-label-inline">Last:</span>
+                    <span class="val-recent-agent-name" id="val-recent-agent-name">&mdash;</span>
+                  </span>
+                </span>
               </div>
               <div class="val-identity-actions">
                 <button type="button" class="val-chip-btn" id="val-share" title="Copy link to this profile">
@@ -171,10 +167,10 @@
               <div class="val-rank-block">
                 <div class="val-rank-label">Peak</div>
                 <div class="val-rank-body">
-                  <img class="val-rank-icon dim" id="val-peak-icon" alt="" width="56" height="56"/>
+                  <img class="val-rank-icon" id="val-peak-icon" alt="" width="72" height="72"/>
                   <div class="val-rank-text">
                     <div class="val-rank-tier" id="val-peak-tier">&mdash;</div>
-                    <div class="val-rank-rr dim" id="val-peak-meta">&mdash;</div>
+                    <div class="val-rank-rr" id="val-peak-meta">&mdash;</div>
                   </div>
                 </div>
               </div>
