@@ -688,8 +688,9 @@
     return { name, tag };
   }
 
-  // One-shot diagnostic so we can spot Henrik shape regressions in the wild
-  // without users having to crack open devtools and search for a field.
+  // One-shot diagnostic so we can spot Henrik shape regressions in the wild.
+  // Logs the FULL first player object as a JSON string so users can copy-paste
+  // it back without expanding console object pickers.
   let _shapeLogged = false;
   function logPlayerShapeOnce(players) {
     if (_shapeLogged) return;
@@ -698,13 +699,26 @@
     const sample = players[0];
     const id = resolvePlayerIdentity(sample);
     if (!id) {
-      console.warn('[val] no player names in match data — dumping first player keys/values for diagnosis:', {
-        keys: Object.keys(sample),
-        sampleStringFields: Object.fromEntries(
-          Object.entries(sample).filter(([, v]) => typeof v === 'string').slice(0, 12)
-        ),
-        riotIdType: typeof sample.riot_id,
-      });
+      // Strip large nested arrays/objects so the JSON stays copy-pasteable.
+      const slim = {};
+      for (const [k, v] of Object.entries(sample)) {
+        if (v == null) { slim[k] = v; continue; }
+        const t = typeof v;
+        if (t === 'string' || t === 'number' || t === 'boolean') {
+          slim[k] = v;
+        } else if (Array.isArray(v)) {
+          slim[k] = `<array len=${v.length}>`;
+        } else if (t === 'object') {
+          slim[k] = Object.fromEntries(
+            Object.entries(v).map(([kk, vv]) =>
+              [kk, (vv == null || ['string','number','boolean'].includes(typeof vv)) ? vv : `<${typeof vv}>`]
+            )
+          );
+        } else {
+          slim[k] = `<${t}>`;
+        }
+      }
+      console.warn('[val] PLAYER SHAPE DUMP — copy this whole block back to evzero:\n' + JSON.stringify(slim, null, 2));
     }
   }
 
@@ -791,10 +805,15 @@
         const acs = playerAcs(p, totalRounds);
         const hs = playerHsPct(p);
 
-        // Resolve player identity with every known shape; fall back to
-        // "Player N" + agent name so the row stays meaningful even when
-        // Henrik anonymises everyone.
-        const id = resolvePlayerIdentity(p);
+        // Resolve player identity from any known shape Henrik has shipped.
+        // For OUR own row, fall back to lastCtx (which already merged the
+        // search-input name) so the user sees themselves named even when
+        // Henrik anonymised the response. For other players we can only
+        // identify by agent + row index.
+        let id = resolvePlayerIdentity(p);
+        if (!id && self && lastCtx && lastCtx.name) {
+          id = { name: lastCtx.name, tag: lastCtx.tag || '' };
+        }
         let nameHtml;
         if (id) {
           nameHtml = `${esc(id.name)}${id.tag ? `<span class="sb-tag">#${esc(id.tag)}</span>` : ''}`;
