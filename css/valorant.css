@@ -54,9 +54,72 @@
   letter-spacing: 1px;
 }
 
+/* Saved players row — appears above the search when at least one favourite
+   exists. Each chip is a one-click re-search shortcut. */
+.val-favs {
+  margin: 36px auto 0;
+  max-width: 760px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.val-favs[hidden] { display: none; }
+.val-favs-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.val-favs-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.val-fav-chip {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
+}
+.val-fav-chip:hover {
+  background: rgba(167, 139, 250, 0.14);
+  border-color: rgba(167, 139, 250, 0.42);
+}
+.val-fav-chip-region {
+  font-size: 9px;
+  color: var(--white-faint);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+}
+.val-fav-chip-x {
+  width: 16px;
+  height: 16px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--white-faint);
+  font-size: 12px;
+  line-height: 1;
+  margin-left: 2px;
+}
+.val-fav-chip-x:hover { background: rgba(255, 255, 255, 0.1); color: var(--white); }
+
 /* Search form */
 .val-search {
-  margin: 44px auto 0;
+  margin: 28px auto 0;
   max-width: 760px;
   text-align: left;
 }
@@ -372,6 +435,11 @@
   color: var(--purple-bright);
 }
 .val-chip-btn.copied .val-chip-btn-icon { color: #7ed99d; }
+.val-chip-btn.saved {
+  background: rgba(245, 185, 106, 0.14);
+  border-color: rgba(245, 185, 106, 0.42);
+}
+.val-chip-btn.saved .val-chip-btn-icon { color: #f5b96a; }
 .val-live-dot {
   width: 8px;
   height: 8px;
@@ -448,6 +516,40 @@
   color: var(--white-dim);
 }
 .val-rank-rr.dim { color: var(--white-faint); }
+
+/* ============================================
+   Mode filter pills — sit above session, switch which queue is loaded.
+   ============================================ */
+.val-mode-bar {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 4px;
+  background: var(--bg-1);
+  border: 1px solid var(--white-line);
+  border-radius: var(--radius-md);
+  width: fit-content;
+}
+.val-mode-pill {
+  appearance: none;
+  cursor: pointer;
+  padding: 8px 14px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: var(--white-dim);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+.val-mode-pill:hover { color: var(--white); background: rgba(255, 255, 255, 0.04); }
+.val-mode-pill.active {
+  color: var(--white);
+  background: rgba(167, 139, 250, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.42);
+}
 
 /* ============================================
    Session summary (today's games, net RR, streak)
@@ -1026,6 +1128,56 @@
   flex-direction: column;
   gap: 8px;
 }
+
+/* Round-by-round timeline shown above the team scoreboards on expand. Each
+   cell is one round, coloured by whether the player's side won it. */
+.val-round-timeline {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-1);
+  border: 1px solid var(--white-line);
+  border-radius: var(--radius-sm);
+}
+.val-round-timeline-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.val-round-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--white-dim);
+  letter-spacing: 1.4px;
+}
+.val-round-key .val-round-cell { width: 10px; height: 10px; margin: 0 4px 0 8px; border-radius: 2px; }
+.val-round-timeline-bar {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.val-round-cell {
+  flex: 1 1 12px;
+  min-width: 12px;
+  height: 18px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: transform 0.15s var(--ease-out);
+}
+.val-round-cell:hover { transform: translateY(-1px); }
+.val-round-cell.win  { background: linear-gradient(180deg, rgba(126, 217, 157, 0.95), rgba(126, 217, 157, 0.55)); }
+.val-round-cell.loss { background: linear-gradient(180deg, rgba(227, 134, 134, 0.95), rgba(227, 134, 134, 0.55)); }
+.val-round-cell.draw { background: rgba(167, 139, 250, 0.45); }
 .val-team-head {
   display: flex;
   align-items: baseline;

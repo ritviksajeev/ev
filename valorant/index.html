@@ -49,6 +49,11 @@
           <span class="val-tagline-dim">Data via Henrik&rsquo;s API.</span>
         </p>
 
+        <div class="val-favs reveal d3" id="val-favs" hidden>
+          <span class="val-favs-label">Saved</span>
+          <div class="val-favs-list" id="val-favs-list"></div>
+        </div>
+
         <form class="val-search reveal d3" id="val-search" autocomplete="off">
           <div class="val-search-row">
             <div class="val-input-wrap val-input-name">
@@ -139,6 +144,12 @@
                   </span>
                   <span class="val-chip-btn-label" id="val-share-label">Share</span>
                 </button>
+                <button type="button" class="val-chip-btn" id="val-fav" title="Save this player to quick-access list">
+                  <span class="val-chip-btn-icon" aria-hidden="true">
+                    <svg viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M8 1.5l1.93 4.07L14.5 6.27l-3.4 3.13.86 4.6L8 11.85 4.04 14l.86-4.6L1.5 6.27l4.57-.7L8 1.5Z"/></svg>
+                  </span>
+                  <span class="val-chip-btn-label" id="val-fav-label">Save</span>
+                </button>
                 <button type="button" class="val-chip-btn val-live-btn" id="val-live-toggle" title="Auto-refresh every 30s">
                   <span class="val-live-dot" aria-hidden="true"></span>
                   <span class="val-chip-btn-label" id="val-live-label">Go Live</span>
@@ -170,6 +181,15 @@
             </div>
 
           </div>
+        </div>
+
+        <!-- Mode filter pills -->
+        <div class="val-mode-bar" id="val-mode-bar" role="tablist" aria-label="Match mode filter">
+          <button type="button" class="val-mode-pill active" role="tab" aria-selected="true" data-mode="competitive">Competitive</button>
+          <button type="button" class="val-mode-pill" role="tab" aria-selected="false" data-mode="unrated">Unrated</button>
+          <button type="button" class="val-mode-pill" role="tab" aria-selected="false" data-mode="deathmatch">Deathmatch</button>
+          <button type="button" class="val-mode-pill" role="tab" aria-selected="false" data-mode="swiftplay">Swiftplay</button>
+          <button type="button" class="val-mode-pill" role="tab" aria-selected="false" data-mode="">All modes</button>
         </div>
 
         <!-- Session summary -->
@@ -206,6 +226,14 @@
         </div>
         <div class="val-rr-chart" id="val-rr-chart">
           <div class="val-rr-empty">No RR history yet.</div>
+        </div>
+
+        <!-- KDA per-match trend chart -->
+        <div class="val-rr-head">
+          <div class="eyebrow plain">KDA trend <span class="val-rr-range" id="val-kda-range">/ per match (oldest → newest)</span></div>
+        </div>
+        <div class="val-rr-chart" id="val-kda-chart">
+          <div class="val-rr-empty">No match data yet.</div>
         </div>
 
         <!-- Top agents / maps -->

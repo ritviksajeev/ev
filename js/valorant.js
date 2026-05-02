@@ -29,6 +29,8 @@
   const STORAGE_LAST = 'evz-val-last';
   const STORAGE_MAPS = 'evz-val-maps-v1';
   const STORAGE_WEAPONS = 'evz-val-weapons-v1';
+  const STORAGE_FAVS = 'evz-val-favs-v1';
+  const STORAGE_MODE = 'evz-val-mode-v1';
   const META_CACHE_MS = 7 * 24 * 60 * 60 * 1000; // 1 week
 
   // Henrik returns map + weapon as display names or UUIDs depending on endpoint
@@ -122,9 +124,15 @@
   const weaponsRange = $('val-weapons-range');
   const shareBtn = $('val-share');
   const shareLabel = $('val-share-label');
+  const favBtn = $('val-fav');
+  const favLabel = $('val-fav-label');
+  const favsWrap = $('val-favs');
+  const favsList = $('val-favs-list');
   const liveBtn = $('val-live-toggle');
   const liveLabel = $('val-live-label');
   const liveIndicator = $('val-live-indicator');
+  const modeBar = $('val-mode-bar');
+  const kdaChartEl = $('val-kda-chart');
   const toastEl = $('val-toast');
   const toastText = $('val-toast-text');
 
@@ -638,12 +646,44 @@
     return total ? hs / total : null;
   }
 
+  // Build a round-by-round timeline from match.rounds — each round is one
+  // small bar coloured by which side won. Returns inline HTML ready to drop
+  // above the team scoreboards.
+  function renderRoundTimeline(match, puuid) {
+    const rds = Array.isArray(match.rounds) ? match.rounds : [];
+    if (!rds.length) return '';
+    const selfTeam = (() => {
+      const players = allPlayers(match);
+      const me = players.find((p) => p.puuid === puuid);
+      return playerTeamId(me || {}) || '';
+    })();
+    if (!selfTeam) return '';
+
+    // Each round in v4 has winning_team ('Red' or 'Blue') and end_type
+    // (Eliminated, Bomb defused, Time expired, Bomb detonated, Surrendered).
+    const cells = rds.map((r, i) => {
+      const winner = String(r.winning_team || r.winning_side || '').toLowerCase();
+      const win = winner === selfTeam;
+      const cls = winner ? (win ? 'win' : 'loss') : 'draw';
+      const ending = String(r.end_type || r.round_result || '').replace(/_/g, ' ');
+      const title = `Round ${i + 1} · ${win ? 'Won' : (winner ? 'Lost' : 'Unknown')}${ending ? ' · ' + ending : ''}`;
+      return `<span class="val-round-cell ${cls}" title="${esc(title)}"></span>`;
+    }).join('');
+    return `
+      <div class="val-round-timeline">
+        <div class="val-round-timeline-label">Round timeline <span class="val-round-key"><span class="val-round-cell win"></span>Won  <span class="val-round-cell loss"></span>Lost</span></div>
+        <div class="val-round-timeline-bar">${cells}</div>
+      </div>
+    `;
+  }
+
   function renderScoreboard(match, puuid) {
     const players = allPlayers(match);
     if (!players.length) return '<div class="val-rr-empty">No scoreboard data for this match.</div>';
 
     const teams = Array.isArray(match.teams) ? match.teams : (match.teams ? Object.values(match.teams) : []);
     const totalRounds = roundCount(match) || 1;
+    const timeline = renderRoundTimeline(match, puuid);
 
     // Group + sort by ACS desc.
     const groups = new Map(); // team_id -> { players[], team obj, won, rounds }
@@ -669,7 +709,7 @@
       return (b.rounds ?? 0) - (a.rounds ?? 0);
     });
 
-    return groupList.map((g) => {
+    const teamsHtml = groupList.map((g) => {
       g.players.sort((x, y) => (y.stats?.score ?? 0) - (x.stats?.score ?? 0));
       const teamLabel = g.key ? g.key.toUpperCase() : 'TEAM';
       const isWin = g.won === true;
@@ -710,6 +750,8 @@
         </div>
       `;
     }).join('');
+
+    return `${timeline}${teamsHtml}`;
   }
 
   function renderMatches(matches, puuid, freshIds = new Set()) {
@@ -954,6 +996,69 @@
     `;
   }
 
+  // ---- KDA per-match trend chart ------------------------------------
+  function renderKdaChart(matches, puuid) {
+    if (!Array.isArray(matches) || matches.length < 2) {
+      kdaChartEl.innerHTML = '<div class="val-rr-empty">Need at least two matches to draw a trend.</div>';
+      return;
+    }
+
+    // Oldest → newest left-to-right.
+    const data = matches.slice().reverse().map((m) => {
+      const self = findSelf(m, puuid);
+      const s = self?.stats || {};
+      const k = s.kills || 0, d = s.deaths || 0, a = s.assists || 0;
+      const kda = d ? (k + a) / d : (k + a);
+      return { kda, k, d, a, result: matchResult(m, self) };
+    });
+
+    const minKda = Math.min(...data.map((p) => p.kda), 0);
+    const maxKda = Math.max(...data.map((p) => p.kda), 1);
+    const span = Math.max(maxKda - minKda, 0.5);
+
+    const W = 720, H = 160, PL = 12, PR = 12, PT = 18, PB = 18;
+    const chartW = W - PL - PR;
+    const chartH = H - PT - PB;
+    const x = (i) => PL + (data.length === 1 ? chartW / 2 : (i / (data.length - 1)) * chartW);
+    const y = (v) => PT + chartH - ((v - minKda) / span) * chartH;
+
+    const linePts = data.map((p, i) => `${x(i).toFixed(1)},${y(p.kda).toFixed(1)}`).join(' ');
+    const area = `M ${x(0).toFixed(1)},${(PT + chartH).toFixed(1)} L ${linePts.split(' ').join(' L ')} L ${x(data.length - 1).toFixed(1)},${(PT + chartH).toFixed(1)} Z`;
+    const dots = data.map((p, i) => {
+      const cx = x(i).toFixed(1);
+      const cy = y(p.kda).toFixed(1);
+      const col = p.result === 'win' ? '#7ed99d' : p.result === 'loss' ? '#e38686' : '#a78bfa';
+      return `<circle cx="${cx}" cy="${cy}" r="2.8" fill="${col}"><title>${p.k}/${p.d}/${p.a}  ·  ${p.kda.toFixed(2)} KDA</title></circle>`;
+    }).join('');
+
+    const avg = data.reduce((s, p) => s + p.kda, 0) / data.length;
+    const recent = data.slice(-5).reduce((s, p) => s + p.kda, 0) / Math.min(5, data.length);
+    const best = Math.max(...data.map((p) => p.kda));
+    const worst = Math.min(...data.map((p) => p.kda));
+
+    kdaChartEl.innerHTML = `
+      <div class="val-rr-summary">
+        <div><strong>Avg</strong><span>${avg.toFixed(2)}</span></div>
+        <div><strong>Last 5</strong><span>${recent.toFixed(2)}</span></div>
+        <div><strong>Best</strong><span class="pos">${best.toFixed(2)}</span></div>
+        <div><strong>Worst</strong><span class="neg">${worst.toFixed(2)}</span></div>
+      </div>
+      <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="kdaArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#7ed99d" stop-opacity="0.30"/>
+            <stop offset="100%" stop-color="#7ed99d" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <line x1="${PL}" y1="${PT + chartH}" x2="${W - PR}" y2="${PT + chartH}" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <line x1="${PL}" y1="${PT}" x2="${W - PR}" y2="${PT}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <path d="${area}" fill="url(#kdaArea)"/>
+        <polyline points="${linePts}" fill="none" stroke="#7ed99d" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        ${dots}
+      </svg>
+    `;
+  }
+
   // ---- main flow ------------------------------------------------------
   let inFlight = 0;
   // Context of the last successful search — used by live-mode polling and
@@ -984,11 +1089,14 @@
       // Account data can tell us the authoritative region — prefer it over the form.
       const resolvedRegion = (account.region || region).toLowerCase();
 
-      // Parallel: MMR + matches + MMR history (competitive only for cleaner stats).
+      // Parallel: MMR + matches + MMR history. The matches call honours the
+      // active mode pill so e.g. switching to Deathmatch refetches that queue.
       // History is best-effort — a missing/rate-limited history shouldn't block the rest.
+      const matchParams = { region: resolvedRegion, platform: 'pc', name, tag, size: 20 };
+      if (currentMode) matchParams.mode = currentMode;
       const [mmrRes, matchesRes, historyRes] = await Promise.all([
         proxy('/val/mmr', { region: resolvedRegion, platform: 'pc', name, tag }).catch((e) => ({ __err: e })),
-        proxy('/val/matches', { region: resolvedRegion, platform: 'pc', name, tag, size: 20, mode: 'competitive' }).catch((e) => ({ __err: e })),
+        proxy('/val/matches', matchParams).catch((e) => ({ __err: e })),
         proxy('/val/mmr-history', { region: resolvedRegion, name, tag }).catch((e) => ({ __err: e })),
       ]);
       if (token !== inFlight) return;
@@ -1028,6 +1136,7 @@
         renderMapBreakdown(topMaps, agg.topMaps);
         renderWeapons(agg.topWeapons);
         renderSession(computeSession(matches, history, account.puuid));
+        renderKdaChart(matches, account.puuid);
         renderMatches(matches, account.puuid, freshIds);
       } else {
         // Wipe to empty state so a previous search doesn't linger.
@@ -1036,6 +1145,7 @@
         renderMapBreakdown(topMaps, []);
         renderWeapons([]);
         renderSession(null);
+        renderKdaChart([], account.puuid);
         renderMatches([], account.puuid, new Set());
       }
 
@@ -1052,6 +1162,7 @@
         puuid: account.puuid,
         matchIds: new Set(matches.map(matchId).filter(Boolean)),
       };
+      refreshFavBtnState();
 
       if (fromLive && freshIds.size > 0) {
         toast(`${freshIds.size} new match${freshIds.size === 1 ? '' : 'es'}`);
@@ -1083,9 +1194,9 @@
     } finally {
       if (token === inFlight) {
         if (!silent) disableForm(false);
-        // Hide the refreshing indicator on the next tick so users see at least
-        // a brief pulse even on very fast responses.
-        setTimeout(() => { liveIndicator.hidden = !liveMode; }, 400);
+        // Once the request lands, drop back to the steady "live" state so the
+        // user sees the countdown again.
+        if (liveMode) refreshLiveLabel();
       }
     }
   }
@@ -1093,34 +1204,63 @@
   // ---- Live mode: poll matches every 30s while tab is visible --------
   let liveMode = false;
   let livePollTimer = null;
+  let liveCountdownTimer = null;
+  let nextPollAt = 0;
   const LIVE_INTERVAL_MS = 30_000;
+  const liveIndicatorText = liveIndicator?.querySelector('.val-live-indicator-text');
 
-  function livePollTick() {
+  function refreshLiveLabel() {
+    if (!liveMode || !liveIndicatorText) return;
+    const remaining = Math.max(0, Math.ceil((nextPollAt - Date.now()) / 1000));
+    liveIndicatorText.textContent = `Live · next in ${remaining}s`;
+  }
+
+  async function livePollTick() {
     if (!liveMode || !lastCtx) return;
-    if (document.hidden) return; // pause while tab is backgrounded
-    runSearch(lastCtx.name, lastCtx.tag, lastCtx.region, { silent: true, fromLive: true });
+    if (document.hidden) {
+      // Pause the visible countdown but stay armed.
+      if (liveIndicatorText) liveIndicatorText.textContent = 'Live · paused (tab hidden)';
+      return;
+    }
+    if (liveIndicatorText) liveIndicatorText.textContent = 'Live · refreshing…';
+    nextPollAt = Date.now() + LIVE_INTERVAL_MS;
+    await runSearch(lastCtx.name, lastCtx.tag, lastCtx.region, { silent: true, fromLive: true });
+    refreshLiveLabel();
   }
 
   function setLiveMode(on) {
     liveMode = !!on;
     clearInterval(livePollTimer);
+    clearInterval(liveCountdownTimer);
     if (liveMode) {
       liveBtn.classList.add('active');
       liveLabel.textContent = 'Live';
       liveIndicator.hidden = false;
+      // Fire an immediate poll so the user sees activity within ~1s rather
+      // than waiting a full interval. nextPollAt updates inside livePollTick.
+      nextPollAt = Date.now() + LIVE_INTERVAL_MS;
+      refreshLiveLabel();
+      livePollTick();
       livePollTimer = setInterval(livePollTick, LIVE_INTERVAL_MS);
-      toast('Live tracking on');
+      // 1Hz countdown updater so the "next in Xs" text actually counts down.
+      liveCountdownTimer = setInterval(refreshLiveLabel, 1000);
+      toast('Live tracking on · polling every 30s');
     } else {
       liveBtn.classList.remove('active');
       liveLabel.textContent = 'Go Live';
       liveIndicator.hidden = true;
+      if (liveIndicatorText) liveIndicatorText.textContent = 'Live · refreshing';
       toast('Live tracking off');
     }
   }
 
   document.addEventListener('visibilitychange', () => {
-    // Fire an immediate refresh when the user returns to the tab if live.
-    if (liveMode && !document.hidden) livePollTick();
+    // Fire an immediate refresh when the user returns to the tab if live, and
+    // resume the visible countdown.
+    if (liveMode && !document.hidden) {
+      livePollTick();
+      refreshLiveLabel();
+    }
   });
 
   // ---- event wiring ---------------------------------------------------
@@ -1170,6 +1310,99 @@
     setLiveMode(!liveMode);
   });
 
+  // ---- Favorites: pin players for one-click re-search ----------------
+  function readFavs() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_FAVS) || '[]'); }
+    catch { return []; }
+  }
+  function writeFavs(list) {
+    try { localStorage.setItem(STORAGE_FAVS, JSON.stringify(list)); } catch { /* quota */ }
+  }
+  function favKey(name, tag) { return `${name}#${tag}`.toLowerCase(); }
+  function isFav(name, tag) {
+    const k = favKey(name, tag);
+    return readFavs().some((f) => favKey(f.name, f.tag) === k);
+  }
+  function addFav(entry) {
+    const list = readFavs().filter((f) => favKey(f.name, f.tag) !== favKey(entry.name, entry.tag));
+    list.unshift(entry);
+    writeFavs(list.slice(0, 8));
+    renderFavs();
+  }
+  function removeFav(name, tag) {
+    writeFavs(readFavs().filter((f) => favKey(f.name, f.tag) !== favKey(name, tag)));
+    renderFavs();
+  }
+  function renderFavs() {
+    const list = readFavs();
+    if (!list.length) { favsWrap.hidden = true; favsList.innerHTML = ''; return; }
+    favsWrap.hidden = false;
+    favsList.innerHTML = list.map((f) => `
+      <button type="button" class="val-fav-chip" data-name="${esc(f.name)}" data-tag="${esc(f.tag)}" data-region="${esc(f.region)}">
+        <span>${esc(f.name)}<span class="val-fav-chip-region">#${esc(f.tag)} · ${esc(f.region.toUpperCase())}</span></span>
+        <span class="val-fav-chip-x" data-x="1" title="Remove">×</span>
+      </button>
+    `).join('');
+  }
+  favsList.addEventListener('click', (e) => {
+    const chip = e.target.closest('.val-fav-chip');
+    if (!chip) return;
+    const name = chip.dataset.name, tag = chip.dataset.tag, region = chip.dataset.region;
+    if (e.target.dataset.x) {
+      removeFav(name, tag);
+      return;
+    }
+    nameInput.value = name;
+    tagInput.value = tag;
+    if ([...regionSelect.options].some((o) => o.value === region)) regionSelect.value = region;
+    runSearch(name, tag, region);
+  });
+  function refreshFavBtnState() {
+    if (!lastCtx) {
+      favBtn.classList.remove('saved');
+      favLabel.textContent = 'Save';
+      return;
+    }
+    const saved = isFav(lastCtx.name, lastCtx.tag);
+    favBtn.classList.toggle('saved', saved);
+    favLabel.textContent = saved ? 'Saved' : 'Save';
+  }
+  favBtn.addEventListener('click', () => {
+    if (!lastCtx) { toast('Search for a player first'); return; }
+    if (isFav(lastCtx.name, lastCtx.tag)) {
+      removeFav(lastCtx.name, lastCtx.tag);
+      toast(`Removed ${lastCtx.name}#${lastCtx.tag}`);
+    } else {
+      addFav({ name: lastCtx.name, tag: lastCtx.tag, region: lastCtx.region });
+      toast(`Saved ${lastCtx.name}#${lastCtx.tag}`);
+    }
+    refreshFavBtnState();
+  });
+
+  // ---- Mode filter: switch which queue runSearch loads ---------------
+  let currentMode = localStorage.getItem(STORAGE_MODE) || 'competitive';
+  function applyModeUI() {
+    modeBar.querySelectorAll('.val-mode-pill').forEach((p) => {
+      const active = (p.dataset.mode || '') === currentMode;
+      p.classList.toggle('active', active);
+      p.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    statsRange.textContent = currentMode
+      ? `/ last 20 ${currentMode}`
+      : '/ last 20 matches';
+  }
+  modeBar.addEventListener('click', (e) => {
+    const pill = e.target.closest('.val-mode-pill');
+    if (!pill) return;
+    const next = pill.dataset.mode || '';
+    if (next === currentMode) return;
+    currentMode = next;
+    localStorage.setItem(STORAGE_MODE, currentMode);
+    applyModeUI();
+    if (lastCtx) runSearch(lastCtx.name, lastCtx.tag, lastCtx.region);
+  });
+  applyModeUI();
+
   regionSelect.addEventListener('change', () => {
     localStorage.setItem(STORAGE_REGION, regionSelect.value);
   });
@@ -1190,6 +1423,7 @@
   if (heroSection) heroSection.classList.add('is-active');
 
   readInitialState();
+  renderFavs();
 
   // Auto-search if URL carries a riot param.
   const initialRiot = new URLSearchParams(location.search).get('riot');
