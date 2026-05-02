@@ -14,11 +14,10 @@
 
   const AGENT_CDN = (uuid) =>
     uuid ? `https://media.valorant-api.com/agents/${uuid}/displayicon.png` : '';
-  // Use largeart (268x640, crisp portrait) rather than wideart (452x128, too low-res
-  // to upscale to a banner without blur). We position it on the right and fade the
-  // left side for text contrast — see .val-profile-bg in valorant.css.
-  const CARD_CDN = (uuid) =>
-    uuid ? `https://media.valorant-api.com/playercards/${uuid}/largeart.png` : '';
+  // Smallart is the natively-square 140x140 player-card thumbnail — perfect
+  // PFP source. Replaces the old portrait banner approach.
+  const CARD_PFP_CDN = (uuid) =>
+    uuid ? `https://media.valorant-api.com/playercards/${uuid}/smallart.png` : '';
   // Current competitive tiers table on valorant-api.com — tier id 0..27 maps to a rank icon.
   // Episode 5 table; update if Riot rotates to Episode 6+ (check https://valorant-api.com/v1/competitivetiers).
   const TIER_TABLE = '03621f52-342b-cf4e-4f86-9350a49c6d04';
@@ -92,7 +91,7 @@
   const statusText = statusEl.querySelector('.val-status-text');
   const dashboard = $('val-dashboard');
 
-  const profileBg = $('val-profile-bg');
+  const pfpEl = $('val-pfp');
   const nameDisplay = $('val-name-display');
   const tagDisplay = $('val-tag-display');
   const levelEl = $('val-level');
@@ -105,7 +104,8 @@
   const peakMeta = $('val-peak-meta');
   const recentAgentWrap = $('val-recent-agent');
   const recentAgentImg = $('val-recent-agent-img');
-  const recentAgentName = $('val-recent-agent-name');
+  const updatedChip = $('val-updated');
+  const updatedTime = $('val-updated-time');
   const rrChartEl = $('val-rr-chart');
   const statsGrid = $('val-stats');
   const statsRange = $('val-stats-range');
@@ -433,22 +433,30 @@
   }
 
   // ---- render ---------------------------------------------------------
-  function renderProfile(account, mmr, matches) {
-    // Card background — Henrik returns `card` as a UUID string. Build the CDN URL ourselves.
-    // Fall back to the old object shape just in case they roll it back later.
+  function renderProfile(account, mmr, matches, fallbackName, fallbackTag) {
+    // PFP — use the small (square) player-card art. Henrik returns `card` as a
+    // UUID string; fall back to the old object shape just in case they roll
+    // it back later.
     const cardUuid = typeof account?.card === 'string'
       ? account.card
       : (account?.card?.id || '');
-    const cardUrl = cardUuid ? CARD_CDN(cardUuid)
-      : (account?.card?.large || account?.card?.wide || account?.card?.small || '');
-    profileBg.style.backgroundImage = cardUrl ? `url("${cardUrl}")` : 'none';
+    const pfpUrl = cardUuid ? CARD_PFP_CDN(cardUuid)
+      : (account?.card?.small || account?.card?.large || '');
+    if (pfpUrl) pfpEl.src = pfpUrl; else pfpEl.removeAttribute('src');
 
-    nameDisplay.textContent = account?.name || '—';
-    tagDisplay.textContent  = account?.tag ? `#${account.tag}` : '';
+    // Defensive name resolution: account.name → fallback args (the original
+    // user input) → em-dash. Catches edge-cases where Henrik returns an
+    // empty name field for very new / freshly-renamed accounts.
+    const resolvedName = account?.name || fallbackName || '';
+    const resolvedTag  = account?.tag  || fallbackTag  || '';
+    if (!account?.name) console.warn('[val] account.name missing, using fallback', { account, fallbackName });
+    nameDisplay.textContent = resolvedName || '—';
+    tagDisplay.textContent  = resolvedTag ? `#${resolvedTag}` : '';
     levelEl.textContent     = `Level ${account?.account_level ?? '—'}`;
     regionDisplay.textContent = `Region ${(account?.region || '—').toUpperCase()}`;
 
-    // Recent-agent portrait — use the most recent match the player appears in.
+    // Recent-agent portrait — "Last agent: [pic]" with the agent name in a
+    // tooltip on hover. Image-only is more compact and visually identifiable.
     const recent = Array.isArray(matches)
       ? matches.map((m) => ({ m, self: findSelf(m, account?.puuid) })).find((x) => x.self)
       : null;
@@ -457,7 +465,8 @@
       const rname = (recent.self.agent && recent.self.agent.name) || recent.self.character || '';
       if (rid) {
         recentAgentImg.src = AGENT_CDN(rid);
-        recentAgentName.textContent = rname || '—';
+        recentAgentImg.title = rname || '';
+        recentAgentImg.alt = rname || '';
         recentAgentWrap.hidden = false;
       } else {
         recentAgentWrap.hidden = true;
@@ -724,10 +733,19 @@
         const s = p.stats || {};
         const acs = playerAcs(p, totalRounds);
         const hs = playerHsPct(p);
+        // Henrik shape changes — try every known location for player riot id.
+        // Some recent endpoints nest under riot_id { name, tag } or use
+        // gameName/tagLine instead of name/tag. Fall back through all of them
+        // so a single shape change doesn't blank the whole scoreboard.
+        const pName = p.name || p.gameName || (p.riot_id && p.riot_id.name) || (p.riot_id && p.riot_id.gameName) || '';
+        const pTag  = p.tag  || p.tagLine  || (p.riot_id && p.riot_id.tag)  || (p.riot_id && p.riot_id.tagLine)  || '';
+        const nameHtml = pName
+          ? `${esc(pName)}${pTag ? `<span class="sb-tag">#${esc(pTag)}</span>` : ''}`
+          : '<span class="sb-anon">Hidden</span>';
         return `
           <div class="val-sb-row ${self ? 'self' : ''}">
-            ${aid ? `<img class="val-sb-agent" src="${esc(AGENT_CDN(aid))}" alt="${esc(aname)}" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div class="val-sb-agent"></div>'}
-            <div class="val-sb-name">${esc(p.name || '—')}<span class="sb-tag">#${esc(p.tag || '')}</span></div>
+            ${aid ? `<img class="val-sb-agent" src="${esc(AGENT_CDN(aid))}" alt="${esc(aname)}" title="${esc(aname)}" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div class="val-sb-agent"></div>'}
+            <div class="val-sb-name">${nameHtml}</div>
             <div class="val-sb-acs">${acs != null ? acs : '—'}</div>
             <div class="val-sb-kda">${s.kills ?? 0}/${s.deaths ?? 0}/${s.assists ?? 0}</div>
             <div class="val-sb-hs">${hs != null ? fmtPct(hs, 0) : '—'}</div>
@@ -1081,10 +1099,28 @@
       loadMeta('maps', 'https://valorant-api.com/v1/maps', STORAGE_MAPS);
       loadMeta('weapons', 'https://valorant-api.com/v1/weapons', STORAGE_WEAPONS);
 
-      const accountRes = await proxy('/val/account', { name, tag });
-      if (token !== inFlight) return;
-      const account = accountRes?.data;
-      if (!account || !account.puuid) throw new Error('Player not found');
+      // Account fetch is the gateway to the rest. If it fails on a follow-up
+      // search (mode swap, live poll) for the SAME player we already loaded,
+      // reuse the cached account so a flaky 429 / 5xx doesn't blank the
+      // whole dashboard. Initial searches still hard-fail on account error.
+      let account;
+      try {
+        const accountRes = await proxy('/val/account', { name, tag });
+        if (token !== inFlight) return;
+        account = accountRes?.data;
+        if (!account || !account.puuid) throw new Error('Player not found');
+      } catch (accErr) {
+        const sameAsLast = lastCtx
+          && lastCtx.name.toLowerCase() === name.toLowerCase()
+          && lastCtx.tag.toLowerCase()  === tag.toLowerCase()
+          && lastCtx.account;
+        if (sameAsLast) {
+          account = lastCtx.account;
+          console.warn('[val] account fetch failed, reusing cached account', accErr);
+        } else {
+          throw accErr;
+        }
+      }
 
       // Account data can tell us the authoritative region — prefer it over the form.
       const resolvedRegion = (account.region || region).toLowerCase();
@@ -1126,7 +1162,7 @@
         }
       }
 
-      renderProfile(account, mmr, matches);
+      renderProfile(account, mmr, matches, name, tag);
       renderMmrHistory(history);
 
       if (matches.length) {
@@ -1155,13 +1191,23 @@
       dashboard.offsetWidth;
 
       // Track context for future polls.
+      // Use account.name/tag if Henrik returned them; otherwise keep the input
+      // values so a follow-up mode swap doesn't go off into the weeds with
+      // empty strings.
+      const ctxName = account.name || name;
+      const ctxTag  = account.tag  || tag;
       lastCtx = {
-        name: account.name,
-        tag: account.tag,
+        name: ctxName,
+        tag: ctxTag,
         region: resolvedRegion,
         puuid: account.puuid,
         matchIds: new Set(matches.map(matchId).filter(Boolean)),
+        // Cache the full account so a transient /val/account failure on the
+        // next search can fall back instead of blanking the dashboard.
+        account,
       };
+      lastUpdatedAt = Date.now();
+      refreshUpdatedChip();
       refreshFavBtnState();
 
       if (fromLive && freshIds.size > 0) {
@@ -1206,6 +1252,25 @@
   let livePollTimer = null;
   let liveCountdownTimer = null;
   let nextPollAt = 0;
+  // Timestamp of the last successful render — drives the "Updated Xs ago" chip
+  // so the user can tell the data is being kept fresh while live mode is on.
+  let lastUpdatedAt = 0;
+  let updatedChipTimer = null;
+
+  function refreshUpdatedChip() {
+    if (!updatedChip) return;
+    if (!lastUpdatedAt) { updatedChip.hidden = true; return; }
+    updatedChip.hidden = false;
+    updatedChip.classList.toggle('live', liveMode);
+    const diff = Math.max(0, Math.floor((Date.now() - lastUpdatedAt) / 1000));
+    let txt;
+    if (diff < 5)        txt = 'just now';
+    else if (diff < 60)  txt = `${diff}s ago`;
+    else if (diff < 3600)txt = `${Math.floor(diff / 60)}m ago`;
+    else                 txt = `${Math.floor(diff / 3600)}h ago`;
+    updatedTime.textContent = txt;
+    if (!updatedChipTimer) updatedChipTimer = setInterval(refreshUpdatedChip, 1000);
+  }
   const LIVE_INTERVAL_MS = 30_000;
   const liveIndicatorText = liveIndicator?.querySelector('.val-live-indicator-text');
 
@@ -1244,14 +1309,15 @@
       livePollTimer = setInterval(livePollTick, LIVE_INTERVAL_MS);
       // 1Hz countdown updater so the "next in Xs" text actually counts down.
       liveCountdownTimer = setInterval(refreshLiveLabel, 1000);
-      toast('Live tracking on · polling every 30s');
+      toast('Live ON — refreshing match list, stats, rank every 30s');
     } else {
       liveBtn.classList.remove('active');
       liveLabel.textContent = 'Go Live';
       liveIndicator.hidden = true;
       if (liveIndicatorText) liveIndicatorText.textContent = 'Live · refreshing';
-      toast('Live tracking off');
+      toast('Live OFF');
     }
+    refreshUpdatedChip();
   }
 
   document.addEventListener('visibilitychange', () => {

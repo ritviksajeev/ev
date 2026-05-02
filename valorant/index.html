@@ -112,10 +112,13 @@
     <div class="val-dashboard hidden" id="val-dashboard">
       <div class="val-dashboard-inner">
 
-        <!-- Profile / rank card -->
+        <!-- Profile / rank card. PFP square sits left of identity like an
+             avatar, ranks stay on the right, action buttons + recent-agent
+             below the meta chips. No more giant background portrait. -->
         <div class="val-profile glass" id="val-profile">
-          <div class="val-profile-bg" id="val-profile-bg"></div>
           <div class="val-profile-content">
+
+            <img class="val-pfp" id="val-pfp" alt="" width="96" height="96"/>
 
             <div class="val-identity">
               <div class="val-identity-label eyebrow plain">Profile</div>
@@ -126,11 +129,12 @@
                 <span class="val-meta-chip" id="val-level">Level &mdash;</span>
                 <span class="val-meta-chip" id="val-region-display">Region &mdash;</span>
                 <span class="val-meta-chip val-recent-agent" id="val-recent-agent" hidden>
-                  <img class="val-recent-agent-img" id="val-recent-agent-img" alt="" width="20" height="20"/>
-                  <span class="val-recent-agent-text">
-                    <span class="val-recent-agent-label-inline">Last:</span>
-                    <span class="val-recent-agent-name" id="val-recent-agent-name">&mdash;</span>
-                  </span>
+                  <span class="val-recent-agent-label-inline">Last agent:</span>
+                  <img class="val-recent-agent-img" id="val-recent-agent-img" alt="" title="" width="22" height="22"/>
+                </span>
+                <span class="val-meta-chip val-updated-chip" id="val-updated" hidden>
+                  <span class="val-updated-label">Updated</span>
+                  <span id="val-updated-time">just now</span>
                 </span>
               </div>
               <div class="val-identity-actions">
@@ -146,7 +150,7 @@
                   </span>
                   <span class="val-chip-btn-label" id="val-fav-label">Save</span>
                 </button>
-                <button type="button" class="val-chip-btn val-live-btn" id="val-live-toggle" title="Auto-refresh every 30s">
+                <button type="button" class="val-chip-btn val-live-btn" id="val-live-toggle" title="Auto-refresh every 30s — refreshes match list, stats, and rank">
                   <span class="val-live-dot" aria-hidden="true"></span>
                   <span class="val-chip-btn-label" id="val-live-label">Go Live</span>
                 </button>

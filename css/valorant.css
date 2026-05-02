@@ -271,55 +271,45 @@
   border-radius: var(--radius-lg);
   padding: 0;
 }
-.val-profile-bg {
-  position: absolute;
-  inset: 0;
-  background-repeat: no-repeat;
-  /* Portrait largeart is 268x640 — show it crisp on the right, no stretching. */
-  background-size: auto 140%;
-  background-position: right -20px center;
-  opacity: 1;
-  filter: saturate(115%) contrast(105%);
-  transition: opacity 0.6s var(--ease-out);
+/* Player-card "PFP" — uses smallart from valorant-api.com (140x140 native).
+   Sits on the left of the identity column, like an avatar. */
+.val-pfp {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--bg-0);
+  flex: none;
+  align-self: start;
+  box-shadow:
+    0 0 0 1px rgba(167, 139, 250, 0.28),
+    0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.4s var(--ease-out);
 }
-.val-profile-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  /* Strong fade on the left so the name/rank text stays readable, soft on the right so
-     the portrait art stays visible. */
-  background:
-    linear-gradient(90deg,
-      rgba(5,5,7,0.95) 0%,
-      rgba(5,5,7,0.88) 35%,
-      rgba(5,5,7,0.55) 60%,
-      rgba(5,5,7,0.15) 85%,
-      rgba(5,5,7,0.00) 100%),
-    linear-gradient(180deg, rgba(5,5,7,0.12) 0%, rgba(5,5,7,0.50) 100%);
-}
+.val-pfp:not([src]) { visibility: hidden; }
+.val-pfp:hover { transform: translateY(-1px); }
 
 .val-profile-content {
   position: relative;
   z-index: 1;
-  /* Extra right padding reserves space for the portrait art on the right edge
-     so rank text never overlaps the card image. */
-  padding: 36px 170px 36px 40px;
+  padding: 32px 36px;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 40px;
-  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: 28px;
+  align-items: start;
 }
 
 .val-identity { min-width: 0; }
 .val-identity-label { margin-bottom: 14px; }
 
-/* Recent-agent now lives inline as a meta chip — small avatar + label.
+/* Recent-agent — "Last agent: [pic]" — label then small agent portrait.
+   Hover the image for the agent name (set via title attribute in renderProfile).
    Hidden until renderProfile gets at least one match for the player. */
 .val-recent-agent {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 12px 4px 4px;
+  padding: 4px 6px 4px 12px;
   background: rgba(167, 139, 250, 0.10);
   border-color: rgba(167, 139, 250, 0.32);
 }
@@ -333,19 +323,33 @@
   flex: none;
   box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.4);
 }
-.val-recent-agent-text {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 4px;
-}
 .val-recent-agent-label-inline {
   color: var(--white-faint);
   letter-spacing: 1.5px;
 }
-.val-recent-agent-name {
-  color: var(--white);
-  font-weight: 600;
-  letter-spacing: 1px;
+
+/* Updated-chip — a small "last refreshed Xs ago" indicator that appears next
+   to level/region. Pulses faintly when live mode is on so users can see the
+   data is being kept fresh. */
+.val-updated-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.val-updated-chip[hidden] { display: none; }
+.val-updated-chip .val-updated-label { color: var(--white-faint); }
+.val-updated-chip.live {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fda4a4;
+}
+.val-updated-chip.live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f87171;
+  animation: val-pulse 1.6s ease-in-out infinite;
 }
 .val-identity-name {
   display: flex;
@@ -1251,6 +1255,11 @@
   font-size: 11px;
 }
 .val-sb-row.self .sb-tag { color: var(--purple-bright); }
+.val-sb-name .sb-anon {
+  font-style: italic;
+  color: var(--white-faint);
+  font-size: 12px;
+}
 .val-sb-acs, .val-sb-kda, .val-sb-hs { text-align: right; }
 
 /* RR history chart */
@@ -1328,31 +1337,20 @@
   .val-search-btn   { grid-area: btn; width: 100%; justify-content: center; }
 
   .val-profile-content {
-    grid-template-columns: 1fr;
-    gap: 28px;
-    /* On mobile the portrait compresses; cut the reserved right space in half. */
-    padding: 28px 90px 28px 24px;
+    /* Mobile: PFP next to identity in a row, ranks wrap below. */
+    grid-template-columns: auto 1fr;
+    gap: 18px 16px;
+    padding: 24px;
   }
-  /* Push the portrait further right and shrink it so it reads as accent art
-     rather than competing with the rank text. */
-  .val-profile-bg {
-    background-size: auto 110%;
-    background-position: calc(100% + 40px) center;
-    opacity: 0.7;
+  .val-pfp { width: 72px; height: 72px; }
+  .val-ranks {
+    grid-column: 1 / -1;
+    gap: 18px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
-  .val-profile-bg::after {
-    background:
-      linear-gradient(90deg,
-        rgba(5,5,7,0.95) 0%,
-        rgba(5,5,7,0.92) 55%,
-        rgba(5,5,7,0.70) 80%,
-        rgba(5,5,7,0.40) 100%),
-      linear-gradient(180deg, rgba(5,5,7,0.12) 0%, rgba(5,5,7,0.50) 100%);
-  }
-  /* Stack ranks vertically so the peak block doesn't crash into the portrait
-     on narrow screens. */
-  .val-ranks { gap: 16px; flex-direction: column; align-items: flex-start; }
-  .val-rank-block { min-width: 0; }
+  .val-rank-block { min-width: 0; flex: 1 1 140px; }
 
   .val-match {
     grid-template-columns: 4px 1fr 1fr auto auto;
