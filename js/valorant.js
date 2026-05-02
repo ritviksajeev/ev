@@ -655,6 +655,59 @@
     return total ? hs / total : null;
   }
 
+  // Resolve a player's display name + tag from whatever shape Henrik returned.
+  // The match endpoint has shipped at least four shapes over its v2/v3/v4 life,
+  // and Riot has been quietly anonymising some matches lately. Walk every
+  // known field; if all fail, return null so the caller can render a useful
+  // fallback (we use "Player N" with the row index, never just "Hidden").
+  function resolvePlayerIdentity(p) {
+    if (!p || typeof p !== 'object') return null;
+    const trim = (v) => (typeof v === 'string' ? v.trim() : '');
+
+    // Direct top-level
+    let name = trim(p.name) || trim(p.gameName) || trim(p.displayName) || trim(p.player_name);
+    let tag  = trim(p.tag)  || trim(p.tagLine)  || trim(p.player_tag);
+
+    // Nested riot_id object
+    if (!name && p.riot_id && typeof p.riot_id === 'object') {
+      name = trim(p.riot_id.name) || trim(p.riot_id.gameName);
+      tag  = tag || trim(p.riot_id.tag) || trim(p.riot_id.tagLine);
+    }
+    // riot_id as a string ("Name#Tag")
+    if (!name && typeof p.riot_id === 'string' && p.riot_id.includes('#')) {
+      const [n, t] = p.riot_id.split('#');
+      name = trim(n);
+      tag = tag || trim(t);
+    }
+    // Nested player object
+    if (!name && p.player && typeof p.player === 'object') {
+      name = trim(p.player.name) || trim(p.player.gameName);
+      tag  = tag || trim(p.player.tag) || trim(p.player.tagLine);
+    }
+    if (!name) return null;
+    return { name, tag };
+  }
+
+  // One-shot diagnostic so we can spot Henrik shape regressions in the wild
+  // without users having to crack open devtools and search for a field.
+  let _shapeLogged = false;
+  function logPlayerShapeOnce(players) {
+    if (_shapeLogged) return;
+    if (!Array.isArray(players) || !players.length) return;
+    _shapeLogged = true;
+    const sample = players[0];
+    const id = resolvePlayerIdentity(sample);
+    if (!id) {
+      console.warn('[val] no player names in match data — dumping first player keys/values for diagnosis:', {
+        keys: Object.keys(sample),
+        sampleStringFields: Object.fromEntries(
+          Object.entries(sample).filter(([, v]) => typeof v === 'string').slice(0, 12)
+        ),
+        riotIdType: typeof sample.riot_id,
+      });
+    }
+  }
+
   // Build a round-by-round timeline from match.rounds — each round is one
   // small bar coloured by which side won. Returns inline HTML ready to drop
   // above the team scoreboards.
@@ -689,6 +742,10 @@
   function renderScoreboard(match, puuid) {
     const players = allPlayers(match);
     if (!players.length) return '<div class="val-rr-empty">No scoreboard data for this match.</div>';
+
+    // Diagnostic: if names are missing for the first player, dump its keys so
+    // we can see what shape Henrik actually returned.
+    logPlayerShapeOnce(players);
 
     const teams = Array.isArray(match.teams) ? match.teams : (match.teams ? Object.values(match.teams) : []);
     const totalRounds = roundCount(match) || 1;
@@ -726,22 +783,26 @@
       const resultClass = isWin ? 'win' : isLoss ? 'loss' : '';
       const rounds = g.rounds != null ? g.rounds : '';
 
-      const rows = g.players.map((p) => {
+      const rows = g.players.map((p, idx) => {
         const aid = (p.agent && p.agent.id) || p.character_id || '';
         const aname = (p.agent && p.agent.name) || p.character || '';
         const self = p.puuid === puuid;
         const s = p.stats || {};
         const acs = playerAcs(p, totalRounds);
         const hs = playerHsPct(p);
-        // Henrik shape changes — try every known location for player riot id.
-        // Some recent endpoints nest under riot_id { name, tag } or use
-        // gameName/tagLine instead of name/tag. Fall back through all of them
-        // so a single shape change doesn't blank the whole scoreboard.
-        const pName = p.name || p.gameName || (p.riot_id && p.riot_id.name) || (p.riot_id && p.riot_id.gameName) || '';
-        const pTag  = p.tag  || p.tagLine  || (p.riot_id && p.riot_id.tag)  || (p.riot_id && p.riot_id.tagLine)  || '';
-        const nameHtml = pName
-          ? `${esc(pName)}${pTag ? `<span class="sb-tag">#${esc(pTag)}</span>` : ''}`
-          : '<span class="sb-anon">Hidden</span>';
+
+        // Resolve player identity with every known shape; fall back to
+        // "Player N" + agent name so the row stays meaningful even when
+        // Henrik anonymises everyone.
+        const id = resolvePlayerIdentity(p);
+        let nameHtml;
+        if (id) {
+          nameHtml = `${esc(id.name)}${id.tag ? `<span class="sb-tag">#${esc(id.tag)}</span>` : ''}`;
+        } else {
+          const fallback = aname ? `${aname} player` : `Player ${idx + 1}`;
+          nameHtml = `<span class="sb-anon">${esc(fallback)}</span>`;
+        }
+
         return `
           <div class="val-sb-row ${self ? 'self' : ''}">
             ${aid ? `<img class="val-sb-agent" src="${esc(AGENT_CDN(aid))}" alt="${esc(aname)}" title="${esc(aname)}" loading="lazy" onerror="this.style.visibility='hidden'"/>` : '<div class="val-sb-agent"></div>'}
