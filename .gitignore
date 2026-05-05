@@ -12,3 +12,7 @@ build/
 
 # extension release zip — built fresh per release, not committed
 evzero-watchparty.zip
+
+# spice binaries — too large for git, hosted on GitHub Releases
+spice/*.zip
+spice/Spice-*/

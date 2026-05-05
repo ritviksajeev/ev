@@ -1,0 +1,7 @@
+{
+  "version": "0.1.3",
+  "channel": "alpha",
+  "url": "https://evzero.org/spice/Spice-v0.1.3-alpha-win-x64.zip",
+  "notes": "Initial public alpha release.",
+  "mandatory": false
+}

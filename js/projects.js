@@ -71,6 +71,27 @@
       cover: coverValorant(),
       actions: [{ label: 'Open tracker →', href: '../valorant/' }],
     },
+    'spice': {
+      title: 'spice',
+      meta: ['desktop app', 'electron + react', 'alpha · 2026'],
+      desc: [
+        'A hardware-level desktop overlay for gamers. Drops a transparent always-on-top layer on the monitor of your choice — center-locked crosshair, fully customizable preset shapes (or your own PNG/GIF), custom image library, and opt-in WASD/mouse visualizers.',
+        'Anti-cheat-conscious by default: no process injection, no game memory access, no synthetic input. The optional input mirror uses the same passive Win32 hook Discord and OBS use — fine for EAC/BattlEye, off by default for Vanguard.',
+        'Cyber-brutalist UI to match this site. Saves profiles, multi-monitor aware, system-tray resident, auto-update on launch.',
+      ],
+      files: [
+        'electron/main.cjs',
+        'electron/preload.cjs',
+        'src/app/App.tsx',
+        'README.md',
+        'CHANGELOG.md',
+      ],
+      cover: coverSpice(),
+      actions: [
+        { label: 'Open Spice page →', href: '../spice/' },
+        { label: 'Download v0.1.3-alpha →', href: 'https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip', external: true },
+      ],
+    },
     'mystery': {
       title: '???',
       meta: ['classified', 'wip', 'soon'],
@@ -92,7 +113,10 @@
     modalFiles.innerHTML = data.files.map((f) => `<div class="file-line">${f}</div>`).join('');
     modalCover.innerHTML = data.cover;
     modalActions.innerHTML = (data.actions || [])
-      .map((a) => `<a class="pm-btn" href="${a.href}" data-transition>${a.label}</a>`)
+      .map((a) => a.external
+        ? `<a class="pm-btn" href="${a.href}" download>${a.label}</a>`
+        : `<a class="pm-btn" href="${a.href}" data-transition>${a.label}</a>`
+      )
       .join('');
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -212,6 +236,45 @@
       </svg>
     `;
   }
+  function coverSpice() {
+    return `
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="spg" cx="0.5" cy="0.5" r="0.55">
+            <stop offset="0%" stop-color="rgba(167,139,250,0.18)"/>
+            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
+            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
+          </radialGradient>
+          <linearGradient id="spgs" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="250" fill="#050507"/>
+        <rect width="400" height="250" fill="url(#spg)"/>
+        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
+          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
+        </g>
+        <!-- Spice bracket mark -->
+        <g transform="translate(160 65) scale(5.45)" stroke="url(#spgs)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M2 8L2 2L8 2"/>
+          <path d="M14 2L20 2L20 8"/>
+          <path d="M2 14L2 20L8 20"/>
+          <path d="M14 20L20 20L20 14"/>
+        </g>
+        <g transform="translate(160 65) scale(5.45)" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round">
+          <line x1="11" y1="7"    x2="11" y2="9.5"/>
+          <line x1="11" y1="12.5" x2="11" y2="15"/>
+          <line x1="7"  y1="11"   x2="9.5"  y2="11"/>
+          <line x1="12.5" y1="11" x2="15" y2="11"/>
+        </g>
+        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">SPICE</text>
+        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// OVERLAY</text>
+      </svg>
+    `;
+  }
+
   function coverMystery() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
@@ -239,6 +302,7 @@
       case 'cat':      svg = coverCat(); break;
       case 'watch':    svg = coverWatch(); break;
       case 'valorant': svg = coverValorant(); break;
+      case 'spice':    svg = coverSpice(); break;
       case 'mystery':  svg = coverMystery(); break;
       default:         svg = coverWave(color);
     }
