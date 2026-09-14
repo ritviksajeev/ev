@@ -2,9 +2,35 @@
   "cleanUrls": true,
   "trailingSlash": true,
   "redirects": [
-    { "source": "/projects", "destination": "/projects/", "permanent": true },
-    { "source": "/solren",   "destination": "/solren/",   "permanent": true },
-    { "source": "/contact",  "destination": "/contact/",  "permanent": true },
-    { "source": "/watchparty", "destination": "/watchparty/", "permanent": true }
+    {
+      "source": "/projects",
+      "destination": "/projects/",
+      "permanent": true
+    },
+    {
+      "source": "/solren",
+      "destination": "/solren/",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/contact/",
+      "permanent": true
+    },
+    {
+      "source": "/watchparty",
+      "destination": "/watchparty/",
+      "permanent": true
+    },
+    {
+      "source": "/ais",
+      "destination": "/ais/",
+      "permanent": true
+    },
+    {
+      "source": "/spice",
+      "destination": "/spice/",
+      "permanent": true
+    }
   ]
 }
