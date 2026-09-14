@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "channel": "alpha",
+  "repo": "https://github.com/ritviksajeev/ais",
+  "tag": "v0.1.0-alpha",
+  "source": "https://github.com/ritviksajeev/ais/archive/refs/tags/v0.1.0-alpha.tar.gz",
+  "notes": "First public alpha. Full pipeline plus the 10-scenario evaluation.",
+  "requires": { "python": ">=3.11", "docker": true }
+}

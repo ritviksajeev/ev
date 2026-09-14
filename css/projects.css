@@ -398,3 +398,8 @@
   .project-modal { padding: 16px; }
   .project-modal-cover { height: 160px; }
 }
+
+/* AiS is written with a deliberate lowercase i. Project names are otherwise
+   uppercased across the grid, which would render it "AIS". */
+.project-card[data-project="ais"] .project-title,
+.project-modal[data-project="ais"] .pm-title { text-transform: none; }

@@ -92,6 +92,27 @@
         { label: 'Download v0.1.3-alpha →', href: 'https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip', external: true },
       ],
     },
+    'ais': {
+      title: 'AiS',
+      meta: ['research prototype', 'python + docker', 'alpha · 2026'],
+      desc: [
+        'Agent-in-Sandbox. AI coding agents are increasingly handed write access to real files, which makes a hijacked one look exactly like a working one until after it has written. AiS takes the filesystem away entirely.',
+        'The agent proposes a change against a filename &mdash; no path, no handle. The change is applied to a disposable copy inside a locked-down container and actually executed there, while a Python audit hook records every network call, file write and process spawn, and names the line responsible. A human sees the diff and what the code really did, side by side, and nothing reaches a real file until they approve.',
+        'Evaluated on ten scripted edits, seven deliberately hostile: 100% caught, 0% false positives, ~0.4s per verification. The interesting one breaks the code and edits the test that would catch it &mdash; every test passes, and it still gets flagged.',
+      ],
+      files: [
+        'ais/mediator/mediator.py',
+        'ais/sandbox/tracer.py',
+        'ais/verifier/rules.py',
+        'ais/audit/log.py',
+        'demo.py',
+      ],
+      cover: coverAis(),
+      actions: [
+        { label: 'Open AiS page \u2192', href: '../ais/' },
+        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/ais', external: true },
+      ],
+    },
     'mystery': {
       title: '???',
       meta: ['classified', 'wip', 'soon'],
@@ -107,6 +128,9 @@
   function openModal(id) {
     const data = PROJECTS[id];
     if (!data) return;
+    // Expose which project is open so a name with deliberate casing (AiS) can
+    // opt out of the grid's uppercase treatment.
+    modal.dataset.project = id;
     modalTitle.textContent = data.title;
     modalMeta.innerHTML = data.meta.map((m) => `<span>${m}</span>`).join('');
     modalDesc.innerHTML = data.desc.map((p) => `<p>${p}</p>`).join('');
@@ -275,6 +299,50 @@
     `;
   }
 
+  function coverAis() {
+    return `
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="aisg" cx="0.5" cy="0.5" r="0.6">
+            <stop offset="0%" stop-color="rgba(167,139,250,0.16)"/>
+            <stop offset="60%" stop-color="rgba(167,139,250,0.035)"/>
+            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
+          </radialGradient>
+          <linearGradient id="aisgs" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="250" fill="#050507"/>
+        <rect width="400" height="250" fill="url(#aisg)"/>
+        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
+          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
+        </g>
+        <!-- containment: an agent boxed in, with the boundary holding -->
+        <rect x="139" y="64" width="122" height="122" rx="6" fill="none" stroke="url(#aisgs)" stroke-width="2"/>
+        <rect x="163" y="88" width="74" height="74" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.2" opacity="0.5"/>
+        <circle cx="200" cy="125" r="11" fill="#a78bfa" opacity="0.9"/>
+        <circle cx="200" cy="125" r="20" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.35"/>
+        <!-- escape attempts, stopped at the wall -->
+        <g stroke="#f87171" stroke-width="1.6" stroke-linecap="round">
+          <line x1="200" y1="105" x2="200" y2="72"/>
+          <line x1="200" y1="145" x2="200" y2="178"/>
+          <line x1="180" y1="125" x2="147" y2="125"/>
+          <line x1="220" y1="125" x2="253" y2="125"/>
+        </g>
+        <g fill="#f87171">
+          <circle cx="200" cy="66" r="2.6"/>
+          <circle cx="200" cy="184" r="2.6"/>
+          <circle cx="141" cy="125" r="2.6"/>
+          <circle cx="259" cy="125" r="2.6"/>
+        </g>
+        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">AiS</text>
+        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// SANDBOX</text>
+      </svg>
+    `;
+  }
+
   function coverMystery() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
@@ -303,6 +371,7 @@
       case 'watch':    svg = coverWatch(); break;
       case 'valorant': svg = coverValorant(); break;
       case 'spice':    svg = coverSpice(); break;
+      case 'ais':      svg = coverAis(); break;
       case 'mystery':  svg = coverMystery(); break;
       default:         svg = coverWave(color);
     }

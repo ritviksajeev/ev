@@ -8,10 +8,14 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 
 | URL                  | Source                  |
 |----------------------|-------------------------|
-| `evzero.org`         | `index.html`            |
-| `/projects`          | `projects/index.html`   |
-| `/solren`            | `solren/index.html`     |
-| `/contact`           | `contact/index.html`    |
+| `evzero.org`         | `index.html`              |
+| `/projects`          | `projects/index.html`     |
+| `/solren`            | `solren/index.html`       |
+| `/contact`           | `contact/index.html`      |
+| `/watchparty`        | `watchparty/index.html`   |
+| `/valorant`          | `valorant/index.html`     |
+| `/spice`             | `spice/index.html`        |
+| `/ais`               | `ais/index.html`          |
 
 ## File layout
 
@@ -44,6 +48,19 @@ website-evzero/
 ├── vercel.json             ← Vercel clean-URL config
 └── README.md
 ```
+
+## Project pages
+
+`/spice` and `/ais` are landing pages only — the applications themselves live in
+their own repositories:
+
+| Page    | Source repo                                   |
+|---------|-----------------------------------------------|
+| `/spice`| <https://github.com/ritviksajeev/spice>       |
+| `/ais`  | <https://github.com/ritviksajeev/ais>         |
+
+Each keeps a `latest.json` next to its page with the current version, so the
+page and the release can be kept in step without editing markup.
 
 ## Notes & TODOs
 
