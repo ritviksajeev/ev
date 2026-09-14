@@ -319,23 +319,27 @@
           ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
           ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
         </g>
-        <!-- containment: an agent boxed in, with the boundary holding -->
-        <rect x="139" y="64" width="122" height="122" rx="6" fill="none" stroke="url(#aisgs)" stroke-width="2"/>
-        <rect x="163" y="88" width="74" height="74" rx="4" fill="none" stroke="#a78bfa" stroke-width="1.2" opacity="0.5"/>
-        <circle cx="200" cy="125" r="11" fill="#a78bfa" opacity="0.9"/>
-        <circle cx="200" cy="125" r="20" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.35"/>
-        <!-- escape attempts, stopped at the wall -->
-        <g stroke="#f87171" stroke-width="1.6" stroke-linecap="round">
-          <line x1="200" y1="105" x2="200" y2="72"/>
-          <line x1="200" y1="145" x2="200" y2="178"/>
-          <line x1="180" y1="125" x2="147" y2="125"/>
-          <line x1="220" y1="125" x2="253" y2="125"/>
-        </g>
-        <g fill="#f87171">
-          <circle cx="200" cy="66" r="2.6"/>
-          <circle cx="200" cy="184" r="2.6"/>
-          <circle cx="141" cy="125" r="2.6"/>
-          <circle cx="259" cy="125" r="2.6"/>
+        <!-- The shield is the boundary; the box inside it is the sandbox; the dot
+             is the agent. The red rays are escape attempts, stopped at the wall. -->
+        <g transform="translate(200 128) scale(6.6) translate(-11 -11.1)">
+          <path d="M11 2.4 L19 5.3 V11.2 C19 15.5 15.6 18.5 11 19.8 C6.4 18.5 3 15.5 3 11.2 V5.3 Z"
+                fill="none" stroke="url(#aisgs)" stroke-width="0.95" stroke-linejoin="round"/>
+          <rect x="7.4" y="7.2" width="7.2" height="7.2" rx="1.3"
+                fill="none" stroke="#a78bfa" stroke-width="0.6" opacity="0.5"/>
+          <circle cx="11" cy="10.8" r="1.5" fill="#a78bfa"/>
+          <circle cx="11" cy="10.8" r="2.7" fill="none" stroke="#a78bfa" stroke-width="0.35" opacity="0.4"/>
+          <g stroke="#f87171" stroke-width="0.5" stroke-linecap="round">
+            <line x1="11" y1="8.6"  x2="11"   y2="4.6"/>
+            <line x1="11" y1="13"   x2="11"   y2="17.2"/>
+            <line x1="8.8" y1="10.8" x2="4.7" y2="10.8"/>
+            <line x1="13.2" y1="10.8" x2="17.3" y2="10.8"/>
+          </g>
+          <g fill="#f87171">
+            <circle cx="11" cy="4.2" r="0.7"/>
+            <circle cx="11" cy="17.6" r="0.7"/>
+            <circle cx="4.3" cy="10.8" r="0.7"/>
+            <circle cx="17.7" cy="10.8" r="0.7"/>
+          </g>
         </g>
         <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">AiS</text>
         <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// SANDBOX</text>
