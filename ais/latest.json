@@ -1,10 +1,10 @@
 {
-  "version": "0.1.2",
+  "version": "0.1.3",
   "channel": "alpha",
   "repo": "https://github.com/ritviksajeev/ais",
-  "tag": "v0.1.2-alpha",
-  "source": "https://github.com/ritviksajeev/ais/archive/refs/tags/v0.1.2-alpha.tar.gz",
-  "notes": "Runs on Linux, macOS and Windows. Adds a guard that refuses to execute a destructive edit on a backend that cannot contain it.",
+  "tag": "v0.1.3-alpha",
+  "source": "https://github.com/ritviksajeev/ais/archive/refs/tags/v0.1.3-alpha.tar.gz",
+  "notes": "Adds a browser review surface (--ui) and a red-team campaign (--redteam) that generates novel attacks and scores the Verifier blind. Closes four detection gaps the first campaign found, and fixes a Windows bug that shredded the sandbox write allowlist.",
   "requires": {
     "python": ">=3.11",
     "docker": true

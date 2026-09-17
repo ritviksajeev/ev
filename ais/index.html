@@ -57,7 +57,7 @@
               <span class="ais-name">AiS</span>
             </h1>
             <div class="ais-version-row reveal d2">
-              <span class="ais-version-pill">v0.1.2-alpha</span>
+              <span class="ais-version-pill">v0.1.3-alpha</span>
               <span class="ais-meta-pill">Python 3.11+</span>
               <span class="ais-meta-pill">Docker</span>
               <span class="ais-meta-pill">Linux &middot; macOS &middot; Windows</span>
@@ -74,7 +74,7 @@
                 <svg viewBox="0 0 24 24" fill="currentColor" width="17" height="17"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
                 <span>
                   <span class="ais-btn-line">SOURCE ON GITHUB</span>
-                  <span class="ais-btn-sub">ritviksajeev/ais · v0.1.2-alpha · MIT</span>
+                  <span class="ais-btn-sub">ritviksajeev/ais · v0.1.3-alpha · MIT</span>
                 </span>
               </a>
               <a href="#run" class="ais-btn ghost">
@@ -199,9 +199,9 @@
         </div>
 
         <div class="ais-pill-row reveal d5">
-          <span class="ais-pill">18 detection rules</span>
+          <span class="ais-pill">19 detection rules</span>
           <span class="ais-pill">append-only hash-chained audit log</span>
-          <span class="ais-pill">215 tests</span>
+          <span class="ais-pill">346 tests</span>
           <span class="ais-pill">~0.4s per verification</span>
         </div>
       </div>
@@ -261,9 +261,12 @@
           <div class="ais-honest-mark">!</div>
           <div>
             <b>Read that 100% carefully.</b> Ten scenarios, authored by the same person who wrote the rules
-            they exercise. That measures internal consistency, not robustness. Turning it into a real
-            benchmark — an attacker that mutates its approach when caught — is the next milestone, and
-            the most important one.
+            they exercise — that measures internal consistency, not robustness. So the adversary got built.
+            <code>--redteam</code> generates edits against the sample project rather than against the rule
+            list and scores them blind, and it is allowed to fail. It found <b>five real gaps</b>. Four are
+            now closed and the campaign scores <b>92%</b>; the one that remains is structural — a wrong value
+            on an input range no test exercises is invisible to a verifier that judges behaviour, and there
+            is a test pinning it open so the claim cannot quietly drift.
           </div>
         </div>
       </div>
@@ -305,13 +308,15 @@ pip install -r requirements.txt</pre>
         </div>
 
         <div class="ais-cmd-table reveal d5">
-          <div class="ais-cmd-row"><code>python demo.py --rules</code><span>the 18 detection rules and what each looks for</span></div>
+          <div class="ais-cmd-row"><code>python demo.py --rules</code><span>the 19 detection rules and what each looks for</span></div>
           <div class="ais-cmd-row"><code>python demo.py</code><span>review all ten by hand</span></div>
           <div class="ais-cmd-row"><code>python demo.py --eval</code><span>full evaluation, writes EVAL.md</span></div>
+          <div class="ais-cmd-row"><code>python demo.py --ui</code><span>review in a browser instead of the terminal</span></div>
+          <div class="ais-cmd-row"><code>python demo.py --redteam</code><span>generate novel attacks, score blind, writes REDTEAM.md</span></div>
           <div class="ais-cmd-row"><code>python demo.py --audit</code><span>the audit trail, and verify its hash chain</span></div>
           <div class="ais-cmd-row"><code>python demo.py --log</code><span>git history — rejected edits left no commits</span></div>
           <div class="ais-cmd-row"><code>python demo.py --backend local</code><span>no-Docker fallback (<b>not isolated</b>)</span></div>
-          <div class="ais-cmd-row"><code>pytest</code><span>215 tests, no Docker needed</span></div>
+          <div class="ais-cmd-row"><code>python -m pytest</code><span>346 tests, no Docker needed</span></div>
         </div>
 
         <div class="ais-bottom-cta reveal d6">
@@ -319,7 +324,7 @@ pip install -r requirements.txt</pre>
             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
             <span>
               <span class="ais-btn-line">READ THE SOURCE</span>
-              <span class="ais-btn-sub">github.com/ritviksajeev/ais · v0.1.2-alpha</span>
+              <span class="ais-btn-sub">github.com/ritviksajeev/ais · v0.1.3-alpha</span>
             </span>
           </a>
         </div>
