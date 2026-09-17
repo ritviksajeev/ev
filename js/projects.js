@@ -132,7 +132,7 @@
       cover: coverQuickres(),
       actions: [
         { label: 'Open QuickRes page \u2192', href: '../quickres/' },
-        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/quickres', external: true },
+        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/Qres', external: true },
       ],
     },
     'mystery': {
