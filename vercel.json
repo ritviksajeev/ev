@@ -31,6 +31,11 @@
       "source": "/spice",
       "destination": "/spice/",
       "permanent": true
+    },
+    {
+      "source": "/quickres",
+      "destination": "/quickres/",
+      "permanent": true
     }
   ]
 }
