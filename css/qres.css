@@ -147,10 +147,7 @@
 .qr-mock {
   width: 100%;
   max-width: 330px;
-  /* Frosted, like the app itself - the page's grid reads through it. */
-  background: rgba(8, 8, 11, 0.66);
-  backdrop-filter: blur(22px) saturate(120%);
-  -webkit-backdrop-filter: blur(22px) saturate(120%);
+  background: var(--bg-0);
   border: 1px solid var(--white-line);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -192,11 +189,6 @@
   background: var(--white-faint);
 }
 .qr-mock-tools span:nth-child(2)::after {
-  width: 7px; height: 7px;
-  background: none;
-  border: 1px solid var(--white-faint);
-}
-.qr-mock-tools span:nth-child(3)::after {
   width: 8px; height: 8px;
   background: none;
   background-image:
@@ -371,24 +363,27 @@
   padding: 0 12px;
 }
 .qr-mock-key {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--white-dim);
-  padding: 8px 20px 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 8px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--white-line);
   border-radius: var(--radius-sm);
-  position: relative;
 }
-.qr-mock-key::after {
-  content: "";
-  position: absolute;
-  right: 9px; top: 50%;
-  width: 4px; height: 4px;
-  margin-top: -3px;
-  border-right: 1.2px solid var(--white-faint);
-  border-bottom: 1.2px solid var(--white-faint);
-  transform: rotate(45deg);
+.qr-mock-key b {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-bottom-width: 2px;
+  border-radius: 2px;
+  padding: 2px 4px 1px;
+  line-height: 1;
 }
 .qr-mock-btn {
   flex: 1;
