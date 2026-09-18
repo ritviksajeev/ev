@@ -16,6 +16,7 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 | `/valorant`          | `valorant/index.html`     |
 | `/spice`             | `spice/index.html`        |
 | `/ais`               | `ais/index.html`          |
+| `/qres`          | `qres/index.html`     |
 
 ## File layout
 
@@ -25,11 +26,13 @@ website-evzero/
 ├── projects/index.html     ← shop-style project grid + modal
 ├── solren/index.html       ← esports team, tabbed by game
 ├── contact/index.html      ← discord + email
+├── qres/index.html     ← Qres landing page
 ├── css/
 │   ├── common.css          ← theme, nav, cat, cursor, scroll
 │   ├── home.css
 │   ├── projects.css
 │   ├── solren.css
+│   ├── qres.css
 │   └── contact.css
 ├── js/
 │   ├── common.js           ← cursor, starfield, section observer, page curtain

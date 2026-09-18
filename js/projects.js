@@ -113,6 +113,28 @@
         { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/ais', external: true },
       ],
     },
+    'qres': {
+      title: 'Qres',
+      meta: ['desktop app', 'electron + win32', '2026'],
+      desc: [
+        'Press a key. Your resolution changes. Press it again, it changes back. Built for stretched-res players tired of walking through the Windows display settings every time they switch games.',
+        'The quick grid is generated from the modes your panel actually reports \u2014 native, the stretched widths that keep its vertical lines, and same-shape lower resolutions. Refresh rate comes along for the ride: leave it on <em>highest available</em> and dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60.',
+        'Game profiles switch on a process launching and restore native when it exits. Changes made in the window revert themselves after 15 seconds if you never confirm, so a mode your monitor can\'t display never leaves you on a black screen \u2014 while hotkey switches skip the dialog, because nothing should land on top of your game.',
+        'No native node module and no committed binary: the Win32 layer is a small C# CLI the app compiles on first run with the csc.exe already inside Windows, then caches. Same purple as this site, in light and dark.',
+      ],
+      files: [
+        'native/QresDisplay.cs',
+        'electron/main.cjs',
+        'electron/display.cjs',
+        'src/App.tsx',
+        'README.md',
+      ],
+      cover: coverQres(),
+      actions: [
+        { label: 'Open Qres page \u2192', href: '../qres/' },
+        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/Qres', external: true },
+      ],
+    },
     'mystery': {
       title: '???',
       meta: ['classified', 'wip', 'soon'],
@@ -347,6 +369,41 @@
     `;
   }
 
+  function coverQres() {
+    return `
+      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="qrg" cx="0.5" cy="0.5" r="0.58">
+            <stop offset="0%" stop-color="rgba(167,139,250,0.18)"/>
+            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
+            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
+          </radialGradient>
+          <linearGradient id="qrgs" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#a78bfa"/>
+            <stop offset="100%" stop-color="#5b21b6"/>
+          </linearGradient>
+        </defs>
+        <rect width="400" height="250" fill="#050507"/>
+        <rect width="400" height="250" fill="url(#qrg)"/>
+        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
+          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
+          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
+        </g>
+        <!-- The panel, the 4:3 crop inside it, and the arrow that squeezes one
+             into the other - the whole app in one glyph. -->
+        <rect x="112" y="76" width="176" height="99" rx="7" fill="none" stroke="url(#qrgs)" stroke-width="2.4"/>
+        <rect x="145" y="76" width="110" height="99" fill="none" stroke="rgba(167,139,250,0.34)" stroke-width="1.2" stroke-dasharray="4 4"/>
+        <g stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <line x1="152" y1="125.5" x2="248" y2="125.5"/>
+          <path d="M160 117.5 L152 125.5 L160 133.5"/>
+          <path d="M240 117.5 L248 125.5 L240 133.5"/>
+        </g>
+        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">QRES</text>
+        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// F6</text>
+      </svg>
+    `;
+  }
+
   function coverMystery() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
@@ -376,6 +433,7 @@
       case 'valorant': svg = coverValorant(); break;
       case 'spice':    svg = coverSpice(); break;
       case 'ais':      svg = coverAis(); break;
+      case 'qres': svg = coverQres(); break;
       case 'mystery':  svg = coverMystery(); break;
       default:         svg = coverWave(color);
     }
