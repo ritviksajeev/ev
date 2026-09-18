@@ -4,14 +4,14 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="QuickRes — change your monitor resolution and refresh rate from a hotkey. By EvZero."/>
-  <title>EvZero / QuickRes</title>
+  <meta name="description" content="Qres — change your monitor resolution and refresh rate from a hotkey. By EvZero."/>
+  <title>EvZero / Qres</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../css/common.css"/>
-  <link rel="stylesheet" href="../css/quickres.css"/>
+  <link rel="stylesheet" href="../css/qres.css"/>
 </head>
 <body>
 
@@ -44,7 +44,7 @@
       <div class="section-inner">
         <div class="qr-hero-grid">
           <div class="qr-hero-left">
-            <div class="eyebrow reveal">Projects / QuickRes</div>
+            <div class="eyebrow reveal">Projects / Qres</div>
             <h1 class="display-xl reveal d1">
               <span class="qr-mark" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -53,7 +53,7 @@
                   <path d="M8.6 9.6 6 12l2.6 2.4M15.4 9.6 18 12l-2.6 2.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-              <span class="qr-name">QUICKRES</span>
+              <span class="qr-name">QRES</span>
             </h1>
             <div class="qr-pill-row reveal d2">
               <span class="qr-pill accent">v1.0.0</span>
@@ -80,7 +80,7 @@
               </a>
             </div>
             <div class="qr-cta-note reveal d6">
-              No admin needed · Settings live in <code>%APPDATA%\QuickRes\</code>
+              No admin needed · Settings live in <code>%APPDATA%\Qres\</code>
             </div>
           </div>
 
@@ -94,7 +94,7 @@
                     <path d="M8.2 12h7.6" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round"/>
                     <path d="M8.6 9.6 6 12l2.6 2.4M15.4 9.6 18 12l-2.6 2.4" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  <span class="qr-mock-name">QuickRes</span>
+                  <span class="qr-mock-name">Qres</span>
                   <span class="qr-mock-ver">v1.0.0</span>
                 </div>
                 <div class="qr-mock-tools"><span></span><span></span><span></span></div>
@@ -151,19 +151,19 @@
           <div class="qr-feat reveal d3">
             <div class="qr-feat-num">02</div>
             <h3>Refresh rate, done right</h3>
-            <p>Every change carries a rate. Leave it on <em>Highest available</em> and QuickRes asks for the fastest rate <strong>at that resolution</strong> &mdash; so dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60. Or pin one.</p>
+            <p>Every change carries a rate. Leave it on <em>Highest available</em> and Qres asks for the fastest rate <strong>at that resolution</strong> &mdash; so dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60. Or pin one.</p>
           </div>
 
           <div class="qr-feat reveal d4">
             <div class="qr-feat-num">03</div>
             <h3>Grid built from your panel</h3>
-            <p>No hardcoded list. QuickRes enumerates every mode your display reports and lays out the useful ones: native, the stretched widths that keep your vertical lines, and same-shape lower resolutions.</p>
+            <p>No hardcoded list. Qres enumerates every mode your display reports and lays out the useful ones: native, the stretched widths that keep your vertical lines, and same-shape lower resolutions.</p>
           </div>
 
           <div class="qr-feat reveal d5">
             <div class="qr-feat-num">04</div>
             <h3>Game profiles</h3>
-            <p>Name a process and a resolution. QuickRes switches when the game launches and restores native when it exits. No hotkey, no thinking. Presets for Valorant, CS2, Apex, Fortnite, Overwatch and more.</p>
+            <p>Name a process and a resolution. Qres switches when the game launches and restores native when it exits. No hotkey, no thinking. Presets for Valorant, CS2, Apex, Fortnite, Overwatch and more.</p>
           </div>
 
           <div class="qr-feat reveal d6">
@@ -187,7 +187,7 @@
         <div class="eyebrow reveal">02 / Under the hood</div>
         <h2 class="display-md reveal d1">No native<br/><span class="accent">module.</span></h2>
         <p class="qr-lead reveal d2">
-          Node can't call Win32 display APIs on its own, and shipping a prebuilt binary or a native addon means an ABI to keep matched forever. QuickRes takes a third route.
+          Node can't call Win32 display APIs on its own, and shipping a prebuilt binary or a native addon means an ABI to keep matched forever. Qres takes a third route.
         </p>
 
         <div class="qr-how-grid">
@@ -195,7 +195,7 @@
             <div class="qr-how-num">01</div>
             <div>
               <div class="qr-how-title">A 500-line C# CLI</div>
-              <p><code>native/QuickResDisplay.cs</code> enumerates displays and applies modes through <code>ChangeDisplaySettingsEx</code>, printing JSON.</p>
+              <p><code>native/QresDisplay.cs</code> enumerates displays and applies modes through <code>ChangeDisplaySettingsEx</code>, printing JSON.</p>
             </div>
           </div>
           <div class="qr-how-step reveal d4">
@@ -217,7 +217,7 @@
         <div class="qr-ac reveal d6">
           <div class="qr-ac-head">Anti-cheat</div>
           <p>
-            QuickRes calls the same Windows API the Settings app uses. Nothing is injected into any process, no game memory is read, no input is synthesised. The global hotkey is an OS-level key reservation, not a keyboard hook. There is nothing here for EAC, BattlEye or Vanguard to object to.
+            Qres calls the same Windows API the Settings app uses. Nothing is injected into any process, no game memory is read, no input is synthesised. The global hotkey is an OS-level key reservation, not a keyboard hook. There is nothing here for EAC, BattlEye or Vanguard to object to.
           </p>
         </div>
       </div>
@@ -229,7 +229,7 @@
         <div class="eyebrow reveal">03 / One thing to set</div>
         <h2 class="display-md reveal d1">GPU scaling,<br/><span class="accent">once.</span></h2>
         <p class="qr-lead reveal d2">
-          QuickRes sets the resolution. Whether the picture fills your panel or sits in black bars is your GPU's scaling setting &mdash; no application can change that for you. Set it once and forget it.
+          Qres sets the resolution. Whether the picture fills your panel or sits in black bars is your GPU's scaling setting &mdash; no application can change that for you. Set it once and forget it.
         </p>
 
         <div class="qr-gpu-grid">
@@ -250,7 +250,7 @@
         <div class="qr-sysreq reveal d6">
           <div class="qr-sysreq-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64)</span></div>
           <div class="qr-sysreq-row"><span class="k">PERMS</span><span class="v">No admin. No code-signing yet &rarr; SmartScreen may warn on first run · "More info &rarr; Run anyway".</span></div>
-          <div class="qr-sysreq-row"><span class="k">CONFIG</span><span class="v"><code>%APPDATA%\QuickRes\quickres.json</code> · safe to delete</span></div>
+          <div class="qr-sysreq-row"><span class="k">CONFIG</span><span class="v"><code>%APPDATA%\Qres\qres.json</code> · safe to delete</span></div>
           <div class="qr-sysreq-row"><span class="k">LICENSE</span><span class="v">MIT · source is on GitHub</span></div>
         </div>
 
@@ -258,7 +258,7 @@
           <a href="https://github.com/ritviksajeev/Qres/releases" class="qr-btn primary big" target="_blank" rel="noreferrer noopener">
             <span class="qr-btn-arrow">&darr;</span>
             <span>
-              <span class="qr-btn-line">DOWNLOAD QUICKRES v1.0.0</span>
+              <span class="qr-btn-line">DOWNLOAD QRES v1.0.0</span>
               <span class="qr-btn-sub">Windows x64 · installer or portable zip</span>
             </span>
           </a>
@@ -268,7 +268,7 @@
 
   </main>
 
-  <div class="footer-mini">evzero.org / quickres</div>
+  <div class="footer-mini">evzero.org / qres</div>
   <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
 
   <script src="../js/common.js"></script>

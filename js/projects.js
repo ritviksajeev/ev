@@ -113,8 +113,8 @@
         { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/ais', external: true },
       ],
     },
-    'quickres': {
-      title: 'QuickRes',
+    'qres': {
+      title: 'Qres',
       meta: ['desktop app', 'electron + win32', '2026'],
       desc: [
         'Press a key. Your resolution changes. Press it again, it changes back. Built for stretched-res players tired of walking through the Windows display settings every time they switch games.',
@@ -123,15 +123,15 @@
         'No native node module and no committed binary: the Win32 layer is a small C# CLI the app compiles on first run with the csc.exe already inside Windows, then caches. Same purple as this site, in light and dark.',
       ],
       files: [
-        'native/QuickResDisplay.cs',
+        'native/QresDisplay.cs',
         'electron/main.cjs',
         'electron/display.cjs',
         'src/App.tsx',
         'README.md',
       ],
-      cover: coverQuickres(),
+      cover: coverQres(),
       actions: [
-        { label: 'Open QuickRes page \u2192', href: '../quickres/' },
+        { label: 'Open Qres page \u2192', href: '../qres/' },
         { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/Qres', external: true },
       ],
     },
@@ -369,7 +369,7 @@
     `;
   }
 
-  function coverQuickres() {
+  function coverQres() {
     return `
       <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -398,7 +398,7 @@
           <path d="M160 117.5 L152 125.5 L160 133.5"/>
           <path d="M240 117.5 L248 125.5 L240 133.5"/>
         </g>
-        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">QUICKRES</text>
+        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">QRES</text>
         <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// F6</text>
       </svg>
     `;
@@ -433,7 +433,7 @@
       case 'valorant': svg = coverValorant(); break;
       case 'spice':    svg = coverSpice(); break;
       case 'ais':      svg = coverAis(); break;
-      case 'quickres': svg = coverQuickres(); break;
+      case 'qres': svg = coverQres(); break;
       case 'mystery':  svg = coverMystery(); break;
       default:         svg = coverWave(color);
     }
