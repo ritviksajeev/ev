@@ -304,6 +304,11 @@
   gap: 18px;
   margin-top: 36px;
 }
+/* Seven steps into a 3- or 2-column grid orphans the last one; the human
+   decision is the point of the pipeline, so it takes the full row instead. */
+.ais-flow-step.span-all { grid-column: 1 / -1; }
+.ais-flow-step.span-all .ais-flow-title { color: var(--purple-bright); }
+
 .ais-flow-step {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
