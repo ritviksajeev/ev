@@ -6,14 +6,29 @@
   <meta name="theme-color" content="#050507"/>
   <meta name="description" content="EvZero — projects and experiments."/>
   <title>EvZero / Projects</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(!sessionStorage.getItem('evz-visited'))h.classList.add('first-visit')}catch(e){}setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css"/>
-  <link rel="stylesheet" href="../css/projects.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css?v=2.1"/>
+  <link rel="stylesheet" href="../css/projects.css?v=2.1"/>
 </head>
 <body>
+
+  <!-- Loader (first visit) / page curtain -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-meta"><b>evzero</b><span>( Projects &mdash; <span data-year>2026</span> )</span></div>
+    <div class="loader-count">
+      <div class="loader-roll">
+        <span class="lr-word">Loading&hellip;</span>
+        <span class="lr-num"><b data-loader-num>0</b><i>%</i></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="loader-bar"><span data-loader-bar></span></div>
+    <div class="loader-brand">evzero</div>
+  </div>
 
   <!-- Background -->
   <div class="bg-layer" aria-hidden="true">
@@ -24,34 +39,50 @@
   </div>
 
   <!-- Nav -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary">
     <div class="nav-inner">
       <a href="../" class="nav-brand" data-transition>evzero</a>
       <ul class="nav-links">
-        <li><a href="../" data-transition>Home</a></li>
-        <li><a href="./" class="active" data-transition>Projects</a></li>
-        <li><a href="../solren/" data-transition>Solren</a></li>
-        <li><a href="../contact/" data-transition>Contact</a></li>
+        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
+        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
+        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
+        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
       </ul>
-      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+      <div class="nav-right">
+        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
+      </div>
     </div>
   </nav>
 
   <div class="section-indicator" aria-hidden="true"></div>
 
-  <main class="page">
+  <div class="panels">
+  <main class="page panel-group">
 
-    <section class="section" data-event="projects-head">
-      <div class="section-inner">
-        <div class="projects-head">
-          <div class="eyebrow centered reveal">Shop / Workshop</div>
-          <h1 class="display-lg reveal d1">The<br/><span class="accent">Workshop</span></h1>
-          <p class="reveal d2">A small shelf of side projects and experiments.</p>
+    <!-- HERO -->
+    <section class="section hero page-hero panel" data-event="projects-head">
+      <div class="ph">
+        <div class="ph-top intro-fade" style="--id: 0.45s"><span><i class="dot"></i>( Shop / Workshop )</span><span>08 projects</span></div>
+        <h1 class="ph-title">
+          <span class="sr-only">The Workshop</span>
+          <span class="line-mask" aria-hidden="true"><span class="line">The</span></span>
+          <span class="line-mask" aria-hidden="true"><span class="line accent">Workshop</span></span>
+        </h1>
+        <div class="ph-bottom intro-fade" style="--id: 0.8s">
+          <p class="ph-lead">A small shelf of side projects and experiments.</p>
+          <span>Click a tile to open &darr;</span>
         </div>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <section class="section projects-sec panel" data-event="projects-grid">
+      <div class="section-inner">
+        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Index)</span><span>2024 &mdash; <span data-year>2026</span></span></div>
 
         <div class="projects-grid">
 
-          <div class="project-card" data-cat="wip" data-project="evzero-org" data-cover-type="wave" data-cover-color="#8b5cf6">
+          <div class="project-card reveal" data-cat="wip" data-project="evzero-org" data-cover-type="wave" data-cover-color="#8b5cf6" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge wip">In dev</span>
               <span class="project-price">v1.1</span>
@@ -59,7 +90,7 @@
             <div class="project-body">
               <div class="project-index">/ 01</div>
               <div class="project-title">evzero.org</div>
-              <div class="project-desc">Personal site with snap-scroll sections, a pixel cat, and obsessive purple theming. Built from scratch.</div>
+              <div class="project-desc">Personal site with smooth-scroll sections, a pixel cat, and obsessive purple theming. Built from scratch.</div>
               <div class="project-tags"><span>html</span><span>css</span><span>js</span></div>
               <div class="project-foot">
                 <span class="project-year">2026</span>
@@ -68,7 +99,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="live" data-project="pixel-cat" data-cover-type="cat">
+          <div class="project-card reveal d1" data-cat="live" data-project="pixel-cat" data-cover-type="cat" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge live">Shipped</span>
               <span class="project-price">Open</span>
@@ -85,7 +116,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="live" data-project="watchparty" data-cover-type="watch">
+          <div class="project-card reveal" data-cat="live" data-project="watchparty" data-cover-type="watch" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge live">Shipped</span>
               <span class="project-price">Live</span>
@@ -102,7 +133,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="wip" data-project="valorant-tracker" data-cover-type="valorant">
+          <div class="project-card reveal d1" data-cat="wip" data-project="valorant-tracker" data-cover-type="valorant" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge wip">In dev</span>
               <span class="project-price">v0.1</span>
@@ -119,7 +150,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="live" data-project="spice" data-cover-type="spice">
+          <div class="project-card reveal" data-cat="live" data-project="spice" data-cover-type="spice" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge live">Alpha</span>
               <span class="project-price">v0.1.3</span>
@@ -136,7 +167,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="live" data-project="ais" data-cover-type="ais">
+          <div class="project-card reveal d1" data-cat="live" data-project="ais" data-cover-type="ais" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge live">Alpha</span>
               <span class="project-price">v0.1.4</span>
@@ -153,7 +184,7 @@
             </div>
           </div>
 
-          <div class="project-card" data-cat="live" data-project="qres" data-cover-type="qres">
+          <div class="project-card reveal" data-cat="live" data-project="qres" data-cover-type="qres" data-cursor-label="View" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge live">Shipped</span>
               <span class="project-price">v1.0.0</span>
@@ -170,7 +201,7 @@
             </div>
           </div>
 
-          <div class="project-card mystery" data-cat="wip" data-project="mystery" data-cover-type="mystery">
+          <div class="project-card mystery reveal d1" data-cat="wip" data-project="mystery" data-cover-type="mystery" data-cursor-label="???" role="button" tabindex="0">
             <div class="project-cover">
               <span class="project-stock-badge wip">Classified</span>
               <span class="project-price">? ? ?</span>
@@ -193,15 +224,49 @@
 
   </main>
 
-  <!-- Project modal -->
-  <div class="project-modal" role="dialog" aria-modal="true">
+  <!-- Footer -->
+  <footer class="site-footer panel">
+    <div class="footer-inner">
+      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
+          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../" class="btn ghost" data-transition data-magnetic>Back home <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-col reveal d2">
+          <nav class="footer-nav" aria-label="Footer">
+            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
+            <a href="./" data-transition><span>Projects</span><sup>02</sup></a>
+            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
+            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+          </nav>
+          <div class="footer-socials">
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / projects</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+    </div>
+  </footer>
+  </div>
+
+  <!-- Project modal (outside the panels so it layers above the nav) -->
+  <div class="project-modal" role="dialog" aria-modal="true" aria-label="Project details">
     <div class="project-modal-backdrop"></div>
     <div class="project-modal-panel">
       <button class="project-modal-close" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <div class="project-modal-cover pm-cover"></div>
-      <div class="project-modal-body">
+      <div class="project-modal-body" data-lenis-prevent>
         <div class="pm-eyebrow">// Case file</div>
         <h3 class="pm-title">...</h3>
         <div class="meta pm-meta"></div>
@@ -212,11 +277,9 @@
     </div>
   </div>
 
-  <div class="footer-mini">evzero.org / projects</div>
-  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
-
-  <script src="../js/common.js"></script>
-  <script src="../js/cat.js"></script>
-  <script src="../js/projects.js"></script>
+  <script src="../js/vendor/lenis.min.js?v=2.1"></script>
+  <script src="../js/common.js?v=2.1"></script>
+  <script src="../js/cat.js?v=2.1"></script>
+  <script src="../js/projects.js?v=2.1"></script>
 </body>
 </html>

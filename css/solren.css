@@ -1,5 +1,7 @@
 /* ============================================
-   Solren page - minimalist rebuild
+   Solren page (v2)
+   Logo + game banner art are intentionally
+   unchanged - only the layout around them moved.
    ============================================ */
 
 /* ---- hero section ---- */
@@ -7,6 +9,8 @@
   text-align: center;
   position: relative;
 }
+.solren-title { margin: 0; }
+.solren-title .line { color: var(--white); }
 .solren-logo-big {
   width: 140px;
   height: 140px;
@@ -82,29 +86,22 @@
 
 /* ---- games section ---- */
 .games-head {
-  text-align: center;
-  margin-bottom: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(32px, 4vw, 52px);
 }
-.games-head .eyebrow { justify-content: center; }
-.games-head .eyebrow::before { display: none; }
-.games-head h2 {
-  margin-top: 22px;
-}
-.games-head h2 .accent { color: var(--purple-bright); }
 
 /* games tabs */
 .game-tabs {
   display: flex;
-  justify-content: center;
   gap: 4px;
   flex-wrap: wrap;
-  margin-bottom: 40px;
   padding: 4px;
   max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 44px;
-  border: 1px solid var(--white-line);
+  border: 1px solid var(--white-rule);
   border-radius: var(--radius-sm);
 }
 .game-tab {
@@ -155,8 +152,6 @@
   display: grid;
   grid-template-columns: 1.05fr 1fr;
   gap: 16px;
-  max-width: 1180px;
-  margin: 0 auto;
 }
 
 /* game banner */
@@ -460,20 +455,13 @@
 .roster-empty .msg.faint { color: var(--white-faint); margin-top: 6px; }
 
 /* ---- join section ---- */
-.join-cta {
-  text-align: center;
-}
-.join-cta h2 {
-  margin: 22px 0 24px;
-}
-.join-cta h2 .accent { color: var(--purple-bright); }
+.join-title { margin-bottom: 26px; }
 .join-cta p {
-  color: var(--white-dim);
   max-width: 520px;
-  margin: 0 auto 40px;
-  font-size: 14px;
-  font-family: var(--font-mono);
-  letter-spacing: 1px;
+  margin: 0 0 36px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--white-dim);
 }
 
 /* ---- responsive ---- */
@@ -481,6 +469,10 @@
   .game-layout { grid-template-columns: 1fr; }
   .game-banner { min-height: 320px; }
   .roster { min-height: auto; }
-  .solren-hero-stats { flex-wrap: wrap; }
+  .solren-hero-stats { flex-wrap: wrap; justify-content: center; }
   .hero-stat { padding: 12px 20px; }
+}
+@media (max-width: 560px) {
+  .game-tab { padding: 10px 14px; letter-spacing: 1.5px; }
+  .hero-stat { flex: 1 1 45%; border-bottom: 1px solid var(--white-line); }
 }

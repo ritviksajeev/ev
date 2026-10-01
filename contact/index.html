@@ -6,14 +6,29 @@
   <meta name="theme-color" content="#050507"/>
   <meta name="description" content="EvZero — get in touch."/>
   <title>EvZero / Contact</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(!sessionStorage.getItem('evz-visited'))h.classList.add('first-visit')}catch(e){}setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css"/>
-  <link rel="stylesheet" href="../css/contact.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css?v=2.1"/>
+  <link rel="stylesheet" href="../css/contact.css?v=2.1"/>
 </head>
 <body>
+
+  <!-- Loader (first visit) / page curtain -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-meta"><b>evzero</b><span>( Contact &mdash; <span data-year>2026</span> )</span></div>
+    <div class="loader-count">
+      <div class="loader-roll">
+        <span class="lr-word">Loading&hellip;</span>
+        <span class="lr-num"><b data-loader-num>0</b><i>%</i></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="loader-bar"><span data-loader-bar></span></div>
+    <div class="loader-brand">evzero</div>
+  </div>
 
   <!-- Background -->
   <div class="bg-layer" aria-hidden="true">
@@ -24,108 +39,131 @@
   </div>
 
   <!-- Nav -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary">
     <div class="nav-inner">
       <a href="../" class="nav-brand" data-transition>evzero</a>
       <ul class="nav-links">
-        <li><a href="../" data-transition>Home</a></li>
-        <li><a href="../projects/" data-transition>Projects</a></li>
-        <li><a href="../solren/" data-transition>Solren</a></li>
-        <li><a href="./" class="active" data-transition>Contact</a></li>
+        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
+        <li><a href="../projects/" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
+        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
+        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
       </ul>
-      <a href="mailto:hello@evzero.org" class="nav-cta">Say hi</a>
+      <div class="nav-right">
+        <a href="mailto:evzeroholder@gmail.com" class="nav-cta" data-magnetic>Say hi</a>
+      </div>
     </div>
   </nav>
 
   <div class="section-indicator" aria-hidden="true"></div>
 
-  <main class="page">
+  <div class="panels">
+  <main class="page panel-group">
 
     <!-- SECTION 1: HERO -->
-    <section class="section" data-event="contact-hero">
+    <section class="section hero panel" data-event="contact-hero">
       <div class="section-inner contact-hero">
-        <div class="hero-eyebrow reveal">
+        <div class="hero-eyebrow intro-fade" style="--id: 0.3s">
           <span class="bracket">[</span>
           <span>Reach out</span>
           <span class="bracket">]</span>
         </div>
-        <h1 class="display-xl ev-text reveal d1">
-          <span class="ev">SAY</span><span class="zero">HI</span>
+        <h1 class="display-xl ev-text contact-title">
+          <span class="sr-only">Say hi</span>
+          <span class="line-mask" aria-hidden="true"><span class="line"><span class="ev">SAY</span><span class="zero">HI</span></span></span>
         </h1>
-        <div class="tagline-mono reveal d2">
+        <div class="tagline-mono intro-fade" style="--id: 0.75s">
           Collab <span class="sep">·</span> Hire <span class="sep">·</span> Just vibes
         </div>
       </div>
-      <div class="scroll-hint">
+      <div class="scroll-hint intro-fade" style="--id: 1s">
         <span>Find the channels</span>
         <span class="line"></span>
       </div>
     </section>
 
     <!-- SECTION 2: LINKS -->
-    <section class="section" data-event="contact-links">
+    <section class="section panel" data-event="contact-links">
       <div class="section-inner">
-        <div class="links-head">
-          <div class="eyebrow centered reveal">01 / Channels</div>
-          <h2 class="display-md reveal d1">Where to<br/><span class="accent">find me</span></h2>
-          <p class="reveal d2">Two channels. Pick the one that matches the vibe of your message and I'll probably reply too fast.</p>
+        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Channels)</span><span>02 ways in</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Where to <span class="accent">find me</span></h2>
+          <p class="sec-sub reveal">Two channels. Pick the one that matches the vibe of your message and I'll probably reply too fast.</p>
         </div>
 
-        <div class="contact-grid">
-
-          <a class="contact-card" href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">
-            <div class="contact-card-num">/ 01</div>
-            <div class="contact-icon-big">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.791 19.791 0 0 0 16.885 3.1a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.273 18.273 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 6.683 4.37a.07.07 0 0 0-.032.027C2.533 10.46 1.492 16.373 2.001 22.21a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-6.747-.838-12.612-3.548-17.814a.061.061 0 0 0-.031-.028zM8.02 18.263c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-            </div>
-            <div class="contact-meta">
-              <div class="lbl">Discord</div>
-              <div class="title">Join the server</div>
-              <div class="handle">discord / @evzero</div>
-            </div>
-            <div class="contact-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5M9 5h10v10"/></svg>
-            </div>
+        <div class="rows">
+          <a class="row-link" href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">
+            <span class="row-idx">(01)
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.791 19.791 0 0 0 16.885 3.1a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.273 18.273 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 6.683 4.37a.07.07 0 0 0-.032.027C2.533 10.46 1.492 16.373 2.001 22.21a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-6.747-.838-12.612-3.548-17.814a.061.061 0 0 0-.031-.028zM8.02 18.263c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+            </span>
+            <span class="row-title" data-split>Discord</span>
+            <span class="row-meta"><small>Join the server</small>discord / @evzero</span>
+            <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
 
-          <a class="contact-card" href="mailto:hello@evzero.org">
-            <div class="contact-card-num">/ 02</div>
-            <div class="contact-icon-big">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="1"/><path d="M22 7l-10 6L2 7"/></svg>
-            </div>
-            <div class="contact-meta">
-              <div class="lbl">Email</div>
-              <div class="title">Drop a line</div>
-              <div class="handle">evzeroholder@gmail.com</div>
-            </div>
-            <div class="contact-arrow">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5M9 5h10v10"/></svg>
-            </div>
+          <a class="row-link" href="mailto:evzeroholder@gmail.com">
+            <span class="row-idx">(02)
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="1"/><path d="M22 7l-10 6L2 7"/></svg>
+            </span>
+            <span class="row-title" data-split>Email</span>
+            <span class="row-meta"><small>Drop a line</small>evzeroholder@gmail.com</span>
+            <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
-
         </div>
       </div>
     </section>
 
     <!-- SECTION 3: SIGN-OFF -->
-    <section class="section" data-event="contact-signoff">
+    <section class="section panel" data-event="contact-signoff">
       <div class="section-inner signoff">
-        <div class="eyebrow centered reveal">02 / Sign-off</div>
-        <h2 class="display-lg reveal d1">
+        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Sign-off)</span><span>I read all of it</span></div>
+        <h2 class="sec-title signoff-title" data-split>
           <span class="l1">See you</span><br/>
           <span class="l2 accent">on the other side.</span>
         </h2>
-        <p class="reveal d2">Whether it's a collab, a bug report, a job, or a cat picture — I read all of it.</p>
-        <div class="sig reveal d3">&mdash; <span>ev</span>zero&nbsp;&nbsp;/&nbsp;&nbsp;<span>00</span></div>
+        <p class="reveal d1">Whether it's a collab, a bug report, a job, or a cat picture — I read all of it.</p>
+        <div class="sig reveal d2">&mdash; <span>ev</span>zero&nbsp;&nbsp;/&nbsp;&nbsp;<span>00</span></div>
       </div>
     </section>
 
   </main>
 
-  <div class="footer-mini">evzero.org / contact</div>
-  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
+  <!-- Footer -->
+  <footer class="site-footer panel">
+    <div class="footer-inner">
+      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
+          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../projects/" class="btn" data-transition data-magnetic>See projects <span class="arrow">&rarr;</span></a>
+            <a href="../" class="btn ghost" data-transition data-magnetic>Back home <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-col reveal d2">
+          <nav class="footer-nav" aria-label="Footer">
+            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
+            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
+            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
+            <a href="./" data-transition><span>Contact</span><sup>04</sup></a>
+          </nav>
+          <div class="footer-socials">
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / contact</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+    </div>
+  </footer>
+  </div>
 
-  <script src="../js/common.js"></script>
-  <script src="../js/cat.js"></script>
+  <script src="../js/vendor/lenis.min.js?v=2.1"></script>
+  <script src="../js/common.js?v=2.1"></script>
+  <script src="../js/cat.js?v=2.1"></script>
 </body>
 </html>

@@ -8,15 +8,15 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 
 | URL                  | Source                  |
 |----------------------|-------------------------|
-| `evzero.org`         | `index.html`              |
-| `/projects`          | `projects/index.html`     |
-| `/solren`            | `solren/index.html`       |
-| `/contact`           | `contact/index.html`      |
-| `/watchparty`        | `watchparty/index.html`   |
-| `/valorant`          | `valorant/index.html`     |
-| `/spice`             | `spice/index.html`        |
-| `/ais`               | `ais/index.html`          |
-| `/qres`          | `qres/index.html`     |
+| `evzero.org`         | `index.html`            |
+| `/projects`          | `projects/index.html`   |
+| `/solren`            | `solren/index.html`     |
+| `/contact`           | `contact/index.html`    |
+| `/watchparty`        | `watchparty/index.html` |
+| `/valorant`          | `valorant/index.html`   |
+| `/spice`             | `spice/index.html`      |
+| `/ais`               | `ais/index.html`        |
+| `/qres`              | `qres/index.html`       |
 
 ## File layout
 
@@ -28,21 +28,23 @@ website-evzero/
 ├── contact/index.html      ← discord + email
 ├── qres/index.html     ← Qres landing page
 ├── css/
-│   ├── common.css          ← theme, nav, cat, cursor, scroll
+│   ├── common.css          ← theme, nav + menu, loader, reveals, footer, cat, cursor
 │   ├── home.css
 │   ├── projects.css
 │   ├── solren.css
 │   ├── qres.css
 │   └── contact.css
 ├── js/
-│   ├── common.js           ← cursor, starfield, section observer, page curtain
+│   ├── common.js           ← loader/curtain, smooth scroll, cursor, menu, reveals
 │   ├── cat.js              ← pixel cat state machine
-│   ├── projects.js         ← filter tabs + project modal + SVG covers
-│   └── solren.js           ← game tab switcher
+│   ├── projects.js         ← project modal + SVG covers
+│   ├── solren.js           ← game tab switcher
+│   └── vendor/lenis.min.js ← smooth scrolling (Lenis 1.3.26, MIT)
 ├── assets/
 │   ├── logo.svg            ← EvZero logo (purple/black waves)
 │   ├── solren-logo.svg
 │   ├── favicon.svg
+│   ├── favicon.png         ← the tab icon pages link to (favicon.svg holds JPEG bytes)
 │   ├── game-valorant.svg
 │   ├── game-bgmi.svg
 │   └── game-marvelrivals.svg
@@ -75,6 +77,18 @@ page and the release can be kept in step without editing markup.
   and avatars directly.
 - Game banners are inline SVG (`assets/game-*.svg`). Replace with real images
   if you'd rather use official game art (keep aspect ~16:10).
+- CSS/JS links carry a `?v=2.1` cache-buster. After editing a stylesheet or
+  script, bump that number in the pages so visitors don't get a stale cached
+  copy next to new HTML.
+- Motion hooks (in `common.js` / `common.css`): `data-split` (letter blur-in),
+  `data-lit` (words light up on scroll), `.reveal` + `d1`–`d7` (fade/rise),
+  `.line-mask > .line` + `.intro-fade` (play when the loader lifts),
+  `data-marquee`, `data-magnetic`, `data-cursor-label="View"`.
+- Page-to-page scrolling: each page's `<main class="page panel-group">` and
+  `<footer class="site-footer panel">` sit inside `<div class="panels">`, and
+  every top-level `<section>` in main has the `panel` class. Panels pin once
+  their bottom reaches the screen bottom and the next one slides over them.
+  Keep `position: fixed` things (modals, toasts) *outside* `.panels`.
 
 ---
 

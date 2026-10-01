@@ -22,7 +22,7 @@
       title: 'evzero.org',
       meta: ['website', 'v1', '2026'],
       desc: [
-        'The personal hub. Custom scroll-snap sections, a pixel cat that stalks your cursor, SVG logos, and fully hand-built animations.',
+        'The personal hub. Smooth-scroll sections, a pixel cat that stalks your cursor, SVG logos, and fully hand-built animations.',
         'No framework. Just HTML, CSS, and JS - the way the web intended.',
       ],
       files: ['index.html', 'css/common.css', 'js/cat.js', 'assets/logo.svg'],
@@ -148,9 +148,24 @@
     },
   };
 
+  let lastFocus = null;
+
+  // Scroll lock via common.js (keeps the pinned page panels intact); plain
+  // <html> overflow as a fallback if common.js isn't there.
+  function lockPage(on) {
+    const ev = window.EV;
+    if (ev && typeof ev.lock === 'function') {
+      if (on) ev.lock(); else ev.unlock();
+    } else {
+      document.documentElement.style.overflow = on ? 'hidden' : '';
+    }
+  }
+
   function openModal(id) {
     const data = PROJECTS[id];
     if (!data) return;
+    const wasOpen = modal.classList.contains('open');
+    if (!wasOpen) lastFocus = document.activeElement;
     // Expose which project is open so a name with deliberate casing (AiS) can
     // opt out of the grid's uppercase treatment.
     modal.dataset.project = id;
@@ -166,17 +181,28 @@
       )
       .join('');
     modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
+    if (!wasOpen) lockPage(true);
+    const closeBtn = modal.querySelector('.project-modal-close');
+    if (closeBtn) setTimeout(() => closeBtn.focus({ preventScroll: true }), 60);
   }
   function closeModal() {
+    if (!modal.classList.contains('open')) return;
     modal.classList.remove('open');
-    document.body.style.overflow = '';
+    lockPage(false);
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus({ preventScroll: true });
+    lastFocus = null;
   }
 
   cards.forEach((card) => {
     card.addEventListener('click', (e) => {
       e.preventDefault();
       openModal(card.dataset.project);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(card.dataset.project);
+      }
     });
   });
   modal.querySelector('.project-modal-close').addEventListener('click', closeModal);
@@ -439,5 +465,8 @@
       default:         svg = coverWave(color);
     }
     coverEl.insertAdjacentHTML('afterbegin', svg);
+    // Tiles aren't 16:10 like the art - fill them (crop) instead of letterboxing.
+    const svgEl = coverEl.querySelector('svg');
+    if (svgEl) svgEl.setAttribute('preserveAspectRatio', 'xMidYMid slice');
   });
 })();

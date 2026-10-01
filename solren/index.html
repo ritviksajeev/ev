@@ -6,14 +6,29 @@
   <meta name="theme-color" content="#050507"/>
   <meta name="description" content="Solren — esports org founded by EvZero."/>
   <title>EvZero / Solren</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(!sessionStorage.getItem('evz-visited'))h.classList.add('first-visit')}catch(e){}setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css"/>
-  <link rel="stylesheet" href="../css/solren.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css?v=2.1"/>
+  <link rel="stylesheet" href="../css/solren.css?v=2.1"/>
 </head>
 <body>
+
+  <!-- Loader (first visit) / page curtain -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-meta"><b>evzero</b><span>( Solren &mdash; <span data-year>2026</span> )</span></div>
+    <div class="loader-count">
+      <div class="loader-roll">
+        <span class="lr-word">Loading&hellip;</span>
+        <span class="lr-num"><b data-loader-num>0</b><i>%</i></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="loader-bar"><span data-loader-bar></span></div>
+    <div class="loader-brand">evzero</div>
+  </div>
 
   <!-- Background -->
   <div class="bg-layer" aria-hidden="true">
@@ -24,39 +39,47 @@
   </div>
 
   <!-- Nav -->
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary">
     <div class="nav-inner">
       <a href="../" class="nav-brand" data-transition>evzero</a>
       <ul class="nav-links">
-        <li><a href="../" data-transition>Home</a></li>
-        <li><a href="../projects/" data-transition>Projects</a></li>
-        <li><a href="./" class="active" data-transition>Solren</a></li>
-        <li><a href="../contact/" data-transition>Contact</a></li>
+        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
+        <li><a href="../projects/" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
+        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
+        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
       </ul>
-      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+      <div class="nav-right">
+        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
+      </div>
     </div>
   </nav>
 
   <div class="section-indicator" aria-hidden="true"></div>
 
-  <main class="page">
+  <div class="panels">
+  <main class="page panel-group">
 
     <!-- SECTION 1: HERO -->
-    <section class="section" data-event="solren-hero">
+    <section class="section hero panel" data-event="solren-hero">
       <div class="section-inner solren-hero">
-        <div class="solren-logo-big reveal">
-          <img src="../assets/solren-logo.png" alt="Solren logo"/>
+        <div class="intro-fade" style="--id: 0.2s">
+          <div class="solren-logo-big">
+            <img src="../assets/solren-logo.png" alt="Solren logo"/>
+          </div>
         </div>
-        <div class="hero-eyebrow reveal d1">
+        <div class="hero-eyebrow intro-fade" style="--id: 0.45s">
           <span class="bracket">[</span>
           <span>Esports / APAC</span>
           <span class="bracket">]</span>
         </div>
-        <h1 class="display-xl reveal d2">SOLREN</h1>
-        <div class="tagline-mono reveal d3">
+        <h1 class="display-xl solren-title">
+          <span class="sr-only">Solren</span>
+          <span class="line-mask" aria-hidden="true"><span class="line">SOLREN</span></span>
+        </h1>
+        <div class="tagline-mono intro-fade" style="--id: 0.8s">
           Valorant <span class="sep">·</span> And more
         </div>
-        <div class="solren-hero-stats reveal d4">
+        <div class="solren-hero-stats intro-fade" style="--id: 0.95s">
           <div class="hero-stat">
             <span class="num">02</span>
             <span class="label">Founders</span>
@@ -75,33 +98,34 @@
           </div>
         </div>
       </div>
-      <div class="scroll-hint">
+      <div class="scroll-hint intro-fade" style="--id: 1.2s">
         <span>Scroll for roster</span>
         <span class="line"></span>
       </div>
     </section>
 
     <!-- SECTION 2: GAMES -->
-    <section class="section" data-event="solren-games">
+    <section class="section panel" data-event="solren-games">
       <div class="section-inner">
-        <div class="games-head">
-          <div class="eyebrow centered reveal">01 / Roster</div>
-          <h2 class="display-md reveal d1">Games<br/><span class="accent">we're in</span></h2>
-        </div>
+        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Roster)</span><span>03 games</span></div>
 
-        <div class="game-tabs reveal d2">
-          <button class="game-tab active" data-game="valorant">
-            <span class="status-dot active"></span>
-            Valorant
-          </button>
-          <button class="game-tab" data-game="bgmi">
-            <span class="status-dot rebuild"></span>
-            BGMI
-          </button>
-          <button class="game-tab" data-game="marvelrivals">
-            <span class="status-dot coming"></span>
-            Marvel Rivals
-          </button>
+        <div class="games-head">
+          <h2 class="sec-title" data-split>Games <span class="accent">we're in</span></h2>
+
+          <div class="game-tabs reveal" role="tablist" aria-label="Games">
+            <button class="game-tab active" data-game="valorant" role="tab" aria-selected="true">
+              <span class="status-dot active"></span>
+              Valorant
+            </button>
+            <button class="game-tab" data-game="bgmi" role="tab" aria-selected="false">
+              <span class="status-dot rebuild"></span>
+              BGMI
+            </button>
+            <button class="game-tab" data-game="marvelrivals" role="tab" aria-selected="false">
+              <span class="status-dot coming"></span>
+              Marvel Rivals
+            </button>
+          </div>
         </div>
 
         <!-- ===================== VALORANT ===================== -->
@@ -138,7 +162,7 @@
                 <span class="label">// Roster</span>
                 <span class="count">5 Players + 1 Coach</span>
               </div>
-              <div class="roster-list">
+              <div class="roster-list" data-lenis-prevent>
 
                 <div class="player">
                   <div class="player-index">01</div>
@@ -298,24 +322,56 @@
     </section>
 
     <!-- SECTION 3: JOIN CTA -->
-    <section class="section" data-event="solren-join">
+    <section class="section join-sec panel" data-event="solren-join">
       <div class="section-inner join-cta">
-        <div class="eyebrow centered reveal">02 / Join</div>
-        <h2 class="display-lg reveal d1">Built from<br/><span class="accent">zero.</span></h2>
-        <p class="reveal d2">Solren is new. Every roster slot is a decision about who we become next. Think you fit? Bring it to the Discord.</p>
-        <div class="cta-buttons reveal d3">
-          <a class="btn" href="https://discord.gg/UefQ4csZvX" data-transition>Join the org <span class="arrow">&rarr;</span></a>
+        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Join)</span><span>Tryouts via Discord</span></div>
+        <h2 class="sec-title join-title" data-split>Built from <span class="accent">zero.</span></h2>
+        <p class="reveal d1">Solren is new. Every roster slot is a decision about who we become next. Think you fit? Bring it to the Discord.</p>
+        <div class="cta-buttons reveal d2">
+          <a class="btn" href="https://discord.gg/UefQ4csZvX" target="_blank" rel="noreferrer noopener" data-magnetic>Join the org <span class="arrow">&rarr;</span></a>
         </div>
       </div>
     </section>
 
   </main>
 
-  <div class="footer-mini">evzero.org / solren</div>
-  <div class="footer-mini-right">&copy; <span data-year></span> solren</div>
+  <!-- Footer -->
+  <footer class="site-footer panel">
+    <div class="footer-inner">
+      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
+          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../projects/" class="btn ghost" data-transition data-magnetic>See projects <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-col reveal d2">
+          <nav class="footer-nav" aria-label="Footer">
+            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
+            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
+            <a href="./" data-transition><span>Solren</span><sup>03</sup></a>
+            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+          </nav>
+          <div class="footer-socials">
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / solren</span><span>&copy; <span data-year>2026</span> solren</span></div>
+      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+    </div>
+  </footer>
+  </div>
 
-  <script src="../js/common.js"></script>
-  <script src="../js/cat.js"></script>
-  <script src="../js/solren.js"></script>
+  <script src="../js/vendor/lenis.min.js?v=2.1"></script>
+  <script src="../js/common.js?v=2.1"></script>
+  <script src="../js/cat.js?v=2.1"></script>
+  <script src="../js/solren.js?v=2.1"></script>
 </body>
 </html>

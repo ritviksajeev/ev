@@ -11,9 +11,13 @@
   tabs.forEach((tab) => {
     tab.addEventListener('click', () => {
       const target = tab.dataset.game;
-      tabs.forEach((t) => t.classList.remove('active'));
+      tabs.forEach((t) => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
       panels.forEach((p) => p.classList.remove('active'));
       tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
       const panel = document.querySelector(`.game-panel[data-game="${target}"]`);
       if (panel) panel.classList.add('active');
     });
