@@ -179,6 +179,21 @@
   // Page transitions - curtain up, then navigate
   // --------------------------------------------
   function initTransitions() {
+    // In-page anchors (<a href="#run">): glide to where the target sits in
+    // normal flow - pinned panels make the browser's own jump unreliable.
+    document.addEventListener('click', (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.hasAttribute('data-transition')) return;
+      const id = decodeURIComponent((a.getAttribute('href') || '').slice(1));
+      const target = id && document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      closeMenu();
+      scrollToEl(target);
+      if (history.replaceState) history.replaceState(null, '', '#' + id);
+    });
+
     document.addEventListener('click', (e) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = e.target.closest && e.target.closest('a[data-transition]');

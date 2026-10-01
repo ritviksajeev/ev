@@ -6,14 +6,29 @@
   <meta name="theme-color" content="#050507"/>
   <meta name="description" content="Qres — change your monitor resolution and refresh rate from a hotkey. By EvZero."/>
   <title>EvZero / Qres</title>
-  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg"/>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(!sessionStorage.getItem('evz-visited'))h.classList.add('first-visit')}catch(e){}setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css"/>
-  <link rel="stylesheet" href="../css/qres.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/common.css?v=2.1"/>
+  <link rel="stylesheet" href="../css/qres.css?v=2.1"/>
 </head>
 <body>
+
+  <!-- Loader (first visit) / page curtain -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-meta"><b>evzero</b><span>( Qres &mdash; <span data-year>2026</span> )</span></div>
+    <div class="loader-count">
+      <div class="loader-roll">
+        <span class="lr-word">Loading&hellip;</span>
+        <span class="lr-num"><b data-loader-num>0</b><i>%</i></span>
+        <span></span>
+      </div>
+    </div>
+    <div class="loader-bar"><span data-loader-bar></span></div>
+    <div class="loader-brand">evzero</div>
+  </div>
 
   <div class="bg-layer" aria-hidden="true">
     <div class="bg-base"></div>
@@ -22,25 +37,28 @@
     <div class="bg-noise"></div>
   </div>
 
-  <nav class="nav">
+  <nav class="nav" aria-label="Primary">
     <div class="nav-inner">
       <a href="../" class="nav-brand" data-transition>evzero</a>
       <ul class="nav-links">
-        <li><a href="../" data-transition>Home</a></li>
-        <li><a href="../projects/" class="active" data-transition>Projects</a></li>
-        <li><a href="../solren/" data-transition>Solren</a></li>
-        <li><a href="../contact/" data-transition>Contact</a></li>
+        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
+        <li><a href="../projects/" class="active" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
+        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
+        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
       </ul>
-      <a href="../contact/" class="nav-cta" data-transition>Get in touch</a>
+      <div class="nav-right">
+        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
+      </div>
     </div>
   </nav>
 
   <div class="section-indicator" aria-hidden="true"></div>
 
-  <main class="page">
+  <div class="panels">
+  <main class="page panel-group">
 
     <!-- HERO -->
-    <section class="section qr-hero" data-event="qr-hero">
+    <section class="section hero qr-hero panel" data-event="qr-hero">
       <div class="section-inner">
         <div class="qr-hero-grid">
           <div class="qr-hero-left">
@@ -136,10 +154,10 @@
     </section>
 
     <!-- FEATURES -->
-    <section class="section qr-features" data-event="qr-features">
+    <section class="section qr-features panel" data-event="qr-features">
       <div class="section-inner">
-        <div class="eyebrow reveal">01 / Capability</div>
-        <h2 class="display-md reveal d1">What it<br/><span class="accent">does.</span></h2>
+        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Capability)</span><span>06 features</span></div>
+        <h2 class="sec-title" data-split>What it<br/><span class="accent">does.</span></h2>
 
         <div class="qr-feat-grid">
           <div class="qr-feat reveal d2">
@@ -182,10 +200,10 @@
     </section>
 
     <!-- HOW IT WORKS -->
-    <section class="section qr-how" data-event="qr-how">
+    <section class="section qr-how panel" data-event="qr-how">
       <div class="section-inner">
-        <div class="eyebrow reveal">02 / Under the hood</div>
-        <h2 class="display-md reveal d1">No native<br/><span class="accent">module.</span></h2>
+        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Under the hood)</span><span>No native module</span></div>
+        <h2 class="sec-title" data-split>No native<br/><span class="accent">module.</span></h2>
         <p class="qr-lead reveal d2">
           Node can't call Win32 display APIs on its own, and shipping a prebuilt binary or a native addon means an ABI to keep matched forever. Qres takes a third route.
         </p>
@@ -224,10 +242,10 @@
     </section>
 
     <!-- SCALING NOTE + DOWNLOAD -->
-    <section class="section qr-install" data-event="qr-install">
+    <section class="section qr-install panel" data-event="qr-install">
       <div class="section-inner">
-        <div class="eyebrow reveal">03 / One thing to set</div>
-        <h2 class="display-md reveal d1">GPU scaling,<br/><span class="accent">once.</span></h2>
+        <div class="sec-bar"><span><i class="dot"></i>(03)</span><span>(One thing to set)</span><span>Windows 10 / 11</span></div>
+        <h2 class="sec-title" data-split>GPU scaling,<br/><span class="accent">once.</span></h2>
         <p class="qr-lead reveal d2">
           Qres sets the resolution. Whether the picture fills your panel or sits in black bars is your GPU's scaling setting &mdash; no application can change that for you. Set it once and forget it.
         </p>
@@ -268,10 +286,42 @@
 
   </main>
 
-  <div class="footer-mini">evzero.org / qres</div>
-  <div class="footer-mini-right">&copy; <span data-year></span> evzero</div>
+  <!-- Footer -->
+  <footer class="site-footer panel">
+    <div class="footer-inner">
+      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
+          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-col reveal d2">
+          <nav class="footer-nav" aria-label="Footer">
+            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
+            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
+            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
+            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+          </nav>
+          <div class="footer-socials">
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / qres</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+    </div>
+  </footer>
+  </div>
 
-  <script src="../js/common.js"></script>
-  <script src="../js/cat.js"></script>
+  <script src="../js/vendor/lenis.min.js?v=2.1"></script>
+  <script src="../js/common.js?v=2.1"></script>
+  <script src="../js/cat.js?v=2.1"></script>
 </body>
 </html>

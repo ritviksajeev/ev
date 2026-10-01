@@ -472,6 +472,11 @@ html.menu-open .menu-links a .mt {
   flex-direction: column;
   justify-content: center;
 }
+/* every page panel clears the fixed nav, whatever the page CSS sets */
+.panel-group > .section.panel:not(.hero) {
+  padding-top: clamp(112px, 15vh, 168px);
+  padding-bottom: clamp(96px, 13vh, 150px);
+}
 
 html.panels-on .panels > .panel,
 html.panels-on .panels > .panel-group,
