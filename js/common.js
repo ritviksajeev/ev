@@ -1,6 +1,6 @@
 /* ============================================
    EvZero - Common JS (v2)
-   Loader + page curtain, Lenis smooth scroll,
+   Page curtain + homepage welcome, Lenis scroll,
    custom cursor, menu overlay, reveal system
    (split letters / lit words), marquees, hero +
    stacked-card scroll effects, footer wordmark.
@@ -109,70 +109,50 @@
   }
 
   // --------------------------------------------
-  // Loader (first visit per session) / curtain
+  // Page curtain - covers the page while it loads,
+  // then lifts. The first homepage view of a session
+  // plays "evzero" -> "welcome" on it first.
   // --------------------------------------------
   function initLoader() {
+    // Scripts are running, so they own the curtain from here - drop the
+    // inline head script's blanket failsafe (it would cut the welcome short).
+    clearTimeout(window.evzFailsafe);
     const loader = $('.loader');
-    const firstVisit = doc.classList.contains('first-visit');
-    try { sessionStorage.setItem('evz-visited', '1'); } catch (err) { /* private mode */ }
-
     if (!loader) { markReady(); return; }
 
-    // Repeat visit: short curtain, lift once fonts are in (capped).
-    if (!firstVisit || reduceMotion) {
+    let fresh = false;
+    if ($('.loader-welcome', loader) && !reduceMotion) {
+      try {
+        fresh = !sessionStorage.getItem('evz-welcomed');
+        sessionStorage.setItem('evz-welcomed', '1');
+      } catch (err) { /* storage blocked - skip the welcome */ }
+    }
+
+    // Plain curtain: lift once fonts are in (capped).
+    if (!fresh) {
       fontsReady(650).then(() => setTimeout(markReady, 80));
       setTimeout(markReady, 1500);
       return;
     }
 
-    // First visit: count 0 -> 100 (12.studio), tied to real load events but
-    // never faster than MIN and never longer than MAX.
-    const num = $('[data-loader-num]', loader);
-    const numWrap = num ? num.parentElement : null;
-    const bar = $('[data-loader-bar]', loader);
-    const MIN = 1700;
-    const MAX = 5000;
+    // Welcome: hold the "evzero" mark (the same curtain page changes use),
+    // roll WELCOME in and let it sit, then send it up as the curtain lifts.
+    const HOLD_MARK = 1500;
+    const HOLD_WELCOME = 3000;
     const t0 = performance.now();
-    let target = 8;
-    let shown = 0;
-    let done = false;
-    const bump = (v) => { target = Math.max(target, v); };
-
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => bump(35));
-    else bump(35);
-    fontsReady(4000).then(() => bump(72));
-    if (document.readyState === 'complete') bump(100);
-    else window.addEventListener('load', () => bump(100));
-
-    setTimeout(() => loader.classList.add('is-counting'), 260);
-
-    function render(v) {
-      if (num) num.textContent = String(Math.round(v));
-      if (numWrap) numWrap.style.opacity = (0.18 + 0.82 * (v / 100)).toFixed(3);
-      if (bar) bar.style.transform = 'scaleX(' + (v / 100).toFixed(4) + ')';
-    }
-    function finish() {
-      if (done) return;
-      done = true;
-      render(100);
+    let played = false;
+    function play() {
+      if (played) return;
+      played = true;
+      loader.classList.add('is-welcome');
       setTimeout(() => {
-        loader.classList.add('is-done');
-        setTimeout(markReady, 420);
-      }, 240);
+        loader.classList.add('is-out');
+        setTimeout(markReady, 300);
+      }, HOLD_WELCOME);
     }
-    function frame(now) {
-      if (done) return;
-      const elapsed = now - t0;
-      let goal = Math.min(target, elapsed < MIN ? (elapsed / MIN) * 100 : 100);
-      if (elapsed > MAX) goal = 100;
-      shown += (goal - shown) * 0.09;
-      if (goal - shown < 0.5) shown = goal;
-      render(shown);
-      if (shown >= 100) finish(); else requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-    // rAF pauses in background tabs - make sure we always finish.
-    setTimeout(finish, 6000);
+    fontsReady(2500).then(() => setTimeout(play, Math.max(0, HOLD_MARK - (performance.now() - t0))));
+    // Never strand anyone behind the curtain.
+    setTimeout(markReady, 9500);
   }
 
   // --------------------------------------------

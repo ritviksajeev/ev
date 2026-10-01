@@ -1226,7 +1226,10 @@ h1, h2, h3, h4 {
 }
 
 /* ============================================
-   Loader (first visit) + page curtain (12.studio)
+   Page curtain (12.studio)
+   Covers each page while it loads and sweeps in on
+   page changes. On the first homepage view of a
+   session it plays "evzero" -> "welcome" first.
    One element per page - common.js drives it.
    ============================================ */
 .loader {
@@ -1261,93 +1264,7 @@ html.is-leaving .loader {
   pointer-events: none;
 }
 
-.loader-meta,
-.loader-count,
-.loader-bar { display: none; }
-html.first-visit .loader-meta  { display: flex; }
-html.first-visit .loader-count { display: block; }
-html.first-visit .loader-bar   { display: block; }
-html.is-leaving .loader-meta,
-html.is-leaving .loader-count,
-html.is-leaving .loader-bar { display: none; }
-
-.loader-meta {
-  position: absolute;
-  top: 26px;
-  left: var(--gutter);
-  right: var(--gutter);
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--white-faint);
-}
-.loader-meta b {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  text-transform: none;
-  color: var(--white);
-}
-
-.loader-count {
-  position: absolute;
-  left: var(--gutter);
-  bottom: clamp(36px, 7vh, 76px);
-  height: 1em;
-  overflow: hidden;
-  font-family: var(--font-display);
-  font-size: clamp(64px, 12vw, 176px);
-  font-weight: 300;
-  line-height: 1;
-  letter-spacing: -0.05em;
-}
-.loader-roll {
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.9s var(--ease-expo);
-}
-.loader-roll > span {
-  display: flex;
-  align-items: flex-end;
-  height: 1em;
-  white-space: nowrap;
-}
-.loader.is-counting .loader-roll { transform: translateY(-1em); }
-.loader.is-done .loader-roll { transform: translateY(-2em); }
-.lr-word {
-  font-size: 0.56em;
-  letter-spacing: -0.03em;
-  color: rgba(255, 255, 255, 0.2);
-  padding-bottom: 0.08em;
-}
-.lr-num { opacity: 0.18; }
-.lr-num b { font-weight: inherit; font-variant-numeric: tabular-nums; }
-.lr-num i {
-  font-style: normal;
-  font-size: 0.42em;
-  align-self: flex-start;
-  margin: 0.12em 0 0 0.08em;
-  color: var(--purple-bright);
-}
-
-.loader-bar {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 1px;
-  background: var(--white-line);
-}
-.loader-bar span {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--purple-deep), var(--purple-bright));
-  transform: scaleX(0);
-  transform-origin: left;
-}
-
-/* quick curtain (repeat visits + page leave) */
+/* "evzero ●" - the curtain's mark */
 .loader-brand {
   position: absolute;
   left: 50%;
@@ -1361,6 +1278,10 @@ html.is-leaving .loader-bar { display: none; }
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--white);
+  transition:
+    opacity 0.9s var(--ease-in-out),
+    filter 0.9s var(--ease-in-out),
+    translate 1.1s var(--ease-in-out);
 }
 .loader-brand::after {
   content: "";
@@ -1370,7 +1291,97 @@ html.is-leaving .loader-bar { display: none; }
   animation: brandPulse 1s ease-in-out infinite;
 }
 @keyframes brandPulse { 50% { opacity: 0.2; } }
-html.first-visit:not(.is-leaving) .loader-brand { display: none; }
+
+/* Welcome - first homepage view per session.
+   .is-welcome -> the mark dissolves, WELCOME rises in
+   .is-out     -> it rises away as the curtain lifts */
+.loader-welcome {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.6vh, 28px);
+  padding: 0 var(--gutter);
+  pointer-events: none;
+}
+.loader-welcome::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 44% 34% at 50% 50%, rgba(91, 33, 182, 0.18), transparent 70%);
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+.lw-word {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0.08em 0.04em 0.1em;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 11vw, 168px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.lw-l {
+  display: inline-block;
+  transform: translateY(118%);
+}
+.lw-dot {
+  display: inline-block;
+  width: 0.13em;
+  height: 0.13em;
+  margin-left: 0.07em;
+  border-radius: 50%;
+  background: var(--purple-bright);
+  transform: scale(0);
+}
+.lw-sub {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  opacity: 0;
+  translate: 0 12px;
+}
+
+.loader.is-welcome .loader-brand { opacity: 0; filter: blur(6px); translate: 0 -16px; }
+.loader.is-welcome .loader-welcome::before { opacity: 1; }
+.loader.is-welcome .lw-l {
+  transform: none;
+  transition: transform 1.4s var(--ease-expo) calc(0.35s + var(--i, 0) * 0.07s);
+}
+.loader.is-welcome .lw-dot {
+  transform: scale(1);
+  transition: transform 0.9s var(--ease-out) 1.05s;
+  animation: brandPulse 1s ease-in-out 2s infinite;
+}
+.loader.is-welcome .lw-sub {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 1.1s var(--ease-out) 0.9s, translate 1.3s var(--ease-out) 0.9s;
+}
+.loader.is-out .lw-l {
+  transform: translateY(-118%);
+  transition: transform 0.9s var(--ease-in-out) calc(var(--i, 0) * 0.04s);
+}
+.loader.is-out .lw-sub {
+  opacity: 0;
+  translate: 0 -10px;
+  transition: opacity 0.5s var(--ease-in-out), translate 0.6s var(--ease-in-out);
+}
+.loader.is-out .loader-welcome::before { opacity: 0; transition-duration: 0.9s; }
+/* and the welcome curtain lifts a touch slower than a page change */
+html.is-ready .loader.is-welcome { transition-duration: 1.5s; }
+
+/* page changes always show the plain curtain */
+html.is-leaving .loader-welcome { display: none; }
+html.is-leaving .loader .loader-brand { opacity: 1; filter: none; translate: none; }
 
 /* ============================================
    Button primitive
@@ -1620,6 +1631,7 @@ html.first-visit:not(.is-leaving) .loader-brand { display: none; }
   .sec-bar > :last-child { display: none; }
   .footer-bottom { flex-direction: column; gap: 8px; }
   .ulink { min-width: 0; }
+  .lw-word { font-size: 12.5vw; }
 }
 
 /* ============================================

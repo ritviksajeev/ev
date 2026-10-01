@@ -28,14 +28,14 @@ website-evzero/
 ├── contact/index.html      ← discord + email
 ├── qres/index.html     ← Qres landing page
 ├── css/
-│   ├── common.css          ← theme, nav + menu, loader, reveals, footer, cat, cursor
+│   ├── common.css          ← theme, nav + menu, curtain + welcome, reveals, footer, cat, cursor
 │   ├── home.css
 │   ├── projects.css
 │   ├── solren.css
 │   ├── qres.css
 │   └── contact.css
 ├── js/
-│   ├── common.js           ← loader/curtain, smooth scroll, cursor, menu, reveals
+│   ├── common.js           ← page curtain + homepage welcome, smooth scroll, cursor, menu, reveals
 │   ├── cat.js              ← pixel cat state machine
 │   ├── projects.js         ← project modal + SVG covers
 │   ├── solren.js           ← game tab switcher
@@ -77,13 +77,17 @@ page and the release can be kept in step without editing markup.
   and avatars directly.
 - Game banners are inline SVG (`assets/game-*.svg`). Replace with real images
   if you'd rather use official game art (keep aspect ~16:10).
-- CSS/JS links carry a `?v=2.1` cache-buster. After editing a stylesheet or
+- CSS/JS links carry a `?v=2.2` cache-buster. After editing a stylesheet or
   script, bump that number in the pages so visitors don't get a stale cached
   copy next to new HTML.
 - Motion hooks (in `common.js` / `common.css`): `data-split` (letter blur-in),
   `data-lit` (words light up on scroll), `.reveal` + `d1`–`d7` (fade/rise),
-  `.line-mask > .line` + `.intro-fade` (play when the loader lifts),
+  `.line-mask > .line` + `.intro-fade` (play when the curtain lifts),
   `data-marquee`, `data-magnetic`, `data-cursor-label="View"`.
+- Page curtain: every page has a `.loader` that shows the `evzero` mark while
+  it loads and sweeps in on page changes. The first homepage view of a
+  session (sessionStorage `evz-welcomed`) plays `evzero` -> `WELCOME` on it
+  before lifting; the welcome markup lives only in `index.html`.
 - Page-to-page scrolling: each page's `<main class="page panel-group">` and
   `<footer class="site-footer panel">` sit inside `<div class="panels">`, and
   every top-level `<section>` in main has the `panel` class. Panels pin once

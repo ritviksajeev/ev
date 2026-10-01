@@ -6,27 +6,18 @@
   <meta name="theme-color" content="#050507"/>
   <meta name="description" content="Qres — change your monitor resolution and refresh rate from a hotkey. By EvZero."/>
   <title>EvZero / Qres</title>
-  <script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(!sessionStorage.getItem('evz-visited'))h.classList.add('first-visit')}catch(e){}setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.1"/>
-  <link rel="stylesheet" href="../css/qres.css?v=2.1"/>
+  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
+  <link rel="stylesheet" href="../css/qres.css?v=2.2"/>
 </head>
 <body>
 
-  <!-- Loader (first visit) / page curtain -->
+  <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
-    <div class="loader-meta"><b>evzero</b><span>( Qres &mdash; <span data-year>2026</span> )</span></div>
-    <div class="loader-count">
-      <div class="loader-roll">
-        <span class="lr-word">Loading&hellip;</span>
-        <span class="lr-num"><b data-loader-num>0</b><i>%</i></span>
-        <span></span>
-      </div>
-    </div>
-    <div class="loader-bar"><span data-loader-bar></span></div>
     <div class="loader-brand">evzero</div>
   </div>
 
@@ -320,8 +311,8 @@
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.1"></script>
-  <script src="../js/common.js?v=2.1"></script>
-  <script src="../js/cat.js?v=2.1"></script>
+  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
+  <script src="../js/common.js?v=2.2"></script>
+  <script src="../js/cat.js?v=2.2"></script>
 </body>
 </html>
