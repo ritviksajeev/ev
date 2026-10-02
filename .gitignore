@@ -16,3 +16,6 @@ evzero-watchparty.zip
 # spice binaries — too large for git, hosted on GitHub Releases
 spice/*.zip
 spice/Spice-*/
+
+# sealed-page sources (plaintext) - never commit; see tools/seal.mjs
+.private/

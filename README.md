@@ -40,6 +40,8 @@ website-evzero/
 │   ├── projects.js         ← project modal + SVG covers
 │   ├── solren.js           ← game tab switcher
 │   └── vendor/lenis.min.js ← smooth scrolling (Lenis 1.3.26, MIT)
+├── tools/
+│   └── seal.mjs            ← encrypts a sealed page's contents (see Notes)
 ├── assets/
 │   ├── logo.svg            ← EvZero logo (purple/black waves)
 │   ├── solren-logo.svg
@@ -88,6 +90,14 @@ page and the release can be kept in step without editing markup.
   it loads and sweeps in on page changes. The first homepage view of a
   session (sessionStorage `evz-welcomed`) plays `evzero` -> `WELCOME` on it
   before lifting; the welcome markup lives only in `index.html`.
+- Sealed pages: a page can ship as just a password gate plus one encrypted
+  blob (`<script id="seal">`). Everything behind the gate - markup, styles,
+  script - is AES-GCM encrypted with a PBKDF2 key from the password, which is
+  never stored anywhere. Edit one by opening it, changing the files, and
+  sealing it again:
+  `node tools/seal.mjs open <page>/index.html .private/<page>` then
+  `node tools/seal.mjs seal .private/<page> <page>/index.html`.
+  `.private/` is git-ignored - never commit the opened files.
 - Page-to-page scrolling: each page's `<main class="page panel-group">` and
   `<footer class="site-footer panel">` sit inside `<div class="panels">`, and
   every top-level `<section>` in main has the `panel` class. Panels pin once

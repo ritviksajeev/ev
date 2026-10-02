@@ -36,6 +36,11 @@
       "source": "/qres",
       "destination": "/qres/",
       "permanent": true
+    },
+    {
+      "source": "/wife",
+      "destination": "/wife/",
+      "permanent": true
     }
   ]
 }
