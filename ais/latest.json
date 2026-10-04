@@ -1,10 +1,10 @@
 {
-  "version": "0.1.4",
+  "version": "0.1.5",
   "channel": "alpha",
   "repo": "https://github.com/ritviksajeev/ais",
-  "tag": "v0.1.4-alpha",
-  "source": "https://github.com/ritviksajeev/ais/archive/refs/tags/v0.1.4-alpha.tar.gz",
-  "notes": "Adds differential behavioural verification: the previous version of the code becomes a second oracle, so a wrong value on an input no test covers is caught by comparison rather than by assertion. Covers functions and stateful class methods. The red-team catalogue more than doubled to 25 attacks, which moved the honest score from 92% to 86% with three named gaps.",
+  "tag": "v0.1.5-alpha",
+  "source": "https://github.com/ritviksajeev/ais/archive/refs/tags/v0.1.5-alpha.tar.gz",
+  "notes": "Adds a live editor agent: a real model now proposes the edits AiS checks, behind a record/replay transport so runs stay reproducible offline. Includes an indirect prompt-injection scenario, where a poisoned docstring tries to trick the model into adding a network beacon, and the sandbox catches it if the model complies.",
   "requires": {
     "python": ">=3.11",
     "docker": true
