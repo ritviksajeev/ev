@@ -100,6 +100,7 @@
         'The agent proposes a change against a filename &mdash; no path, no handle. The change is applied to a disposable copy inside a locked-down container and actually executed there, while a Python audit hook records every network call, file write and process spawn, and names the line responsible. A human sees the diff and what the code really did, side by side, and nothing reaches a real file until they approve.',
         'Evaluated on ten scripted edits, seven deliberately hostile: 100% caught, 0% false positives. The interesting one breaks the code and edits the test that would catch it &mdash; every test passes, and it still gets flagged.',
         'Ten scenarios written by the same person who wrote the rules measures consistency, not robustness, so there is a second harness that generates novel attacks and scores them blind. It is allowed to fail: 25 attacks, 86% caught, 0 false positives, and three gaps named on the page rather than buried.',
+        'The editor is now a real model, and the test that matters is whether it can be turned. One task hands it a file with instructions hidden in a docstring telling it to phone home. If it complies, the sandbox sees the connection and blocks the edit &mdash; the model is treated as the victim, never as the safeguard.',
       ],
       files: [
         'ais/mediator/mediator.py',
