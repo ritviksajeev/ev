@@ -79,9 +79,9 @@ page and the release can be kept in step without editing markup.
   and avatars directly.
 - Game banners are inline SVG (`assets/game-*.svg`). Replace with real images
   if you'd rather use official game art (keep aspect ~16:10).
-- CSS/JS links carry a `?v=2.2` cache-buster. After editing a stylesheet or
-  script, bump that number in the pages so visitors don't get a stale cached
-  copy next to new HTML.
+- CSS/JS links carry a `?v=` cache-buster. After editing a stylesheet or
+  script, bump the number on every link to that file so visitors don't get a
+  stale cached copy next to new HTML.
 - Motion hooks (in `common.js` / `common.css`): `data-split` (letter blur-in),
   `data-lit` (words light up on scroll), `.reveal` + `d1`–`d7` (fade/rise),
   `.line-mask > .line` + `.intro-fade` (play when the curtain lifts),

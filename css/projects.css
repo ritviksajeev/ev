@@ -74,6 +74,7 @@
 .project-stock-badge.live { color: #6aff9a; border-color: rgba(106, 255, 154, 0.35); }
 .project-stock-badge.wip  { color: #ffcc6a; border-color: rgba(255, 204, 106, 0.35); }
 .project-stock-badge.idea { color: var(--purple-bright); border-color: rgba(167, 139, 250, 0.4); }
+.project-stock-badge.old  { color: var(--white-dim); border-color: rgba(255, 255, 255, 0.18); }
 
 .project-price {
   position: absolute;

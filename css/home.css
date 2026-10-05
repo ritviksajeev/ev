@@ -448,6 +448,7 @@ a.work-card:hover { border-color: rgba(167, 139, 250, 0.42); }
   margin-bottom: 18px;
   overflow-wrap: anywhere;
 }
+.work-title.keep-case { text-transform: none; }   /* names with deliberate casing (AiS) */
 .work-desc {
   max-width: 460px;
   font-size: 14px;
@@ -508,53 +509,7 @@ a.work-card:hover { border-color: rgba(167, 139, 250, 0.42); }
   background: var(--bg-0);
   overflow: hidden;
 }
-.wv-site {
-  background:
-    radial-gradient(circle at 50% 60%, rgba(139, 92, 246, 0.16), transparent 60%),
-    var(--bg-0);
-}
-.wv-window {
-  width: 76%;
-  max-width: 420px;
-  border: 1px solid var(--white-rule);
-  border-radius: 8px;
-  background: var(--bg-1);
-  overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.12);
-  transform: rotate(-3deg) translateY(4%);
-  transition: transform 1s var(--ease-expo);
-}
-.work-card:hover .wv-window { transform: rotate(0deg) translateY(0); }
-.wv-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--white-line);
-}
-.wv-bar i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--white-ghost);
-}
-.wv-bar span {
-  margin-left: 10px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1px;
-  color: var(--white-faint);
-}
-.wv-body {
-  display: flex;
-  justify-content: center;
-  padding: 30px;
-}
-.wv-body img {
-  width: 44%;
-  height: auto;
-  filter: drop-shadow(0 12px 40px rgba(138, 43, 226, 0.35));
-}
+.wv-ais,
 .wv-spice {
   color: var(--purple-bright);
   background:
@@ -563,6 +518,7 @@ a.work-card:hover { border-color: rgba(167, 139, 250, 0.42); }
     linear-gradient(90deg, rgba(167, 139, 250, 0.06) 1px, transparent 1px) 0 0 / 28px 28px,
     var(--bg-0);
 }
+.wv-ais svg,
 .wv-spice svg {
   width: 38%;
   max-width: 200px;
@@ -571,6 +527,7 @@ a.work-card:hover { border-color: rgba(167, 139, 250, 0.42); }
   transition: transform 1.2s var(--ease-expo);
 }
 .work-card:hover .wv-spice svg { transform: scale(1.08) rotate(90deg); }
+.work-card:hover .wv-ais svg { transform: scale(1.08); }
 
 /* --------- responsive --------- */
 @media (max-width: 1080px) {

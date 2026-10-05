@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="css/home.css?v=2.2"/>
+  <link rel="stylesheet" href="css/home.css?v=2.3"/>
 </head>
 <body>
 
@@ -203,35 +203,36 @@
 
         <div class="stack" data-stack>
 
-          <article class="stack-card work-card" style="--i: 0">
+          <a href="ais/" class="stack-card work-card" data-transition data-cursor-label="Open" style="--i: 0">
             <div class="work-info">
               <div class="work-top">
                 <span class="work-index">01</span>
-                <span class="work-tag active"><span class="dot"></span>In development</span>
+                <span class="work-tag active"><span class="dot"></span>Alpha released</span>
               </div>
-              <h3 class="work-title ev-text">ev<span class="zero">zero</span>.org</h3>
-              <p class="work-desc">The very site you're on.</p>
+              <h3 class="work-title keep-case">AiS</h3>
+              <p class="work-desc">Agent-in-Sandbox. AI editing agents never touch your real files &mdash; every proposed edit runs in a throwaway container first, and a person approves it on a plain security-check screen. Anti-cheat for AI.</p>
               <div class="work-meta">
-                <span>html</span>
-                <span>css</span>
-                <span>vanilla js</span>
-                <span>svg</span>
+                <span>python</span>
+                <span>docker</span>
+                <span>security</span>
+                <span>ai agents</span>
               </div>
               <div class="work-progress">
-                <div class="work-progress-bar"><span style="--pct: 72%"></span></div>
+                <div class="work-progress-bar"><span style="--pct: 40%"></span></div>
                 <div class="work-progress-label">
-                  <span>v1.1 build</span>
-                  <span>72 / 100</span>
+                  <span>v0.1.6-alpha</span>
+                  <span>open page &rarr;</span>
                 </div>
               </div>
             </div>
-            <div class="work-visual wv-site" aria-hidden="true">
-              <div class="wv-window">
-                <div class="wv-bar"><i></i><i></i><i></i><span>evzero.org</span></div>
-                <div class="wv-body"><img src="assets/logo.svg" alt="" width="200" height="200"/></div>
-              </div>
+            <div class="work-visual wv-ais" aria-hidden="true">
+              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 2.4 L19 5.3 V11.2 C19 15.5 15.6 18.5 11 19.8 C6.4 18.5 3 15.5 3 11.2 V5.3 Z" stroke-width="1.2"/>
+                <rect x="7.4" y="7.2" width="7.2" height="7.2" rx="1.3" stroke-width="0.9" opacity="0.55"/>
+                <circle cx="11" cy="10.8" r="1.5" fill="currentColor" stroke="none"/>
+              </svg>
             </div>
-          </article>
+          </a>
 
           <a href="spice/" class="stack-card work-card" data-transition data-cursor-label="Open" style="--i: 1">
             <div class="work-info">
@@ -277,7 +278,7 @@
         <div class="marquee-track"><div class="mq-group"><span>Built from zero</span><i class="mq-dia"></i><span>Creator</span><i class="mq-dia"></i><span>Developer</span><i class="mq-dia"></i><span>Competitor</span><i class="mq-dia"></i></div></div>
       </div>
       <div class="marquee reverse strip-small" data-marquee data-speed="38">
-        <div class="marquee-track"><div class="mq-group"><span>evzero.org</span><i>/</i><span>solren</span><i>/</i><span>spice</span><i>/</i><span>watchparty</span><i>/</i><span>valorant tracker</span><i>/</i><span>pixel cat</span><i>/</i></div></div>
+        <div class="marquee-track"><div class="mq-group"><span>evzero.org</span><i>/</i><span>solren</span><i>/</i><span>spice</span><i>/</i><span>ais</span><i>/</i><span>qres</span><i>/</i><span>watchparty</span><i>/</i><span>valorant tracker</span><i>/</i><span>pixel cat</span><i>/</i></div></div>
       </div>
     </div>
     <div class="footer-inner">
@@ -306,7 +307,7 @@
           </div>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / v1.0</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-bottom"><span>evzero.org / v2.1</span><span>&copy; <span data-year>2026</span> evzero</span></div>
       <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
     </div>
   </footer>

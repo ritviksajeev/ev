@@ -20,7 +20,7 @@
   const PROJECTS = {
     'evzero-org': {
       title: 'evzero.org',
-      meta: ['website', 'v1', '2026'],
+      meta: ['website', 'v2.1', 'shipped · 2026'],
       desc: [
         'The personal hub. Smooth-scroll sections, a pixel cat that stalks your cursor, SVG logos, and fully hand-built animations.',
         'No framework. Just HTML, CSS, and JS - the way the web intended.',
@@ -30,12 +30,15 @@
     },
     'pixel-cat': {
       title: 'pixel-cat',
-      meta: ['widget', 'open source', '2026'],
+      meta: ['site pet', 'vanilla js + svg', '2026'],
       desc: [
-        'The cat running around this site, extracted into a standalone drop-in web component. State machine for idle / walk / sleep / play, cursor tracking, and a pluggable sprite system.',
+        'The cat wandering every page of this site. A small state machine runs every frame: it idles, wanders off to a random spot, curls up for a nap (with a floating z), and every so often says something &mdash; meow!, prr..., mrrp, pspsps?',
+        'It keeps an eye on your cursor. Get near and it turns to face you, sometimes it stalks over, and if the cursor gets close it pounces. Click it and it meows and pounces on the spot.',
+        'Three hand-placed 16&times;16 SVG sprites &mdash; standing, curled up asleep, mid-pounce &mdash; built from plain rects with crisp edges, so they stay sharp at any size. Plain JavaScript, no libraries. It hides on small screens, where there is no cursor to chase.',
       ],
-      files: ['src/cat.ts', 'sprites/', 'README.md'],
+      files: ['js/cat.js', 'css/common.css'],
       cover: coverCat(),
+      actions: [{ label: 'View the source →', href: 'https://github.com/ritviksajeev/ev/blob/main/js/cat.js', external: true }],
     },
     'watchparty': {
       title: 'watchparty',
@@ -57,7 +60,7 @@
     },
     'valorant-tracker': {
       title: 'valorant-tracker',
-      meta: ['web', 'henrik api', '2026'],
+      meta: ['web', 'henrik api', 'outdated · 2026'],
       desc: [
         'Type a Riot ID, get a rank card, recent form, and a full match log. Data is pulled live from Henrik\'s community Valorant API through a small proxy so the key never hits the browser.',
         'Landing pad for a bigger companion app in the works — same identity and stats will carry across both.',
