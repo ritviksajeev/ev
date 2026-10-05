@@ -231,7 +231,8 @@
 .ais-problem h2 .accent,
 .ais-flow h2 .accent,
 .ais-results h2 .accent,
-.ais-install h2 .accent { color: var(--purple-bright); }
+.ais-install h2 .accent,
+.ais-screen h2 .accent { color: var(--purple-bright); }
 
 /* ───── THE PROBLEM ───── */
 .ais-lead {
@@ -432,6 +433,28 @@
   font-weight: 800;
   font-size: 14px;
 }
+
+/* ───── THE REVIEW SCREEN ───── */
+.ais-screen .ais-lead em { color: var(--purple-bright); font-style: normal; }
+.ais-shot {
+  margin: 0;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--bg-0);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(139, 92, 246, 0.08);
+}
+.ais-shot img { display: block; width: 100%; height: auto; }
+.ais-shot figcaption {
+  padding: 12px 16px;
+  border-top: 1px solid var(--white-line);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  color: var(--white-faint);
+}
+.ais-screen .ais-flow-step b { color: var(--white); }
 
 /* ───── RUN IT ───── */
 .ais-step-grid {

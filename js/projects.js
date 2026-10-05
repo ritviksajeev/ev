@@ -101,6 +101,7 @@
         'Evaluated on ten scripted edits, seven deliberately hostile: 100% caught, 0% false positives. The interesting one breaks the code and edits the test that would catch it &mdash; every test passes, and it still gets flagged.',
         'Ten scenarios written by the same person who wrote the rules measures consistency, not robustness, so there is a second harness that generates novel attacks and scores them blind. It is allowed to fail: 25 attacks, 86% caught, 0 false positives, and three gaps named on the page rather than buried.',
         'The editor is now a real model, and the test that matters is whether it can be turned. One task hands it a file with instructions hidden in a docstring telling it to phone home. If it complies, the sandbox sees the connection and blocks the edit &mdash; the model is treated as the victim, never as the safeguard.',
+        'The review screen is built for whoever actually has to approve an AI&rsquo;s change, not just engineers: anti-cheat for AI. The answer is the headline, a six-line checklist says why in plain words, and only the safe button is ever highlighted. The editor can also run on a free local model through Ollama &mdash; no API key.',
       ],
       files: [
         'ais/mediator/mediator.py',
