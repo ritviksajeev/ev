@@ -1,5 +1,5 @@
 {
-  "_notes": "OpenCV HSV: H 0-179, S 0-255, V 0-255. Grid size comes from game.json (cols/rows). Tuned live on /debug.",
+  "_notes": "OpenCV HSV: H 0-179, S 0-255, V 0-255. Grid size comes from game.json (cols/rows). Tuned live on /debug. Pixel sizes are in the warped card (warp). detect runs on a copy with long side 640: approxEpsilon is a fraction of the outline length, kept small so a corner hidden by ink survives and is rebuilt by extending the sides; maxAreaFraction rejects outlines that fill the photo; minContrast is the grey-level step from table to paper (median inside the card minus a ring outside it; each side must show half of it); insetPx crops the card rim after warping. normalize: flatFieldKernel is the closing size that estimates the bare paper and must be wider than any filled ink area; clahe is off because it lifts large black areas above solid vMax. colors.*.coverage is the share of a tile the mask must cover; a line split between two neighbouring tiles counts once, in the fuller tile.",
 
   "warp": { "width": 1000, "height": 600 },
 
@@ -7,33 +7,36 @@
     "blur": 5,
     "cannyLow": 40,
     "cannyHigh": 120,
-    "approxEpsilon": 0.02,
-    "minAreaFraction": 0.15
+    "approxEpsilon": 0.005,
+    "minAreaFraction": 0.15,
+    "maxAreaFraction": 0.95,
+    "minContrast": 25,
+    "insetPx": 3
   },
 
   "normalize": {
     "flatField": true,
-    "flatFieldKernel": 61,
-    "clahe": true,
+    "flatFieldKernel": 151,
+    "clahe": false,
     "claheClipLimit": 2.0,
     "claheTileGrid": 8
   },
 
   "colors": {
     "solid": {
-      "ranges": [{ "hMin": 0, "hMax": 179, "sMin": 0, "sMax": 110, "vMin": 0, "vMax": 95 }],
-      "coverage": 0.3
+      "ranges": [{ "hMin": 0, "hMax": 179, "sMin": 0, "sMax": 110, "vMin": 0, "vMax": 125 }],
+      "coverage": 0.45
     },
     "pass": {
       "ranges": [{ "hMin": 95, "hMax": 130, "sMin": 70, "sMax": 255, "vMin": 40, "vMax": 255 }],
-      "coverage": 0.25
+      "coverage": 0.4
     },
     "hazard": {
       "ranges": [
         { "hMin": 0, "hMax": 10, "sMin": 90, "sMax": 255, "vMin": 60, "vMax": 255 },
         { "hMin": 165, "hMax": 179, "sMin": 90, "sMax": 255, "vMin": 60, "vMax": 255 }
       ],
-      "coverage": 0.25
+      "coverage": 0.3
     }
   },
 
