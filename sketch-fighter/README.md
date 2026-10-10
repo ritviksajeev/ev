@@ -36,19 +36,30 @@ Dockerfile            Cloud Run / Railway image
 
 **Without a server (sample stages only):** open **evzero.org/sketch/**. It always plays in landscape: turn the phone sideways (it works with rotation lock on too). Everything except photo scanning works there.
 
-**Everything, from your laptop on the same Wi-Fi:**
+**Everything, from your laptop on the same Wi-Fi.** First get the code (once):
+
+```sh
+git clone https://github.com/ritviksajeev/ev.git
+cd ev
+git checkout claude/friendly-dirac-8izbac     # until PR #6 is merged
+cd sketch-fighter
+```
+
+*Windows:* install the tools once (`winget install Git.Git`, `winget install Python.Python.3.11`, `winget install OpenJS.NodeJS.LTS`, then open a new terminal), then double-click **`dev.cmd`** in `sketch-fighter`, or run it from that folder. The first run installs everything. It then opens two windows, the API on :8080 and the game, and the game window prints a `Network: http://192.168.x.x:5173/` line. When Windows Firewall asks about Node.js or Python, allow **Private networks**.
+
+*macOS / Linux:*
 
 ```sh
 cd backend
 python3.11 -m venv .venv && . .venv/bin/activate
 pip install -r requirements-dev.txt
 python app.py                         # API on :8080
-
-cd ../frontend && npm install
+# second terminal, from sketch-fighter/
+cd frontend && npm install
 npm run dev                           # prints a "Network" URL like http://192.168.1.20:5173
 ```
 
-Open the Network URL on the phone. If it doesn't load, the laptop's firewall is blocking it, or the Wi-Fi isolates devices (common on venue and campus Wi-Fi). Turn on your phone's hotspot and connect the laptop to it.
+Open the Network URL on the phone. If it doesn't load, the laptop's firewall is blocking it, the Wi-Fi is marked Public in Windows, or the Wi-Fi isolates devices (common on venue and campus Wi-Fi). Turn on your phone's hotspot and connect the laptop to it.
 
 For a production-like run, `npm run build`, then `python app.py` alone serves the game and the API on :8080 (use `http://<laptop-ip>:8080`).
 
