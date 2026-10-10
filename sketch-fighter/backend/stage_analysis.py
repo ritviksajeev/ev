@@ -1,9 +1,9 @@
 """Stage analysis: turns a scanned tile grid into a fair, playable stage.
 
 Standable nodes are connected by walking and by moves from a jump table that is
-simulated once at import with physics.step_body and pessimistic physics. On top
-of that nav graph run the checks with automatic fixes from docs/SPEC.md (main
-stage, unreachable platforms, recovery, enclosed pockets) and fair spawns.
+simulated once at import with physics.step_body (real and pessimistic physics).
+On top of that nav graph run the checks with automatic fixes from docs/SPEC.md
+(main stage, unreachable platforms, recovery, enclosed pockets), then fair spawns.
 """
 
 import itertools
@@ -83,25 +83,24 @@ def recipe_input(recipe, step):
     jumps = recipe["type"] in ("jump", "double_jump") and step == 0
     if recipe["type"] == "double_jump" and step == ms_to_step(recipe["doubleJumpAtMs"]):
         jumps = True
-    return {"dir": recipe["dir"] if held else 0, "down": recipe["type"] == "drop" and step == 0, "jump": jumps}
+    down = recipe["type"] == "drop" and step == 0
+    return {"dir": recipe["dir"] if held else 0, "down": down, "jump": jumps}
+
+
+def _recipe(kind, d, hold_from=0, until=None, dj_at=None):
+    return {"type": kind, "dir": d, "holdFromMs": hold_from, "holdUntilMs": until, "doubleJumpAtMs": dj_at}
 
 
 def _recipes():
     """All move recipes, simplest first, so dedupe and edge selection keep the simplest."""
-    out = [
-        {"type": "fall", "dir": d, "holdFromMs": 0, "holdUntilMs": until, "doubleJumpAtMs": None}
-        for until in FALL_HOLD_UNTIL_MS
-        for d in (1, -1)
-    ]
+    out = [_recipe("fall", d, until=until) for until in FALL_HOLD_UNTIL_MS for d in (1, -1)]
     for kind in ("drop", "jump", "double_jump"):
         for dj in DOUBLE_JUMP_AT_MS if kind == "double_jump" else (None,):
-            out.append({"type": kind, "dir": 0, "holdFromMs": 0, "holdUntilMs": None, "doubleJumpAtMs": dj})
+            out.append(_recipe(kind, 0, dj_at=dj))
             for hold_from in HOLD_FROM_MS:
                 for until in HOLD_UNTIL_MS:
-                    if until is not None and until <= hold_from:
-                        continue
-                    for d in (1, -1):
-                        out.append({"type": kind, "dir": d, "holdFromMs": hold_from, "holdUntilMs": until, "doubleJumpAtMs": dj})
+                    if until is None or until > hold_from:
+                        out += [_recipe(kind, d, hold_from, until, dj) for d in (1, -1)]
     return out
 
 
@@ -213,29 +212,28 @@ class _JumpTable:
         self.build_ms = (time.perf_counter() - t0) * 1000
 
     def _flatten(self, traces):
-        kind, dc, dr, cross, seg = [], [], [], [], []
-        cr = {"dr": [], "dc0": [], "dc1": [], "dcc": [], "dx": [], "drop": [], "seg": [], "event": []}
+        events = []  # (kind, dc, dr, crossing id or -1, segment)
+        crossings = []  # (dr, dc0, dc1, dcc, dx, dropping, segment, index of its first event)
         starts = []
-        for s, events in enumerate(traces):
-            starts.append(len(kind))
-            for k, c, r, extra in events:
+        for s, trace in enumerate(traces):
+            starts.append(len(events))
+            for k, c, r, extra in trace:
                 if k == CELL:
-                    kind.append(k), dc.append(c), dr.append(r), cross.append(-1), seg.append(s)
+                    events.append((k, c, r, -1, s))
                     continue
                 c1, cc, dx = extra
-                cid = len(cr["dr"])
-                for key, v in (("dr", r), ("dc0", c), ("dc1", c1), ("dcc", cc), ("dx", dx), ("drop", k == CROSS_DROPPING), ("seg", s), ("event", len(kind))):
-                    cr[key].append(v)
-                for col in sorted({c, c1}):
-                    kind.append(k), dc.append(col), dr.append(r), cross.append(cid), seg.append(s)
-        self.seg_end = np.array(starts[1:] + [len(kind)], np.int64)
+                crossings.append((r, c, c1, cc, dx, k == CROSS_DROPPING, s, len(events)))
+                events += [(k, col, r, len(crossings) - 1, s) for col in sorted({c, c1})]
+        self.seg_end = np.array(starts[1:] + [len(events)], np.int64)
+        kind, dc, dr, cross, seg = zip(*events)
         self.kind = np.array(kind, np.uint8)
         self.dc = np.array(dc, np.int32)
         self.dr = np.array(dr, np.int32)
         self.cross = np.array(cross, np.int32)
         self.seg = np.array(seg, np.int32)
+        keys = ("dr", "dc0", "dc1", "dcc", "dx", "drop", "seg", "event")
         dtypes = {"drop": bool, "dx": np.float64}
-        self.cr = {k: np.array(v, dtypes.get(k, np.int32)) for k, v in cr.items()}
+        self.cr = {k: np.array(v, dtypes.get(k, np.int32)) for k, v in zip(keys, zip(*crossings))}
 
         # Padding so every event offset stays inside one flat array.
         self.pad_top = int(max(1, -self.dr.min()))
@@ -253,7 +251,8 @@ class _JumpTable:
             for depth in range(1, ROWS):
                 sel = np.nonzero((self.dr <= depth) & (self.seg >= first_seg))[0]
                 seg_starts = np.searchsorted(self.seg[sel], np.arange(first_seg, len(traces)))
-                self.by_depth[real_only, depth] = (sel, offset[sel].astype(np.int32), _EVENT_BIT[self.kind[sel]], seg_starts)
+                bit = _EVENT_BIT[self.kind[sel]]
+                self.by_depth[real_only, depth] = (sel, offset[sel].astype(np.int32), bit, seg_starts)
 
     def pad(self, grid, fill):
         out = np.full((self.pad_top + ROWS + 1, self.width), fill, grid.dtype)
@@ -274,7 +273,8 @@ class _JumpTable:
             n_events = len(sel)
             positions = np.arange(n_events, dtype=np.int32)
             for chunk in np.array_split(idx, max(1, len(idx) // 32)):
-                base = ((rows[chunk] + self.pad_top) * self.width + cols[chunk] + self.pad_left).astype(np.int32)
+                base = (rows[chunk] + self.pad_top) * self.width + cols[chunk] + self.pad_left
+                base = base.astype(np.int32)
                 trig = (np.take(bits, base[:, None] + off[None, :]) & bit).astype(bool)
                 first = np.minimum.reduceat(np.where(trig, positions, n_events), seg_starts, axis=1)
                 out[chunk] = np.where(first < n_events, sel[np.minimum(first, n_events - 1)], -1)
@@ -289,6 +289,8 @@ _TRIGGER_BITS[[SOLID, PASS, HAZARD, FIX]] |= 2
 _EVENT_BIT = np.array([1, 2, 1], np.uint8)  # by event kind: CELL, CROSS_LAND_PASS, CROSS_DROPPING
 
 TABLE = _JumpTable()
+log.info("jump table: %d moves from %d recipes, %d events, built in %.0f ms",
+         TABLE.n_moves, TABLE.recipes_total, len(TABLE.kind), TABLE.build_ms)
 
 
 # --- Nav graph ------------------------------------------------------------------
@@ -334,7 +336,8 @@ def _landed(first, tiles_pad, node_pad, cols, rows):
 
     centre_node = node_pad[r - 1, cc]
     other_node = node_pad[r - 1, other]
-    picked = np.where(lands(cc) & (centre_node >= 0), centre_node, np.where(lands(other) & (other_node >= 0), other_node, INVALID))
+    picked = np.where(lands(other) & (other_node >= 0), other_node, INVALID)
+    picked = np.where(lands(cc) & (centre_node >= 0), centre_node, picked)
     hazard = (tiles_pad[r, a] == HAZARD) | (tiles_pad[r, b] == HAZARD)
     res[is_cross] = np.where(hazard, INVALID, picked)
     node[ni, si] = res
@@ -372,8 +375,11 @@ class Nav:
         self.tiles_pad = TABLE.pad(tiles, EMPTY)
         self.node_pad = TABLE.pad(self.node_grid, -1)
         # Platform runs: node ids are row-major, so a run breaks where the row or column jumps.
-        self.runs = np.cumsum(np.r_[True, (np.diff(self.rows) != 0) | (np.diff(self.cols) != 1)]) if self.n else np.zeros(0, int)
-        self.outcomes, self.land_dx = _outcomes(self.tiles_pad, self.node_pad, self.runs, self.cols, self.rows, self.work)
+        breaks = (np.diff(self.rows) != 0) | (np.diff(self.cols) != 1)
+        self.runs = np.cumsum(np.r_[True, breaks]) if self.n else np.zeros(0, int)
+        self.outcomes, self.land_dx = _outcomes(
+            self.tiles_pad, self.node_pad, self.runs, self.cols, self.rows, self.work
+        )
         self._edges()
         self.open = _open_air(tiles)[self.rows, self.cols]
         self.comp = _scc(self.n, self.adj)
@@ -544,15 +550,9 @@ class _Stage:
         for c, r in changed:
             self.tiles[r, c] = value
         self._nav = None
-        self.fixes.append({"type": kind, "op": op, "cells": [[int(c), int(r)] for c, r in changed], "message": message})
+        cells = [[int(c), int(r)] for c, r in changed]
+        self.fixes.append({"type": kind, "op": op, "cells": cells, "message": message})
         return undo
-
-    def mark(self):
-        return self.tiles, self._nav, len(self.fixes)
-
-    def restore(self, mark):
-        self.tiles, self._nav, n_fixes = mark
-        del self.fixes[n_fixes:]
 
     def revert(self, undo):
         self.tiles, self._nav = undo
@@ -569,7 +569,8 @@ def _check_ground(stage):
     row = DEFAULT_FLOOR_ROW
     room = [(c, r) for r in (row - 2, row - 1) for c in range(c0, c1 + 1)]
     stage.apply("default_stage", "remove", room, "Cleared room for a default stage")
-    stage.apply("default_stage", "add", [(c, row) for c in range(c0, c1 + 1)], "Added a default stage: there was almost no ground")
+    floor = [(c, row) for c in range(c0, c1 + 1)]
+    stage.apply("default_stage", "add", floor, "Added a default stage: there was almost no ground")
 
 
 def _check_unreachable(stage):
@@ -592,15 +593,20 @@ def _check_unreachable(stage):
             src, dst, message = group, nav.main, "Added a step so you can get back up"
         joined = lambda new, step: _joined(new, cells, need_in)  # noqa: E731
         budget[0] -= 1
-        if _try_steps(stage, _step_candidates(nav, src, dst), joined, message, budget):
+        result = _try_steps(stage, _step_candidates(nav, src, dst), joined, message, budget)
+        if result is None:
+            return
+        if result:
             continue
-        if need_in and key not in stage.bridged and budget[0] > 0:
+        if need_in and key not in stage.bridged:
             stage.bridged.add(key)
             budget[0] -= 1
-            if _bridge(stage, cells, "Added steps so you can reach a platform", budget):
+            result = _bridge(stage, cells, "Added steps so you can reach a platform", budget)
+            if result is None:
+                return
+            if result:
                 continue
-        if budget[0] <= 0:
-            return
+        # Every candidate failed: remove the platform (the reserved unit of budget).
         budget[0] -= 1
         protected = set(nav.main) | {i for i in range(nav.n) if not nav.open[i]}
         if not _remove_platform(stage, nav, group, protected):
@@ -619,10 +625,12 @@ def _ids(nav, cells):
 
 
 def _try_steps(stage, candidates, ok, message, budget):
-    """Apply candidates in order until ok(new_nav, step) holds; each rebuild costs one unit of budget."""
+    """Apply candidates in order until ok(new_nav, step) holds: True. False when every candidate
+    failed, None when out of budget first. Each rebuild costs one unit of budget; one unit stays
+    in reserve so the platform can still be removed instead."""
     for step in candidates:
-        if budget[0] <= 0 or stage.busy():
-            return False
+        if budget[0] <= 1 or stage.busy():
+            return None
         undo = stage.apply("added_step", "add", step, message)
         if undo is None:
             continue
@@ -703,23 +711,25 @@ def _leaving(nav, flat, dst):
     return is_dst[np.where(out >= 0, out, nav.n)].sum(axis=1)
 
 
-def _step_candidates(nav, src, dst, limit=60):
-    """Steps (lists of cells) that verified moves reach from src and leave toward dst, best first."""
+def _step_candidates(nav, src, dst, spots=60, limit=4):
+    """Up to `limit` steps (lists of cells) that moves reach from src and leave toward dst, best
+    first, judged from the `spots` most landed-on cells."""
     if src is nav.main:
         _, flat = _main_landing_spots(nav)
     else:
         _, flat = _landing_spots(nav, nav.cols[src], nav.rows[src])
     if len(flat) == 0:
         return []
-    spots, counts = np.unique(flat, return_counts=True)
-    top = np.argsort(-counts, kind="stable")[:limit]
-    spots, counts = spots[top], counts[top]
-    score = counts * _leaving(nav, spots, dst)
-    order = np.lexsort((spots, -score))
-    return [step for step in (_step_cells(nav.tiles, *_cell(spots[i])) for i in order if score[i] > 0) if step]
+    cells, counts = np.unique(flat, return_counts=True)
+    top = np.argsort(-counts, kind="stable")[:spots]
+    cells, counts = cells[top], counts[top]
+    score = counts * _leaving(nav, cells, dst)
+    order = np.lexsort((cells, -score))
+    steps = (_step_cells(nav.tiles, *_cell(cells[i])) for i in order if score[i] > 0)
+    return list(itertools.islice((step for step in steps if step), limit))
 
 
-def _two_step_candidates(nav, group, stones=20, seconds=80, limit=10):
+def _two_step_candidates(nav, group, stones=20, seconds=80, limit=3):
     """Pairs of steps main -> stone -> step -> group for groups too far for one step, best first."""
     _, flat = _main_landing_spots(nav)
     if len(flat) == 0:
@@ -741,7 +751,8 @@ def _two_step_candidates(nav, group, stones=20, seconds=80, limit=10):
     pairs, n_ways = np.unique(np.stack([stone, flat2], axis=1)[lv > 0], axis=0, return_counts=True)
     if len(pairs) == 0:
         return []
-    score = counts[np.searchsorted(spots, pairs[:, 0])] * n_ways * second_leaving[np.searchsorted(second, pairs[:, 1])]
+    score = counts[np.searchsorted(spots, pairs[:, 0])] * n_ways
+    score *= second_leaving[np.searchsorted(second, pairs[:, 1])]
     out = []
     for i in np.lexsort((pairs[:, 1], pairs[:, 0], -score)):
         a, b = _step_cells(nav.tiles, *_cell(pairs[i, 0])), _step_cells(nav.tiles, *_cell(pairs[i, 1]))
@@ -769,7 +780,8 @@ def _cell(flat):
 
 def _step_cells(tiles, c, r):
     """A 2-3 tile step at row r around column c, or None if there is no room."""
-    cells = [(c, r)] + [(x, r) for x in (c - 1, c + 1) if 0 <= x < COLS and tiles[r, x] == EMPTY and tiles[r - 1, x] == EMPTY]
+    cells = [(c, r)]
+    cells += [(x, r) for x in (c - 1, c + 1) if 0 <= x < COLS and tiles[r, x] == EMPTY == tiles[r - 1, x]]
     return cells if len(cells) >= 2 else None
 
 
@@ -783,7 +795,8 @@ def _remove_platform(stage, nav, group, protected):
     if any(holds[i] for i in protected):
         return False
     cells = [(int(c), int(r)) for r, c in np.argwhere(blob)]
-    return stage.apply("removed_platform", "remove", cells, "Removed a platform nobody could reach") is not None
+    message = "Removed a platform nobody could reach"
+    return stage.apply("removed_platform", "remove", cells, message) is not None
 
 
 def _check_recovery(stage):
@@ -841,7 +854,7 @@ def _edge_recovers(tiles, main_cells, edge, side):
         if _overlaps_blocking(tiles, col, row):
             continue
         started = True
-        target = min(main_cells, key=lambda cell: ((cell[0] - col) ** 2 + (cell[1] - row) ** 2, cell[1], cell[0]))
+        target = min(main_cells, key=lambda n: ((n[0] - col) ** 2 + (n[1] - row) ** 2, n[1], n[0]))
         for jump_ms in RECOVERY_JUMP_MS:
             if _recovers(grid, main_cells, lowest_y, col, row, target, ms_to_step(jump_ms)):
                 return True
@@ -862,8 +875,9 @@ def _recovers(grid, main_cells, lowest_y, col, row, target, jump_step):
             return False
         if b["onGround"]:
             r = round((b["y"] + HALF_H) / T) - 1
-            cols = {math.floor(b["x"] / T), math.floor((b["x"] - HALF_W) / T), math.floor((b["x"] + HALF_W - physics.EPS) / T)}
-            return any((c, r) in main_cells for c in cols)
+            x = b["x"]
+            covered = (x / T, (x - HALF_W) / T, (x + HALF_W - physics.EPS) / T)
+            return any((math.floor(c), r) in main_cells for c in covered)
         if step > jump_step and b["vy"] > 0 and b["y"] + HALF_H > lowest_y:
             return False  # jump spent, falling, already below every main-stage node
     return False
@@ -985,6 +999,7 @@ def _spawns(nav):
         + 2 * np.abs(edge[a] - edge[b])
         + np.abs(cols[b] - cols[a] - target)
         + 6 * ((edge[a] < 2).astype(float) + (edge[b] < 2))
+        + 0.1 * (2 * rows.max() - rows[a] - rows[b])  # tie-break: lower platforms (the ground)
     )
     cost[cols[b] <= cols[a]] = np.inf
     i, j = np.unravel_index(int(np.argmin(cost)), cost.shape)
@@ -994,7 +1009,8 @@ def _spawns(nav):
 
 
 def analyze(grid):
-    """grid: [rows, cols] tile codes. Returns tiles, spawns, fixes, navGraph and timings (stage.schema.json)."""
+    """grid: [rows, cols] tile codes 0-3 (4 accepted). Returns tiles, spawns, fixes, navGraph and
+    timings as in stage.schema.json."""
     t0 = time.perf_counter()
     tiles = np.asarray(grid)
     if tiles.shape != (ROWS, COLS):
@@ -1013,7 +1029,8 @@ def analyze(grid):
     graph = nav.export()
 
     ms = (time.perf_counter() - t0) * 1000
-    log.info("analysis: %d nodes, %d edges, %d fixes in %.1f ms", nav.n, len(graph["edges"]), len(stage.fixes), ms)
+    n_edges, n_fixes = len(graph["edges"]), len(stage.fixes)
+    log.info("analysis: %d nodes, %d edges, %d fixes in %.1f ms", nav.n, n_edges, n_fixes, ms)
     return {
         "tiles": stage.tiles.tolist(),
         "spawns": spawns,
