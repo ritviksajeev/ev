@@ -5,6 +5,8 @@ import hmac
 import json
 import logging
 import os
+import tempfile
+import threading
 import time
 from pathlib import Path
 
@@ -13,7 +15,7 @@ from werkzeug.exceptions import HTTPException
 
 import enrich as gemini
 import vision
-from config import APP_DIR, GAME_HASH, SHARED_DIR, load_vision
+from config import APP_DIR, GAME_HASH, SHARED_DIR, load_vision, vision_problem
 from pipeline import build_stage
 from store import Store
 
@@ -117,16 +119,25 @@ def scan():
             return _error("'vision' must be JSON", 400)
         if not isinstance(overrides, dict):
             return _error("'vision' must be a JSON object", 400)
-        vision_cfg = _merge(load_vision(), overrides)
+        current = load_vision()
+        vision_cfg = _merge(current, overrides)
+        # Anyone can send these, and some values crash OpenCV in C (claheTileGrid 0 kills the
+        # whole server process with SIGFPE), so check them before OpenCV ever sees them.
+        problem = vision_problem(vision_cfg, current)
+        if problem:
+            return _error(f"Those vision settings are invalid: {problem}", 400)
 
     try:
         stage, warped = build_stage(photo, vision_cfg, debug=debug)
+    except vision.ImageTooLarge as e:
+        return _error(str(e), 413)
     except ValueError:
         return _error("That file doesn't look like a photo", 400)
-    except (KeyError, TypeError):
-        if vision_cfg is not None:
-            return _error("Those vision settings are incomplete", 400)
-        raise
+    except Exception:
+        if vision_cfg is None:
+            raise
+        log.exception("debug scan with custom vision settings failed")
+        return _error("Those vision settings are invalid", 400)
 
     if debug:
         stage["photoUrl"] = None
@@ -161,10 +172,30 @@ def enrich(sid):
         return _error("No such stage", 404)
     if found.get("extras"):
         return jsonify(extras=found["extras"])
-    path = store.file(sid, "warped")
-    extras = gemini.enrich(path.read_bytes() if path else b"", seed=sid)
-    store.set_extras(sid, extras)
+    # A Gemini call can take GEMINI_TIMEOUT_S, and each one holds a server thread: cap how many
+    # run at once so scans always have threads, and never ask twice for the same stage. A request
+    # that can't go now gets the stage's local name (not stored, so a later call still asks).
+    with _enrich_lock:
+        go = sid not in _enriching and _enrich_slots.acquire(blocking=False)
+        if go:
+            _enriching.add(sid)
+    if not go:
+        return jsonify(extras=gemini.fallback(sid))
+    try:
+        path = store.file(sid, "warped")
+        extras = gemini.enrich(path.read_bytes() if path else b"", seed=sid)
+        store.set_extras(sid, extras)
+    finally:
+        with _enrich_lock:
+            _enriching.discard(sid)
+        _enrich_slots.release()
     return jsonify(extras=extras)
+
+
+ENRICH_CONCURRENCY = 3  # of gunicorn's 8 threads (Dockerfile); the rest stay free for scans
+_enrich_slots = threading.BoundedSemaphore(ENRICH_CONCURRENCY)
+_enrich_lock = threading.Lock()
+_enriching = set()
 
 
 # ---------- calibration (/debug) ----------
@@ -186,14 +217,21 @@ def save_vision():
         return _error("Set DEBUG_TOKEN on the server to save from another machine", 403)
 
     new = request.get_json(silent=True)
-    current = load_vision()
-    problem = _shape_mismatch(current, new)
+    # Same check as the debug-scan overrides: shape, finite numbers, ranges OpenCV accepts. A bad
+    # value saved here would break (or, for claheTileGrid 0, crash) every later scan.
+    problem = vision_problem(new, load_vision())
     if problem:
         return _error(f"vision.json not saved: {problem}", 400)
+    text = json.dumps(new, indent=2, allow_nan=False) + "\n"
     path = SHARED_DIR / "vision.json"
-    tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(new, indent=2) + "\n", encoding="utf-8")
-    os.replace(tmp, path)
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=".vision-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
     log.info("vision.json saved from /debug")
     return jsonify(ok=True)
 
@@ -203,29 +241,6 @@ def _merge(base, overrides):
     for k, v in overrides.items():
         out[k] = _merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
     return out
-
-
-def _shape_mismatch(want, got, path="vision"):
-    """None if `got` has exactly the keys and value types of `want`."""
-    if isinstance(want, dict):
-        if not isinstance(got, dict):
-            return f"{path} must be an object"
-        if set(want) != set(got):
-            return f"{path} keys differ ({', '.join(sorted(set(want) ^ set(got)))})"
-        for k in want:
-            problem = _shape_mismatch(want[k], got[k], f"{path}.{k}")
-            if problem:
-                return problem
-        return None
-    if isinstance(want, list):
-        if not isinstance(got, list) or not got:
-            return f"{path} must be a non-empty list"
-        return next((p for p in (_shape_mismatch(want[0], item, f"{path}[]") for item in got) if p), None)
-    if isinstance(want, bool) or isinstance(got, bool):
-        return None if isinstance(got, bool) == isinstance(want, bool) else f"{path} must be true/false"
-    if isinstance(want, (int, float)):
-        return None if isinstance(got, (int, float)) else f"{path} must be a number"
-    return None if isinstance(got, type(want)) else f"{path} has the wrong type"
 
 
 # ---------- the game ----------

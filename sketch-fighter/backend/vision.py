@@ -5,7 +5,9 @@ colour, sample the masks into the game grid, tidy the grid. Thresholds live in s
 """
 
 import base64
+import itertools
 import logging
+import struct
 import time
 
 import cv2
@@ -19,6 +21,14 @@ EMPTY, SOLID, PASS, HAZARD = 0, 1, 2, 3
 DETECT_MAX_SIDE = 640  # the card is searched for on a copy this size; corners are scaled back up
 BACKGROUND_SCALE = 4  # lighting is estimated at 1/4 size, it only holds slow changes
 GRID_COLORS = np.array([(240, 240, 240), (30, 30, 30), (210, 100, 30), (40, 40, 210)], np.uint8)  # BGR legend
+# A small PNG can decode to a huge image (300 KB -> 100 Mpx, ~600 MB). The client always sends a
+# 1280 px JPEG; anything over this many pixels is refused from its header, before decoding.
+MAX_PIXELS = 40_000_000
+UPSIDE_DOWN_INK_CENTRE = 0.40  # a landscape card whose ink centre is higher than this is turned over
+
+
+class ImageTooLarge(ValueError):
+    """The image header asks for more than MAX_PIXELS pixels."""
 
 
 class _Timer:
@@ -45,8 +55,12 @@ def scan_image(data, vision_cfg=None, debug=False):
     timer.lap("warp")
 
     masks = colour_masks(normalize(warped, cfg["normalize"]), cfg)
-    if sideways and _ink_in_top_half(masks):
-        # Photographed with the card's long side vertical: assume the ground is drawn low on the card.
+    # Which end is up can't be told from the outline, so assume the ground is drawn low on the card.
+    # A card photographed sideways is turned when most ink is in the top half; one in landscape only
+    # when the ink sits clearly high (a judge photographing it from across the table): drawn cards
+    # put their ink centre at 0.56-0.78 of the height, upside-down ones at about 0.33.
+    centre = _ink_centre(masks)
+    if card is not None and centre is not None and centre < (0.5 if sideways else UPSIDE_DOWN_INK_CENTRE):
         warped = cv2.rotate(warped, cv2.ROTATE_180)
         masks = {name: cv2.rotate(m, cv2.ROTATE_180) for name, m in masks.items()}
     timer.lap("masks")
@@ -67,11 +81,71 @@ def scan_image(data, vision_cfg=None, debug=False):
 
 
 def decode_image(data):
-    buf = np.frombuffer(data or b"", np.uint8)
-    img = cv2.imdecode(buf, cv2.IMREAD_COLOR) if buf.size else None
-    if img is None:
+    """BGR image from file bytes. Raises ValueError if undecodable, ImageTooLarge if too many pixels."""
+    data = bytes(data or b"")
+    size = image_size(data)
+    if size is not None and size[0] * size[1] > MAX_PIXELS:
+        raise ImageTooLarge(f"That photo is too big ({size[0]} x {size[1]} pixels)")
+    buf = np.frombuffer(data, np.uint8)
+    try:
+        img = cv2.imdecode(buf, cv2.IMREAD_COLOR) if buf.size else None
+    except cv2.error as e:
+        raise ValueError(f"could not decode image: {e}") from None
+    if img is None or img.size == 0:
         raise ValueError("could not decode image")
+    if img.shape[0] * img.shape[1] > MAX_PIXELS:  # a format image_size does not read
+        raise ImageTooLarge(f"That photo is too big ({img.shape[1]} x {img.shape[0]} pixels)")
     return img
+
+
+def image_size(data):
+    """(width, height) from a PNG, JPEG, GIF, BMP or WebP header, or None if not one of those."""
+    try:
+        if data[:8] == b"\x89PNG\r\n\x1a\n":
+            return struct.unpack(">II", data[16:24])
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            return struct.unpack("<HH", data[6:10])
+        if data[:2] == b"BM":
+            w, h = struct.unpack("<ii", data[18:26])
+            return abs(w), abs(h)
+        if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+            chunk = data[12:16]
+            if chunk == b"VP8X":
+                return 1 + int.from_bytes(data[24:27], "little"), 1 + int.from_bytes(data[27:30], "little")
+            if chunk == b"VP8L":
+                bits = int.from_bytes(data[21:25], "little")
+                return 1 + (bits & 0x3FFF), 1 + ((bits >> 14) & 0x3FFF)
+            if chunk == b"VP8 ":
+                w, h = struct.unpack("<HH", data[26:30])
+                return w & 0x3FFF, h & 0x3FFF
+            return None
+        if data[:2] == b"\xff\xd8":
+            return _jpeg_size(data)
+    except struct.error:
+        return None
+    return None
+
+
+def _jpeg_size(data):
+    i = 2
+    while i + 4 <= len(data):
+        if data[i] != 0xFF:
+            return None
+        marker = data[i + 1]
+        if marker == 0xFF:  # fill byte
+            i += 1
+            continue
+        if marker in (0x01, *range(0xD0, 0xDA)):  # no length; 0xD9 = end, 0xDA = scan start
+            if marker in (0xD9, 0xDA):
+                return None
+            i += 2
+            continue
+        (length,) = struct.unpack(">H", data[i + 2:i + 4])
+        if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):  # start of frame
+            h, w = struct.unpack(">HH", data[i + 5:i + 9])
+            return w, h
+        i += 2 + length
+    return None
 
 
 def encode_jpeg(img, quality=85):
@@ -89,42 +163,81 @@ def find_card(img, cfg):
     sideways means the card's long side was closer to vertical than horizontal in the photo,
     so which end is up cannot be told from the outline.
     """
-    scale = min(1.0, DETECT_MAX_SIDE / max(img.shape[:2]))
-    small = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA) if scale < 1 else img
+    h, w = img.shape[:2]
+    scale = min(1.0, DETECT_MAX_SIDE / max(h, w))
+    if scale < 1:  # explicit size: a 1 px side would round to 0 px with fx/fy
+        small = cv2.resize(img, (max(1, round(w * scale)), max(1, round(h * scale))), interpolation=cv2.INTER_AREA)
+    else:
+        small = img
     k = int(cfg["blur"]) | 1
     gray = cv2.GaussianBlur(cv2.cvtColor(small, cv2.COLOR_BGR2GRAY), (k, k), 0)
-    for strategy in (_quads_from_edges, _quads_from_paper):
-        for quad in strategy(gray, cfg):
+    outlines = [_contours_from_edges(gray, cfg), _contours_from_paper(gray)]
+    # Convex hulls first (they ignore ink that reaches the card edge); then, if no hull gave a card,
+    # the raw outlines, where something lying across the card edge (a fingertip pinning a corner)
+    # adds sides of its own that the hull would have swallowed together with a side of the card.
+    for quads in ([_quads_from_contours(c, gray.shape, cfg) for c in outlines]
+                  + [_quads_from_raw_contours(c, gray.shape, cfg) for c in outlines]):
+        for quad in quads:
             if _plausible_card(quad, gray, cfg):
                 corners, sideways = order_corners(quad)
                 return corners / scale, sideways
     return None
 
 
-def _quads_from_edges(gray, cfg):
+def _contours_from_edges(gray, cfg):
     edges = cv2.Canny(gray, cfg["cannyLow"], cfg["cannyHigh"])
     edges = cv2.dilate(edges, np.ones((3, 3), np.uint8))  # bridge small gaps in the outline
     contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    return _quads_from_contours(contours, gray.shape, cfg)
+    return contours
 
 
-def _quads_from_paper(gray, cfg):
+def _contours_from_paper(gray):
     """Fallback: the largest bright region (white paper on a darker table)."""
     _, paper = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     paper = cv2.morphologyEx(paper, cv2.MORPH_OPEN, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
     contours, _ = cv2.findContours(paper, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    return _quads_from_contours(contours, gray.shape, cfg)
+    return contours
 
 
-def _quads_from_contours(contours, shape, cfg, tries=3):
-    """Quadrilaterals around the largest contours. Convex hulls ignore ink that reaches the card edge."""
+def _largest(contours, shape, cfg, tries=3):
+    """(contour, hull) for the largest few outlines by hull area, down to minAreaFraction."""
     min_area = cfg["minAreaFraction"] * shape[0] * shape[1]
-    hulls = sorted((cv2.convexHull(c) for c in contours), key=cv2.contourArea, reverse=True)
-    for hull in hulls[:tries]:
-        if cv2.contourArea(hull) < min_area:
-            return
+    pairs = sorted(((c, cv2.convexHull(c)) for c in contours), key=lambda p: cv2.contourArea(p[1]), reverse=True)
+    return [(c, hull) for c, hull in pairs[:tries] if cv2.contourArea(hull) >= min_area]
+
+
+def _quads_from_contours(contours, shape, cfg):
+    """Quadrilaterals around the largest contours' convex hulls (lazily: a generator)."""
+    for _, hull in _largest(contours, shape, cfg):
         quad = hull_to_quad(hull, cfg["approxEpsilon"])
         if quad is not None:
+            yield quad
+
+
+def _quads_from_raw_contours(contours, shape, cfg, longest=6, max_growth=1.25):
+    """Quads from 4 of the 6 longest straight sides of each large raw outline, biggest first."""
+    for contour, hull in _largest(contours, shape, cfg):
+        pts = cv2.approxPolyDP(contour, cfg["approxEpsilon"] * cv2.arcLength(contour, True), True)
+        pts = pts.reshape(-1, 2).astype(np.float64)
+        if len(pts) < 4:
+            continue
+        sides = _straight_sides(pts, 5)
+        if len(sides) < 4:
+            continue
+        lengths = [np.linalg.norm(b - a) for a, b in sides]
+        keep = sorted(np.argsort(lengths)[-longest:])
+        limit = max_growth * cv2.contourArea(hull)
+        quads = []
+        for combo in itertools.combinations(keep, 4):
+            chosen = [sides[i] for i in combo]
+            corners = [_intersect(chosen[i - 1], chosen[i]) for i in range(4)]
+            if any(c is None for c in corners):
+                continue
+            quad = np.array(corners, np.float32)
+            area = cv2.contourArea(quad)
+            if 0 < area <= limit and cv2.isContourConvex(quad.reshape(-1, 1, 2)):
+                quads.append((area, quad))
+        for _, quad in sorted(quads, key=lambda q: -q[0]):
             yield quad
 
 
@@ -274,8 +387,12 @@ def flat_field(img, kernel):
     # Closing replaces ink narrower than the kernel with the paper around it.
     background = cv2.morphologyEx(small, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_RECT, (k, k)))
     # Ink areas wider than the kernel survive the closing; give them the typical paper colour instead.
-    level = background.max(axis=2)
-    paper = level >= 0.5 * np.percentile(level, 90)
+    # Paper vs ink is judged on the darkest channel (a wide red or blue fill is dark in one), median
+    # filtered so paper specks inside a filled block don't pass for paper, against a low bar: paper
+    # under a hard shadow that takes half the light or more must still count as paper, or dividing
+    # by lit paper turns the shadowed half of the card into solid ground.
+    darkest = np.ascontiguousarray(small.min(axis=2))
+    paper = cv2.medianBlur(darkest, min(k, 255)) >= 0.3 * np.percentile(background.min(axis=2), 90)
     if paper.any() and not paper.all():
         background[~paper] = np.median(background[paper], axis=0)
     background = cv2.blur(background, (k, k))
@@ -343,10 +460,11 @@ def _ellipse(px):
     return cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (px, px)) if px > 1 else None
 
 
-def _ink_in_top_half(masks):
+def _ink_centre(masks):
+    """Height of the ink's centre of mass as a fraction of the card height (0 top), None if no ink."""
     ink = masks["solid"] | masks["pass"] | masks["hazard"]
     m = cv2.moments(ink, binaryImage=True)
-    return m["m00"] > 0 and m["m01"] / m["m00"] < ink.shape[0] / 2
+    return m["m01"] / m["m00"] / ink.shape[0] if m["m00"] > 0 else None
 
 
 # --- grid -------------------------------------------------------------------------------------
