@@ -297,7 +297,8 @@ def render_card(rng, spec):
 # --- photographing ---------------------------------------------------------------------------------
 
 def _rotation(yaw, pitch, roll):
-    y, p, r = np.radians([yaw, pitch, roll])
+    # Positive pitch tips the top of the card away from the phone, as when shooting a card in front of you.
+    y, p, r = np.radians([yaw, -pitch, roll])
     rz = np.array([[math.cos(y), -math.sin(y), 0], [math.sin(y), math.cos(y), 0], [0, 0, 1]])
     rx = np.array([[1, 0, 0], [0, math.cos(p), -math.sin(p)], [0, math.sin(p), math.cos(p)]])
     ry = np.array([[math.cos(r), 0, math.sin(r)], [0, 1, 0], [-math.sin(r), 0, math.cos(r)]])
@@ -305,7 +306,10 @@ def _rotation(yaw, pitch, roll):
 
 
 def card_quad(rng, spec):
-    """Corners (card TL, TR, BR, BL) in the photo: a pinhole camera with a phone's field of view."""
+    """Corners (card TL, TR, BR, BL) in the photo: a pinhole camera with a phone's field of view.
+
+    The card covers spec["cover"] of the frame, or less when a steep angle would push it out of frame.
+    """
     frame_w, frame_h = spec["frame"]
     f = max(frame_w, frame_h) / 2 / math.tan(math.radians(spec["fov"]) / 2)
     corners = np.array([[-CARD_ASPECT, -1, 0], [CARD_ASPECT, -1, 0], [CARD_ASPECT, 1, 0], [-CARD_ASPECT, 1, 0]])
@@ -315,13 +319,16 @@ def card_quad(rng, spec):
         p = tilted + [0, 0, z]
         return f * p[:, :2] / p[:, 2:3]
 
-    z = 6.0
-    for _ in range(5):  # area goes as 1 / z^2
-        z *= math.sqrt(cv2.contourArea(project(z).astype(np.float32)) / (spec["cover"] * frame_w * frame_h))
-    quad = project(z)
     margin = 0.04 * min(frame_w, frame_h)
-    room = np.maximum(np.array([frame_w, frame_h]) - 2 * margin - np.ptp(quad, axis=0), 0)
-    return quad - quad.min(0) + margin + rng.uniform(0.2, 0.8, 2) * room
+    cover, z = spec["cover"], 6.0
+    while True:
+        for _ in range(5):  # area goes as 1 / z^2
+            z *= math.sqrt(cv2.contourArea(project(z).astype(np.float32)) / (cover * frame_w * frame_h))
+        quad = project(z)
+        room = np.array([frame_w, frame_h]) - 2 * margin - np.ptp(quad, axis=0)
+        if (room >= 0).all():
+            return quad - quad.min(0) + margin + rng.uniform(0.2, 0.8, 2) * room
+        cover *= 0.95
 
 
 def _table(rng, w, h, kind):
