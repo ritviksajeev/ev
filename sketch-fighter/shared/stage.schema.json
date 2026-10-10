@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "stage.schema.json",
+  "title": "Stage",
+  "description": "Contract between POST /api/scan and the game. Grid coordinates are [col, row] with row 0 at the top. tiles is row-major: tiles[row][col].",
+  "type": "object",
+  "required": ["version", "id", "cols", "rows", "tileSize", "tiles", "spawns", "fixes", "navGraph", "cardDetected", "photoUrl", "timings", "extras"],
+  "properties": {
+    "version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9-]{3,32}$" },
+    "createdAt": { "type": "string", "description": "ISO 8601 UTC timestamp." },
+    "source": { "enum": ["scan", "sample"] },
+
+    "cols": { "type": "integer", "description": "Equals game.json cols (40)." },
+    "rows": { "type": "integer", "description": "Equals game.json rows (24)." },
+    "tileSize": { "type": "integer", "description": "Equals game.json tileSize (24)." },
+    "tiles": {
+      "type": "array",
+      "description": "rows arrays of cols codes. 0 empty, 1 solid, 2 pass-through, 3 hazard, 4 added by a fix (behaves as solid).",
+      "items": { "type": "array", "items": { "enum": [0, 1, 2, 3, 4] } }
+    },
+
+    "spawns": {
+      "type": "array",
+      "description": "[player 1, player 2]. Each is a standable node: the empty tile the fighter's feet occupy; ground is at row + 1.",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["col", "row"],
+        "properties": { "col": { "type": "integer" }, "row": { "type": "integer" } },
+        "additionalProperties": false
+      }
+    },
+
+    "fixes": {
+      "type": "array",
+      "description": "Automatic repairs, in the order they were applied. Already reflected in tiles.",
+      "items": {
+        "type": "object",
+        "required": ["type", "op", "cells", "message"],
+        "properties": {
+          "type": { "enum": ["default_stage", "added_step", "removed_platform", "added_ledge", "opened_pocket"] },
+          "op": { "enum": ["add", "remove"], "description": "add: cells became 4. remove: cells became 0." },
+          "cells": { "type": "array", "items": { "$ref": "#/$defs/cell" } },
+          "message": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+
+    "navGraph": {
+      "type": "object",
+      "required": ["nodes", "edges", "moves"],
+      "properties": {
+        "nodes": { "type": "array", "description": "Standable nodes.", "items": { "$ref": "#/$defs/cell" } },
+        "edges": {
+          "type": "array",
+          "description": "[fromNode, toNode, type, moveId]. moveId indexes moves; null for walk edges.",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              { "type": "integer", "minimum": 0 },
+              { "type": "integer", "minimum": 0 },
+              { "enum": ["walk", "fall", "drop", "jump", "double_jump"] },
+              { "type": ["integer", "null"], "minimum": 0 }
+            ],
+            "minItems": 4,
+            "maxItems": 4
+          }
+        },
+        "moves": {
+          "type": "array",
+          "description": "Input recipes the analyzer verified, so the CPU can replay them exactly. Times are from the move's start.",
+          "items": {
+            "type": "object",
+            "required": ["type", "dir", "holdFromMs", "holdUntilMs", "doubleJumpAtMs"],
+            "properties": {
+              "type": { "enum": ["fall", "drop", "jump", "double_jump"] },
+              "dir": { "enum": [-1, 0, 1] },
+              "holdFromMs": { "type": "integer", "minimum": 0 },
+              "holdUntilMs": { "type": ["integer", "null"], "description": "null = hold until landing." },
+              "doubleJumpAtMs": { "type": ["integer", "null"] }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "cardDetected": { "type": "boolean", "description": "false = no card outline found, the whole photo was used. The UI offers a retake." },
+    "photoUrl": { "type": ["string", "null"] },
+    "timings": {
+      "type": "object",
+      "description": "Server step durations in ms: decode, warp, masks, grid, analysis, total.",
+      "additionalProperties": { "type": "number" }
+    },
+    "extras": {
+      "description": "null until POST /api/stages/<id>/enrich returns. The game behaves the same either way.",
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["stageName", "announcerLine", "accentColor", "source"],
+          "properties": {
+            "stageName": { "type": "string" },
+            "announcerLine": { "type": "string" },
+            "accentColor": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+            "source": { "enum": ["gemini", "fallback"] }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "debug": {
+      "type": "object",
+      "description": "Only with ?debug=1. Base64 data URLs of the intermediate images.",
+      "properties": {
+        "warped": { "type": "string" },
+        "masks": { "type": "object", "additionalProperties": { "type": "string" } },
+        "grid": { "type": "string" }
+      }
+    }
+  },
+  "$defs": {
+    "cell": {
+      "type": "array",
+      "description": "[col, row]",
+      "prefixItems": [{ "type": "integer" }, { "type": "integer" }],
+      "minItems": 2,
+      "maxItems": 2
+    }
+  }
+}

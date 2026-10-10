@@ -1,0 +1,50 @@
+{
+  "_units": "pixels and seconds unless a key says Ms (milliseconds) or Deg (degrees). Read by backend/config.py and frontend/src/config.js.",
+
+  "tileSize": 24,
+  "cols": 40,
+  "rows": 24,
+  "tileCodes": { "empty": 0, "solid": 1, "pass": 2, "hazard": 3, "fix": 4 },
+
+  "canvas": { "width": 1280, "height": 720 },
+  "blastZone": { "left": 120, "right": 120, "top": 200, "bottom": 120 },
+
+  "physics": {
+    "fps": 120,
+    "gravity": 1500,
+    "jumpVelocity": 570,
+    "doubleJumpVelocity": 500,
+    "runSpeed": 260,
+    "maxFallSpeed": 900,
+    "maxLaunchSpeed": 2400,
+    "knockbackDecay": 1200,
+    "coyoteMs": 80,
+    "jumpBufferMs": 100,
+    "dropThroughMs": 250
+  },
+
+  "fighter": { "width": 18, "height": 34 },
+
+  "analysis": { "validatorPessimism": 0.9 },
+
+  "combat": {
+    "attacks": {
+      "quick": {
+        "startupMs": 50, "activeMs": 100, "recoveryMs": 150,
+        "damage": 5, "baseKnockback": 220, "growth": 7, "angleDeg": 35,
+        "hitbox": { "offsetX": 20, "offsetY": -2, "width": 26, "height": 18 }
+      },
+      "strong": {
+        "startupMs": 220, "activeMs": 120, "recoveryMs": 300,
+        "damage": 13, "baseKnockback": 320, "growth": 11, "angleDeg": 45,
+        "hitbox": { "offsetX": 24, "offsetY": -4, "width": 34, "height": 24 }
+      }
+    },
+    "hitstunMsPerSpeed": 0.35,
+    "maxHitstunMs": 700,
+    "hitPauseMs": 60,
+    "hazard": { "damage": 4, "knockback": 520, "cooldownMs": 600 }
+  },
+
+  "match": { "stocks": 1, "durationSec": 30 }
+}

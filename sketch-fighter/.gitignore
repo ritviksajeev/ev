@@ -1,0 +1,7 @@
+frontend/node_modules/
+backend/static/
+backend/data/
+__pycache__/
+.pytest_cache/
+.venv/
+.env

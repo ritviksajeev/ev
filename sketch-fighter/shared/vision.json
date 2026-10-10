@@ -1,0 +1,43 @@
+{
+  "_notes": "OpenCV HSV: H 0-179, S 0-255, V 0-255. Grid size comes from game.json (cols/rows). Tuned live on /debug.",
+
+  "warp": { "width": 1000, "height": 600 },
+
+  "detect": {
+    "blur": 5,
+    "cannyLow": 40,
+    "cannyHigh": 120,
+    "approxEpsilon": 0.02,
+    "minAreaFraction": 0.15
+  },
+
+  "normalize": {
+    "flatField": true,
+    "flatFieldKernel": 61,
+    "clahe": true,
+    "claheClipLimit": 2.0,
+    "claheTileGrid": 8
+  },
+
+  "colors": {
+    "solid": {
+      "ranges": [{ "hMin": 0, "hMax": 179, "sMin": 0, "sMax": 110, "vMin": 0, "vMax": 95 }],
+      "coverage": 0.3
+    },
+    "pass": {
+      "ranges": [{ "hMin": 95, "hMax": 130, "sMin": 70, "sMax": 255, "vMin": 40, "vMax": 255 }],
+      "coverage": 0.25
+    },
+    "hazard": {
+      "ranges": [
+        { "hMin": 0, "hMax": 10, "sMin": 90, "sMax": 255, "vMin": 60, "vMax": 255 },
+        { "hMin": 165, "hMax": 179, "sMin": 90, "sMax": 255, "vMin": 60, "vMax": 255 }
+      ],
+      "coverage": 0.25
+    }
+  },
+
+  "morph": { "openPx": 3, "dilatePx": 5 },
+
+  "cleanup": { "removeIsolated": true, "fillHoles": true }
+}

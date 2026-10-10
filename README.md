@@ -69,6 +69,11 @@ their own repositories:
 Each keeps a `latest.json` next to its page with the current version, so the
 page and the release can be kept in step without editing markup.
 
+## Sketch Fighter
+
+`sketch-fighter/` is a separate app (Flask + Phaser), not part of the static
+site. See `sketch-fighter/README.md`.
+
 ## Notes & TODOs
 
 - Social handles in the home page (`@evzero`, `discord.gg/evzero`, etc.) are
