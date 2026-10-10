@@ -1,14 +1,10 @@
 import { BUTTONS, ButtonSource } from './input.js';
 
 // Standard mapping: A jump, X quick, B strong (Y also jumps), stick or D-pad.
+// Reads the first connected pad, whatever slot the browser put it in.
 export class GamepadSource extends ButtonSource {
-  constructor(index) {
-    super();
-    this.index = index;
-  }
-
   read() {
-    const pad = navigator.getGamepads?.()[this.index];
+    const pad = [...(navigator.getGamepads?.() ?? [])].find(Boolean);
     if (pad) {
       const btn = (i) => !!pad.buttons[i]?.pressed;
       const x = pad.axes[0] ?? 0;
@@ -26,5 +22,3 @@ export class GamepadSource extends ButtonSource {
     return super.read();
   }
 }
-
-export const connectedPads = () => [...(navigator.getGamepads?.() ?? [])].filter(Boolean).length;

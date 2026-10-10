@@ -112,11 +112,12 @@ button, label { font: inherit; color: inherit; background: none; border: 0; curs
   top: var(--cy);
   width: var(--cw);
   height: var(--ch);
-  z-index: 2;
+  z-index: 3;
   container-type: size;
   pointer-events: none;
 }
-#touch { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+/* Below #hud so the HUD's exit button stays tappable over the joystick zone. */
+#touch { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 #ui { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 #ui :is(button, a, input, label, .hit), #hud :is(button) { pointer-events: auto; }
 

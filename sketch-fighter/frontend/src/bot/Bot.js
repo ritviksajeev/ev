@@ -4,6 +4,8 @@ import { NavGraph } from './nav.js';
 const T = GAME.tileSize;
 // Recipe times -> physics steps, rounded exactly as backend/stage_analysis.py does.
 const stepOf = (ms) => Math.floor((ms * GAME.physics.fps) / 1000 + 0.5);
+// Close enough to a node centre to start a move: just over half a run step.
+const ALIGN_PX = (GAME.physics.runSpeed / GAME.physics.fps) * 0.55;
 
 // Easy CPU. Produces the same command a Controller does, once per physics step.
 // With a nav graph it paths across the stage and replays the analyzer's
@@ -79,14 +81,14 @@ export class Bot {
       return false;
     }
     const cx = this.nav.x(from);
-    if (Math.abs(me.x - cx) > 3) {
+    if (Math.abs(me.x - cx) > ALIGN_PX) {
       cmd.dir = Math.sign(cx - me.x);
       return false;
     }
     // Hesitate a moment, and don't leap at a moving target: two CPUs on a
     // mirrored stage would otherwise jump in lockstep and swap sides forever.
     if (this.hesitate === null) this.hesitate = 0.12 + Math.random() * 0.5;
-    if ((this.hesitate -= dt) > 0 || !op.onGround) return false;
+    if ((this.hesitate -= dt) > 0 || !op.onGround || this.self.attack) return false;
     this.hesitate = null;
     this.plan = { edge, move: edge.move, step: 0, airborne: false };
     return this.followPlan(cmd);

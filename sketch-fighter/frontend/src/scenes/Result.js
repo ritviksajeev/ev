@@ -38,6 +38,7 @@ export class Result extends Phaser.Scene {
     };
     el.querySelectorAll('[data-act]').forEach((b) => b.addEventListener('click', () => go(b.dataset.act)));
     const onKey = (e) => {
+      if (e.repeat) return;
       if (e.code === 'Enter' || e.code === 'Space') go('rematch');
       if (e.code === 'Escape') go('new');
     };

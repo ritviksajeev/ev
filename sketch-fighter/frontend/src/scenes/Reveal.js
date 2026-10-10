@@ -19,8 +19,11 @@ export class Reveal extends Phaser.Scene {
 
   create({ stage, photoUrl, clientMs }) {
     this.stage = stage;
-    this.alive = true;
-    this.events.once('shutdown', () => { this.alive = false; });
+    this.leaving = false;
+    // A name from an earlier Reveal's Gemini call must not land on this stage.
+    const token = (this.token = {});
+    const show = (extras) => this.token === token && this.showName(extras);
+    this.events.once('shutdown', () => { this.token = null; });
     fitCamera(this);
     drawPaper(this);
 
@@ -61,12 +64,12 @@ export class Reveal extends Phaser.Scene {
     this.time.delayedCall(sweep + 1100, () => this.showFixes());
     this.time.delayedCall(sweep + 1300, () => this.showActions());
 
-    if (stage.extras) this.showName(stage.extras);
+    if (stage.extras) show(stage.extras);
     else if (HAS_API) {
-      enrichStage(stage.id).then((x) => this.showName(x)).catch(() => this.showName(fallbackExtras(stage.id)));
-    } else this.showName(fallbackExtras(stage.id));
+      enrichStage(stage.id).then(show).catch(() => show(fallbackExtras(stage.id)));
+    } else show(fallbackExtras(stage.id));
 
-    this.onKey = (e) => (e.code === 'Enter' || e.code === 'Space') && this.fight();
+    this.onKey = (e) => !e.repeat && (e.code === 'Enter' || e.code === 'Space') && this.fight();
     window.addEventListener('keydown', this.onKey);
     this.events.once('shutdown', () => window.removeEventListener('keydown', this.onKey));
   }
@@ -127,7 +130,7 @@ export class Reveal extends Phaser.Scene {
   }
 
   showName(extras) {
-    if (!this.alive || !extras) return;
+    if (!extras) return;
     this.stage.extras = extras;
     const name = this.ui.querySelector('.reveal-title');
     name.textContent = extras.stageName;

@@ -62,7 +62,12 @@ $('#photo').addEventListener('change', async (e) => {
   const file = e.target.files?.[0];
   if (!file) return;
   status('Preparing photo...');
-  photo = (await reencode(file)).blob;
+  try {
+    photo = (await reencode(file)).blob;
+  } catch (err) {
+    status(err.message, true);
+    return;
+  }
   scan();
 });
 

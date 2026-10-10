@@ -12,6 +12,8 @@ export class Capture extends Phaser.Scene {
   }
 
   create({ file }) {
+    this.photo = null;
+    this.keepPhoto = false;
     this.el = mount(this, `
       <div class="overlay capture">
         <div class="panel">

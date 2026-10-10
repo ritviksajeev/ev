@@ -57,10 +57,14 @@ export class Fight extends Phaser.Scene {
     this.particles = [];
 
     this.hud = new Hud(this, this.fighters, { onExit: () => this.exit(), hint: this.hint() });
+    // Phaser reuses this object for every match: reset all per-match state.
     this.phase = 'intro';
     this.clock = GAME.match.durationSec;
     this.acc = 0;
     this.hitstop = 0;
+    this.leaving = false;
+    this.ring = null;
+    this.firstKo = null;
 
     this.onKey = (e) => {
       if (e.code === 'Escape') this.exit();
@@ -88,7 +92,7 @@ export class Fight extends Phaser.Scene {
     if (this.mode === 'demo') {
       return [new Bot(p1, p2, this.stage), new Bot(p2, p1, this.stage)].map(botDriver);
     }
-    const sources = [new KeyboardSource(KEYS), new GamepadSource(0)];
+    const sources = [new KeyboardSource(KEYS), new GamepadSource()];
     if (IS_TOUCH) sources.push(new TouchSource(document.getElementById('touch')));
     return [padDriver(new Controller(sources)), botDriver(new Bot(p2, p1, this.stage))];
   }
@@ -188,6 +192,7 @@ export class Fight extends Phaser.Scene {
 
   knockOut(f) {
     f.ko = true;
+    this.firstKo ??= f;
     const x = Phaser.Math.Clamp(f.x, 12, VIEW_W - 12);
     const y = Phaser.Math.Clamp(f.y, 12, VIEW_H - 12);
     this.burst(x, y, 26, f.color, 520, 0.9);
@@ -206,7 +211,8 @@ export class Fight extends Phaser.Scene {
     this.phase = 'end';
     const [a, b] = this.fighters;
     let winner = null;
-    if (reason === 'ko') winner = a.ko && !b.ko ? b : b.ko && !a.ko ? a : null;
+    // The first fighter out loses, even if the other falls during the K.O. banner.
+    if (reason === 'ko') winner = this.firstKo === a ? b : a;
     else winner = a.damage < b.damage ? a : b.damage < a.damage ? b : null;
     if (reason === 'time') this.hud.showBanner('Time', 1000);
 
