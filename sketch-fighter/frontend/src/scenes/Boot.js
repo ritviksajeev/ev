@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { apiUrl, HAS_API } from '../api.js';
+import { apiUrl, HAS_API, recentStages } from '../api.js';
 import { GAME_HASH } from '../config.js';
 
 // Waits for the UI fonts and pings the server, then hands off to Home.
@@ -11,6 +11,9 @@ export class Boot extends Phaser.Scene {
   create() {
     Promise.all([loadFonts(), checkServer()]).then(([, server]) => {
       this.registry.set('server', server);
+      if (server.online) {
+        recentStages().then((list) => this.registry.set('gallery', list.filter((s) => s?.tiles))).catch(() => {});
+      }
       this.scene.start('Home');
     });
   }

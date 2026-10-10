@@ -5,15 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#050507" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="description" content="Draw a stage on paper, photograph it, fight on it." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Sketch Fighter</title>
   </head>
   <body>
-    <div class="backdrop" aria-hidden="true"></div>
-    <div id="game"></div>
-    <div id="ui"></div>
+    <!-- #app is always a landscape box; shell.js rotates it when the screen is portrait -->
+    <div id="app">
+      <div class="backdrop" aria-hidden="true"></div>
+      <div id="game"></div>
+      <div id="hud"></div>
+      <div id="ui"></div>
+      <div id="touch"></div>
+    </div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
