@@ -1,8 +1,14 @@
 """Renders synthetic phone photos of hand-drawn index cards, plus the grid each one should scan to.
 
 Run from backend/:  python -m tools.make_samples
-Writes samples/card-NN.jpg and samples/card-NN.truth.json ({"grid": rows x cols tile codes}).
+Writes samples/card-NN.jpg and samples/card-NN.truth.json: {"grid": rows x cols tile codes, "lines": the
+thin pen lines, each {"code", "cells": [[col, row], ...] in drawing order}}.
 Every card has a fixed seed, so repeated runs produce the same files.
+
+Cards are designed on a 40 x 24 grid (DESIGN_COLS x DESIGN_ROWS) and scored on the game grid, an exact
+multiple of it. Truth on the game grid: filled blocks, outlined blocks and marker strokes cover every game
+tile of their design tiles (upsampling); a thin pen line is the line of tiles its centre line passes
+through (line_cells), one tile thick, steps connected edge to edge.
 """
 
 import json
@@ -16,8 +22,12 @@ from config import GAME
 
 SAMPLES_DIR = Path(__file__).resolve().parents[2] / "samples"
 COLS, ROWS = GAME["cols"], GAME["rows"]
+DESIGN_COLS, DESIGN_ROWS = 40, 24
+SCALE = COLS // DESIGN_COLS  # game tiles per design tile
+assert (DESIGN_COLS * SCALE, DESIGN_ROWS * SCALE) == (COLS, ROWS), "the game grid must be a multiple of 40 x 24"
 EMPTY, SOLID, PASS, HAZARD = 0, 1, 2, 3
-TILE = 30  # card render resolution (px per tile) before the card is "photographed"
+TILE = 30  # card render resolution (px per design tile) before the card is "photographed"
+PEN_KINDS = ("pen", "line")
 CARD_ASPECT = 5 / 3
 
 # Marker reflectance per BGR channel: 1 lets the paper show through. One variant is picked per card.
@@ -28,7 +38,7 @@ INKS = {
 }
 
 PEN_INKS = {
-    SOLID: [(0.12, 0.12, 0.13)],
+    SOLID: [(0.12, 0.12, 0.13), (0.20, 0.19, 0.21)],  # fineliner, ballpoint
     PASS: [(0.45, 0.30, 0.14), (0.42, 0.38, 0.16)],  # navy, dark teal
     HAZARD: [(0.20, 0.16, 0.48), (0.22, 0.14, 0.40)],  # maroon
 }
@@ -43,13 +53,14 @@ TABLES = {  # base reflectance (BGR) of dark venue tables
 # Light colour gains (BGR): phones do not fully correct warm or cool venue lighting.
 LIGHTS = {"neutral": (1.0, 1.0, 1.0), "warm": (0.82, 0.96, 1.07), "cool": (1.08, 1.0, 0.86)}
 
-# Shapes use tile coordinates, rows and cols inclusive:
+# Shapes use design tile coordinates (40 x 24), rows and cols inclusive:
 #   ("block", code, r0, r1, c0, c1)  filled marker area
-#   ("stroke", code, r, r, c0, c1)   one marker line about a tile thick
+#   ("stroke", code, r, r, c0, c1)   one marker line about a design tile thick
 #   ("zigzag", HAZARD, r, r, c0, c1) red spikes across one row
 #   ("outline", SOLID, r0, r1, c0, c1) a block drawn as a thin pen outline (it means solid ground)
-#   ("pen", code, r, r, c0, c1)      a thin pen line along one row
-# A card's "inks" picks darker pen colours: maroon red and navy / teal blue photograph dark.
+#   ("pen", code, r, r, c0, c1)      a thin pen line along one row, in the lower half of the row
+#   ("line", code, (x0, y0), (x1, y1)) a thin pen line between two points (design tile units, x right, y down)
+# A card with "pen" uses pen inks: maroon red and navy / teal blue photograph dark.
 CARDS = [
     {
         "name": "classic", "seed": 101, "frame": (1280, 960), "light": "neutral", "table": "walnut", "curl": True,
@@ -183,14 +194,103 @@ CARDS = [
             ("pen", HAZARD, 19, 19, 17, 22),
         ],
     },
+    # Thin pen lines only, the way people sketch a stage with a fineliner: flat ledges at several
+    # heights, a gentle (10 deg) and a steep (25 deg) slope, and a wall standing on the ground.
+    {
+        "name": "pen lines", "seed": 1201, "frame": (1280, 960), "light": "neutral", "table": "slate", "pen": True,
+        "shapes": [
+            ("line", SOLID, (3.0, 20.25), (37.0, 20.25)),
+            ("line", SOLID, (5.0, 16.75), (17.0, 14.63)),
+            ("line", SOLID, (21.5, 17.75), (29.0, 14.25)),
+            ("line", SOLID, (34.25, 12.5), (34.25, 19.6)),
+            ("line", SOLID, (6.0, 9.25), (15.0, 9.25)),
+            ("line", SOLID, (24.0, 8.75), (33.0, 8.75)),
+            ("line", SOLID, (16.0, 4.75), (23.0, 4.75)),
+        ],
+    },
+    {
+        "name": "slanted colour pens", "seed": 1202, "frame": (1280, 960), "light": "cool", "table": "walnut",
+        "pen": True, "shadow": True,
+        "shapes": [
+            ("outline", SOLID, 16, 18, 13, 26),
+            ("line", PASS, (4.0, 13.25), (12.0, 10.5)),
+            ("line", PASS, (28.0, 10.6), (36.0, 13.4)),
+            ("line", PASS, (15.0, 7.25), (25.0, 6.0)),
+            ("line", HAZARD, (3.0, 21.0), (12.0, 19.0)),
+            ("line", HAZARD, (28.0, 19.2), (37.0, 21.3)),
+            ("line", HAZARD, (17.0, 13.6), (22.0, 10.7)),
+        ],
+    },
+    # Like a real photo of a pen sketch: many short black lines, a few blue ones, one long red one, warm light.
+    {
+        "name": "pen sketch, warm", "seed": 1203, "frame": (1280, 960), "light": "warm", "table": "felt", "pen": True,
+        "shadow": True,
+        "shapes": [
+            ("line", SOLID, (3.0, 17.75), (8.5, 17.75)),
+            ("line", SOLID, (10.0, 15.25), (14.5, 15.6)),
+            ("line", SOLID, (17.0, 17.25), (22.0, 16.5)),
+            ("line", SOLID, (25.0, 15.75), (29.5, 15.75)),
+            ("line", SOLID, (31.0, 17.75), (37.0, 18.6)),
+            ("line", SOLID, (5.0, 12.25), (9.0, 11.6)),
+            ("line", SOLID, (30.5, 11.75), (35.0, 12.25)),
+            ("line", SOLID, (12.0, 9.25), (16.0, 9.25)),
+            ("line", SOLID, (24.0, 9.75), (28.5, 9.1)),
+            ("line", SOLID, (18.0, 5.75), (22.0, 5.75)),
+            ("line", PASS, (14.0, 12.75), (20.0, 12.4)),
+            ("line", PASS, (21.0, 13.25), (27.0, 13.25)),
+            ("line", PASS, (4.0, 7.25), (10.0, 6.75)),
+            ("line", HAZARD, (4.0, 21.75), (36.0, 21.25)),
+        ],
+    },
 ]
 
 
-def truth_grid(shapes):
+def truth(shapes, pen_lines):
+    """(grid, lines) on the game grid. pen_lines: (code, centre line in design tile units) per pen shape,
+    in shape order. Later shapes overwrite earlier ones."""
     grid = np.zeros((ROWS, COLS), np.uint8)
-    for _, code, r0, r1, c0, c1 in shapes:
-        grid[r0:r1 + 1, c0:c1 + 1] = code
-    return grid
+    lines = []
+    pen = iter(pen_lines)
+    for item in shapes:
+        kind, code = item[0], item[1]
+        if kind in PEN_KINDS:
+            cells = line_cells(next(pen)[1] * SCALE)
+            for c, r in cells:
+                grid[r, c] = code
+            lines.append({"code": int(code), "cells": [[int(c), int(r)] for c, r in cells]})
+        else:
+            _, _, r0, r1, c0, c1 = item
+            grid[r0 * SCALE:(r1 + 1) * SCALE, c0 * SCALE:(c1 + 1) * SCALE] = code
+    return grid, lines
+
+
+def line_cells(points, step=0.02):
+    """The game tiles a pen's centre line passes through, as (col, row) in drawing order, each once.
+
+    points: the centre line as a polyline in game tile units (x right, y down). A tile counts when the line
+    runs through it. Where the line crosses a tile corner exactly, the tile beside the earlier one along x
+    is added, so consecutive tiles always share an edge. A straight line gives a line one tile thick: one
+    tile per column (per row if steeper than 45 deg), plus one where it steps to the next row (column).
+    """
+    points = np.asarray(points, float)
+    dense = [points[:1]]
+    for p, q in zip(points[:-1], points[1:]):
+        n = max(1, int(math.ceil(np.hypot(*(q - p)) / step)))
+        dense.append(p + np.linspace(0, 1, n + 1)[1:, None] * (q - p))
+    xy = np.floor(np.concatenate(dense)).astype(int)
+    xy[:, 0] = np.clip(xy[:, 0], 0, COLS - 1)
+    xy[:, 1] = np.clip(xy[:, 1], 0, ROWS - 1)
+    cells, seen = [], set()
+    for c, r in map(tuple, xy):
+        if cells and abs(c - cells[-1][0]) + abs(r - cells[-1][1]) == 2:
+            corner = (c, cells[-1][1])
+            if corner not in seen:
+                seen.add(corner)
+                cells.append(corner)
+        if (c, r) not in seen:
+            seen.add((c, r))
+            cells.append((c, r))
+    return cells
 
 
 # --- drawing ---------------------------------------------------------------------------------
@@ -256,14 +356,23 @@ def _polyline_alpha(rng, shape, points, width):
     return mask.astype(np.float32) / 255 * streaks * rng.uniform(0.92, 0.99)
 
 
-def _stroke_points(rng, r, c0, c1, width):
-    """A horizontal line along row r that starts and ends inside its first and last tile."""
+def _stroke_points(rng, r, c0, c1, width, height=0.5):
+    """A horizontal line along row r, height down into the row, that starts and ends inside its first and last tile."""
     x0 = c0 + width / 2 + rng.uniform(-0.12, 0.25)
     x1 = c1 + 1 - width / 2 - rng.uniform(-0.12, 0.25)
     xs = np.linspace(x0, x1, max(8, int((x1 - x0) * 3)))
     slope = rng.uniform(-0.1, 0.1) * np.linspace(-1, 1, len(xs))  # the line drifts a little across the row
-    ys = r + 0.5 + rng.uniform(-0.05, 0.05) + slope + _wobble(rng, len(xs), -0.06, 0.06)
+    ys = r + height + rng.uniform(-0.05, 0.05) + slope + _wobble(rng, len(xs), -0.06, 0.06)
     return np.stack([xs, ys], 1)
+
+
+def _line_points(rng, start, end):
+    """A pen line from start to end (design tile units): straight, with a slight sideways wobble of the hand."""
+    start, end = np.asarray(start, float), np.asarray(end, float)
+    length = math.hypot(*(end - start))
+    t = np.linspace(0, 1, max(8, int(length * 3)))[:, None]
+    normal = np.array([-(end - start)[1], (end - start)[0]]) / length
+    return start + t * (end - start) + _wobble(rng, len(t), -0.04, 0.04)[:, None] * normal
 
 
 def _zigzag_points(rng, r, c0, c1, width):
@@ -281,20 +390,29 @@ def _outline_points(rng, r0, r1, c0, c1):
 
 
 def _shape_alpha(rng, shape, item, xx, yy):
-    kind, _, r0, r1, c0, c1 = item
+    """(alpha, centre line in design tile units for a pen line, else None)."""
+    kind = item[0]
+    if kind == "line":
+        width = rng.uniform(0.12, 0.18)
+        points = _line_points(rng, item[2], item[3])
+        return _polyline_alpha(rng, shape, points, width), points
+    _, _, r0, r1, c0, c1 = item
     if kind == "outline":
         width = rng.uniform(0.14, 0.2)
-        return _polyline_alpha(rng, shape, _outline_points(rng, r0, r1, c0, c1), width)
+        return _polyline_alpha(rng, shape, _outline_points(rng, r0, r1, c0, c1), width), None
     if kind == "pen":
+        # In the lower half of the row: a pen line one game tile thick, away from the game-tile boundary
+        # at mid-row, so the tiles it covers are not decided by the hand's wobble.
         width = rng.uniform(0.14, 0.2)
-        return _polyline_alpha(rng, shape, _stroke_points(rng, r0, c0, c1, width), width)
+        points = _stroke_points(rng, r0, c0, c1, width, height=0.75)
+        return _polyline_alpha(rng, shape, points, width), points
     if kind == "block":
-        return _fill_alpha(rng, shape, _block_polygon(rng, r0, r1, c0, c1), xx, yy)
+        return _fill_alpha(rng, shape, _block_polygon(rng, r0, r1, c0, c1), xx, yy), None
     if kind == "stroke":
         width = rng.uniform(0.78, 0.95)
-        return _polyline_alpha(rng, shape, _stroke_points(rng, r0, c0, c1, width), width)
+        return _polyline_alpha(rng, shape, _stroke_points(rng, r0, c0, c1, width), width), None
     width = rng.uniform(0.25, 0.32)
-    return _polyline_alpha(rng, shape, _zigzag_points(rng, r0, c0, c1, width), width)
+    return _polyline_alpha(rng, shape, _zigzag_points(rng, r0, c0, c1, width), width), None
 
 
 def _pencil_marks(rng, card):
@@ -311,21 +429,25 @@ def _pencil_marks(rng, card):
 
 
 def render_card(rng, card_spec):
-    h, w = ROWS * TILE, COLS * TILE
+    """(card as float BGR 0..1, [(code, centre line in design tile units)] for each pen line)."""
+    h, w = DESIGN_ROWS * TILE, DESIGN_COLS * TILE
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     card = _paper(rng, h, w)
     if card_spec.get("pencil"):
         card = _pencil_marks(rng, card)
     layers = {code: np.zeros((h, w), np.float32) for code in INKS}
+    pen_lines = []
     for item in card_spec["shapes"]:
-        alpha = _shape_alpha(rng, (h, w), item, xx, yy)
+        alpha, centre = _shape_alpha(rng, (h, w), item, xx, yy)
         layers[item[1]] = 1 - (1 - layers[item[1]]) * (1 - alpha)  # overlapping marker gets darker
+        if centre is not None:
+            pen_lines.append((item[1], centre))
     inks = PEN_INKS if card_spec.get("pen") else INKS
     for code, alpha in layers.items():
         variants = inks[code]
         ink = np.array(variants[rng.integers(len(variants))], np.float32)
         card *= 1 - alpha[..., None] * (1 - ink)
-    return card
+    return card, pen_lines
 
 
 # --- photographing -----------------------------------------------------------------------------
@@ -417,9 +539,10 @@ def _motion_kernel(rng):
 
 
 def render_photo(card_spec):
+    """(JPEG bytes, truth grid, truth lines): see truth()."""
     rng = np.random.default_rng(card_spec["seed"])
     frame_w, frame_h = card_spec["frame"]
-    card = render_card(rng, card_spec)
+    card, pen_lines = render_card(rng, card_spec)
     ch, cw = card.shape[:2]
     pad = 12 if card_spec.get("curl") else 0
     if pad:
@@ -455,16 +578,18 @@ def render_photo(card_spec):
     photo = np.clip(scene, 0, 255).astype(np.uint8)
     ok, jpeg = cv2.imencode(".jpg", photo, [cv2.IMWRITE_JPEG_QUALITY, 85])
     assert ok
-    return jpeg.tobytes()
+    grid, lines = truth(card_spec["shapes"], pen_lines)
+    return jpeg.tobytes(), grid, lines
 
 
 def main():
     SAMPLES_DIR.mkdir(exist_ok=True)
     for i, spec in enumerate(CARDS, 1):
         stem = SAMPLES_DIR / f"card-{i:02d}"
-        stem.with_suffix(".jpg").write_bytes(render_photo(spec))
-        grid = truth_grid(spec["shapes"]).tolist()
-        stem.with_suffix(".truth.json").write_text(json.dumps({"grid": grid}, separators=(",", ":")) + "\n")
+        jpeg, grid, lines = render_photo(spec)
+        stem.with_suffix(".jpg").write_bytes(jpeg)
+        stem.with_suffix(".truth.json").write_text(
+            json.dumps({"grid": grid.tolist(), "lines": lines}, separators=(",", ":")) + "\n")
         print(f"{stem.name}: {spec['name']}")
 
 
