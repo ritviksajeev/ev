@@ -558,7 +558,7 @@ class _Stage:
         self.given_up = set()
         self.bridged = set()
         self.doored = set()
-        self.added = set()  # cells set by an "add" fix; never removed again by a later fix
+        self.added = set()  # cells an "add" fix set; later fixes leave them alone (except a dead end)
         self.work = [0]
         self._nav = None
 
@@ -1115,7 +1115,6 @@ def _one_tile_openings(tiles, pocket, open_air):
     wall = _blocking(tiles)
     outside = np.pad(open_air, 1, constant_values=True)
     inside = np.pad(pocket, 1, constant_values=False)
-    stand = standable(tiles) & pocket
     centre = np.nonzero(pocket)[1].mean()
     floor, side, roof = [], [], []
     for r, c in zip(*np.nonzero(wall)):
@@ -1125,7 +1124,7 @@ def _one_tile_openings(tiles, pocket, open_air):
             floor.append((abs(c - centre), c, r))
         if (inside[pr, pc - 1] and outside[pr, pc + 1]) or (inside[pr, pc + 1] and outside[pr, pc - 1]):
             side.append((r, c))
-        if inside[pr + 1, pc] and outside[pr - 1, pc] and not stand[min(r + 1, ROWS - 1), c]:
+        if inside[pr + 1, pc] and outside[pr - 1, pc]:
             roof.append((abs(c - centre), c, r))
     picks = []
     if floor:
