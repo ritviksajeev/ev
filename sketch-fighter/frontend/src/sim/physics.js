@@ -89,46 +89,86 @@ function decayX(b, phys, dt, floor) {
 // Semi-implicit Euler like Phaser Arcade: velocity first, then position.
 // X is moved and resolved before Y. Per step a body moves less than one tile
 // (maxLaunchSpeed / fps < tileSize), so at most one tile boundary is crossed.
+// A grounded body walks up and down steps of at most phys.stepUpPx, so a
+// hand-drawn slanted line plays as a slope rather than a staircase of walls.
 export function integrate(b, grid, game, phys, dt) {
   const T = game.tileSize;
+  const step = phys.stepUpPx ?? 0;
+  const grounded = b.onGround; // from the previous step
   b.vy = Math.min(b.vy + phys.gravity * dt, phys.maxFallSpeed);
 
   b.x += b.vx * dt;
-  resolveX(b, grid, T);
+  resolveX(b, grid, T, grounded ? step : 0);
 
   const prevTop = b.y - b.h / 2;
   const prevBottom = b.y + b.h / 2;
   b.y += b.vy * dt;
   resolveY(b, grid, T, prevTop, prevBottom);
+  if (grounded && step > 0 && !b.onGround && b.vy >= 0) snapDown(b, grid, T, step);
 }
 
-function resolveX(b, grid, T) {
+function resolveX(b, grid, T, step) {
   if (b.vx === 0) return;
   const r0 = Math.floor((b.y - b.h / 2) / T);
   const r1 = Math.floor((b.y + b.h / 2 - EPS) / T);
-  if (b.vx > 0) {
-    const c = Math.floor((b.x + b.w / 2 - EPS) / T);
-    for (let r = r0; r <= r1; r++) {
-      const t = tileAt(grid, c, r);
-      if (blocks(t)) {
-        b.x = c * T - b.w / 2;
-        b.vx = 0;
-        if (t === HAZARD) b.hazard = [c, r];
-        return;
-      }
-    }
-  } else {
-    const c = Math.floor((b.x - b.w / 2) / T);
-    for (let r = r0; r <= r1; r++) {
-      const t = tileAt(grid, c, r);
-      if (blocks(t)) {
-        b.x = (c + 1) * T + b.w / 2;
-        b.vx = 0;
-        if (t === HAZARD) b.hazard = [c, r];
-        return;
-      }
+  const c = b.vx > 0 ? Math.floor((b.x + b.w / 2 - EPS) / T) : Math.floor((b.x - b.w / 2) / T);
+  let hit = -1; // topmost blocking row in the leading column
+  for (let r = r0; r <= r1; r++) {
+    if (blocks(tileAt(grid, c, r))) {
+      hit = r;
+      break;
     }
   }
+  if (hit < 0) {
+    // Walking into a pass-through tile at foot level: climb onto it.
+    if (step > 0 && b.vy >= 0 && b.dropTimer <= 0 && tileAt(grid, c, r1) === PASS) stepUp(b, grid, T, step, r1);
+    return;
+  }
+  if (step > 0 && b.vy >= 0 && stepUp(b, grid, T, step, hit)) return;
+  b.x = b.vx > 0 ? c * T - b.w / 2 : (c + 1) * T + b.w / 2;
+  b.vx = 0;
+  if (tileAt(grid, c, hit) === HAZARD) b.hazard = [c, hit];
+}
+
+// Lift the body onto row `top` if that is at most `step` px above its feet and it fits there.
+function stepUp(b, grid, T, step, top) {
+  const lift = b.y + b.h / 2 - top * T;
+  if (lift <= EPS || lift > step + EPS) return false;
+  const y = top * T - b.h / 2;
+  if (overlapsBlocking(grid, T, b.x, y, b.w, b.h)) return false;
+  b.y = y;
+  return true;
+}
+
+// Just walked off a step no taller than `step`: stay on the ground below it.
+function snapDown(b, grid, T, step) {
+  const bottom = b.y + b.h / 2;
+  const r = Math.ceil(bottom / T - EPS);
+  if (r * T - bottom > step + EPS) return;
+  const c0 = Math.floor((b.x - b.w / 2) / T);
+  const c1 = Math.floor((b.x + b.w / 2 - EPS) / T);
+  for (let c = c0; c <= c1; c++) {
+    const t = tileAt(grid, c, r);
+    if (blocks(t) || (t === PASS && b.dropTimer <= 0)) {
+      b.y = r * T - b.h / 2;
+      b.vy = 0;
+      b.onGround = true;
+      b.airJumps = 1;
+      if (t === HAZARD) b.hazard = [c, r];
+      return;
+    }
+  }
+}
+
+function overlapsBlocking(grid, T, x, y, w, h) {
+  const c0 = Math.floor((x - w / 2) / T);
+  const c1 = Math.floor((x + w / 2 - EPS) / T);
+  const r0 = Math.floor((y - h / 2) / T);
+  const r1 = Math.floor((y + h / 2 - EPS) / T);
+  for (let r = r0; r <= r1; r++) {
+    for (let c = c0; c <= c1; c++) if (blocks(tileAt(grid, c, r))) return true;
+  }
+  return false;
 }
 
 function resolveY(b, grid, T, prevTop, prevBottom) {

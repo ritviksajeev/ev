@@ -9,34 +9,52 @@ import { createBody, stepBody } from '../src/sim/physics.js';
 const shared = (p) => fileURLToPath(new URL(`../../shared/${p}`, import.meta.url));
 const game = JSON.parse(readFileSync(shared('game.json'), 'utf8'));
 const dt = 1 / game.physics.fps;
+const T = game.tileSize;
 
-// A test grid exercising every tile type and collision direction.
+// The layout is described in 24 px units so it means the same thing at any
+// tile size; u(n) is the tile index n units in.
+const u = (n) => Math.round((n * 24) / T);
+const span = (n) => Math.max(1, u(n)); // a thickness of n units, at least one tile
+const steps = (s) => Math.round(s * game.physics.fps); // seconds -> physics steps
+
 const cols = game.cols;
 const rows = game.rows;
 const tiles = Array.from({ length: rows }, () => Array(cols).fill(0));
-const fill = (code, row, c0, c1) => { for (let c = c0; c <= c1; c++) tiles[row][c] = code; };
-fill(1, 20, 5, 34);            // floor
-fill(1, 21, 5, 34);
-fill(2, 16, 10, 16);           // pass-through platform, 4 tiles up
-for (let r = 17; r <= 19; r++) tiles[r][25] = 1; // wall
-fill(1, 15, 19, 22);           // low ceiling over col 20-21
-fill(3, 19, 30, 31);           // hazard on the floor
-fill(4, 17, 3, 4);             // fix tile ledge off the left edge
+const fill = (code, r0, r1, c0, c1) => {
+  for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) tiles[r][c] = code;
+};
+const floorTop = u(20);
+fill(1, floorTop, floorTop + span(2) - 1, u(5), u(35) - 1); // floor
+fill(2, u(16), u(16), u(10), u(17) - 1); // pass-through platform, 4 units up
+fill(1, u(17), floorTop - 1, u(25), u(26) - 1); // wall
+fill(1, u(15), u(16) - 1, u(19), u(23) - 1); // low ceiling over the wall's left
+fill(3, floorTop - span(1), floorTop - 1, u(30), u(32) - 1); // hazard on the floor
+fill(4, u(17), u(18) - 1, u(3), u(5) - 1); // fix-tile ledge off the left edge
+// A one-tile staircase going up to the right and back down (a drawn slope),
+// and a pass-through tile at foot level to walk onto.
+const stairs = u(6);
+for (let i = 0; i < 4; i++) fill(1, floorTop - 1 - i, floorTop - 1 - i, stairs + 2 * i, stairs + 2 * i + 1);
+for (let i = 0; i < 3; i++) fill(1, floorTop - 3 + i, floorTop - 3 + i, stairs + 8 + 2 * i, stairs + 9 + 2 * i);
+fill(2, floorTop - 1, floorTop - 1, u(14), u(14) + 1);
 const grid = { cols, rows, tiles };
 
-// Each segment: [steps, dir, down, jumpOnFirstStep]
+// Start tiles in units (feet on the floor = row floorTop - 1). Segments: [seconds, dir, down, jump on first step].
+const feet = floorTop - 1;
 const SCENARIOS = [
-  { name: 'stand', start: [8, 19], segs: [[30, 0, false, false]] },
-  { name: 'jump_up', start: [8, 19], segs: [[1, 0, false, true], [140, 0, false, false]] },
-  { name: 'run_into_wall', start: [20, 19], segs: [[90, 1, false, false]] },
-  { name: 'double_jump_right', start: [6, 19], segs: [[1, 1, false, true], [40, 1, false, false], [1, 1, false, true], [160, 1, false, false]] },
-  { name: 'walk_off_left_ledge', start: [6, 19], segs: [[200, -1, false, false]] },
-  { name: 'jump_onto_pass', start: [13, 19], segs: [[1, 0, false, true], [120, 0, false, false]] },
-  { name: 'drop_through_pass', start: [13, 15], segs: [[1, 0, true, false], [120, 0, false, false]] },
-  { name: 'bonk_ceiling', start: [20, 19], segs: [[1, 0, false, true], [80, 0, false, false]] },
-  { name: 'touch_hazard', start: [27, 19], segs: [[60, 1, false, false]] },
-  { name: 'coyote_jump', start: [33, 19], segs: [[24, 1, false, false], [1, 1, false, true], [100, 1, false, false]] },
-  { name: 'knockback', start: [15, 19], kick: { vx: -1300, vy: -900, hitstun: 0.4 }, segs: [[220, 1, false, false]] },
+  { name: 'stand', start: [u(8), feet], segs: [[0.25, 0, false, false]] },
+  { name: 'jump_up', start: [u(8), feet], segs: [[0, 0, false, true], [1.2, 0, false, false]] },
+  { name: 'run_into_wall', start: [u(20), feet], segs: [[0.75, 1, false, false]] },
+  { name: 'double_jump_right', start: [u(17), feet], segs: [[0, 1, false, true], [0.33, 1, false, false], [0, 1, false, true], [1.33, 1, false, false]] },
+  { name: 'walk_off_left_ledge', start: [u(6), feet], segs: [[1.7, -1, false, false]] },
+  { name: 'jump_onto_pass', start: [u(13), feet], segs: [[0, 0, false, true], [1.0, 0, false, false]] },
+  { name: 'drop_through_pass', start: [u(13), u(16) - 1], segs: [[0, 0, true, false], [1.0, 0, false, false]] },
+  { name: 'bonk_ceiling', start: [u(20), feet], segs: [[0, 0, false, true], [0.67, 0, false, false]] },
+  { name: 'touch_hazard', start: [u(27), feet], segs: [[0.5, 1, false, false]] },
+  { name: 'coyote_jump', start: [u(33), feet], segs: [[0.2, 1, false, false], [0, 1, false, true], [0.83, 1, false, false]] },
+  { name: 'knockback', start: [u(15), feet], kick: { vx: -1300, vy: -900, hitstun: 0.4 }, segs: [[1.8, 1, false, false]] },
+  { name: 'walk_up_and_down_stairs', start: [stairs - 2, feet], segs: [[1.6, 1, false, false]] },
+  { name: 'walk_down_stairs_left', start: [stairs + 13, feet], segs: [[1.6, -1, false, false]] },
+  { name: 'walk_onto_pass_step', start: [u(12), feet], segs: [[0.6, 1, false, false]] },
 ];
 
 const scenarios = SCENARIOS.map(({ name, start, segs, kick }) => {
@@ -44,8 +62,9 @@ const scenarios = SCENARIOS.map(({ name, start, segs, kick }) => {
   if (kick) Object.assign(b, { vx: kick.vx, vy: kick.vy, hitstun: kick.hitstun, onGround: false });
   const inputs = [];
   const frames = [];
-  for (const [steps, dir, down, jump] of segs) {
-    for (let i = 0; i < steps; i++) {
+  for (const [seconds, dir, down, jump] of segs) {
+    const n = Math.max(1, steps(seconds));
+    for (let i = 0; i < n; i++) {
       const input = { dir, down, jump: jump && i === 0 };
       stepBody(b, input, grid, game, game.physics, dt);
       inputs.push([input.dir, input.down ? 1 : 0, input.jump ? 1 : 0]);

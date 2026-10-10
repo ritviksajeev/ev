@@ -3,6 +3,7 @@ import { COLOR } from '../theme.js';
 import { STAGE_X, STAGE_Y } from '../view.js';
 
 const T = GAME.tileSize;
+const PAPER = 24; // px between the faint paper lines
 
 // Draws the faint paper grid and the stage's tiles. Runs of equal tiles on a
 // row are merged into one rectangle so there are no seams between tiles.
@@ -11,8 +12,8 @@ export function drawPaper(scene) {
   const w = GAME.cols * T;
   const h = GAME.rows * T;
   g.lineStyle(1, COLOR.line, 0.03);
-  for (let c = 1; c < GAME.cols; c++) g.lineBetween(STAGE_X + c * T, STAGE_Y, STAGE_X + c * T, STAGE_Y + h);
-  for (let r = 1; r < GAME.rows; r++) g.lineBetween(STAGE_X, STAGE_Y + r * T, STAGE_X + w, STAGE_Y + r * T);
+  for (let x = PAPER; x < w; x += PAPER) g.lineBetween(STAGE_X + x, STAGE_Y, STAGE_X + x, STAGE_Y + h);
+  for (let y = PAPER; y < h; y += PAPER) g.lineBetween(STAGE_X, STAGE_Y + y, STAGE_X + w, STAGE_Y + y);
   g.lineStyle(1, COLOR.line, 0.07);
   g.strokeRect(STAGE_X, STAGE_Y, w, h);
   g.lineStyle(1, COLOR.line, 0.35);
@@ -39,20 +40,19 @@ export function drawTiles(scene, tiles, { alpha = 1 } = {}) {
   return g;
 }
 
-export function drawTile(g, code, x, y) {
-  drawRun(g, code, x, y, T);
-}
-
-function drawRun(g, code, x, y, w) {
+// One run of equal tiles on a row, drawn at (x, y) in canvas pixels.
+export function drawRun(g, code, x, y, w) {
   if (code === 2) {
     g.fillStyle(COLOR.pass, 0.1).fillRect(x, y, w, T);
-    g.fillStyle(COLOR.pass, 1).fillRect(x, y, w, 5);
+    g.fillStyle(COLOR.pass, 1).fillRect(x, y, w, Math.min(5, T / 2));
     return;
   }
   if (code === 3) {
+    // Spikes 12 px wide whatever the tile size.
+    const spike = Math.min(12, T);
     g.fillStyle(COLOR.hazard, 0.22).fillRect(x, y, w, T);
     g.fillStyle(COLOR.hazard, 1);
-    for (let sx = x; sx < x + w; sx += T / 2) g.fillTriangle(sx, y + T, sx + T / 4, y + 6, sx + T / 2, y + T);
+    for (let sx = x; sx + spike <= x + w + 0.5; sx += spike) g.fillTriangle(sx, y + T, sx + spike / 2, y + T / 4, sx + spike, y + T);
     return;
   }
   g.fillStyle(code === 4 ? COLOR.fix : COLOR.solid, 1).fillRect(x, y, w, T);

@@ -2,6 +2,7 @@ import { GAME } from '../config.js';
 import { NavGraph } from './nav.js';
 
 const T = GAME.tileSize;
+const U = 24; // px: the bot's sense of "near", independent of tile size
 // Recipe times -> physics steps, rounded exactly as backend/stage_analysis.py does.
 const stepOf = (ms) => Math.floor((ms * GAME.physics.fps) / 1000 + 0.5);
 // Close enough to a node centre to start a move: just over half a run step.
@@ -53,7 +54,7 @@ export class Bot {
     } else if (this.crossing) {
       cmd.dir = this.crossing;
       wantJump = me.vy > -60 && me.airJumps > 0;
-    } else if (this.nav && me.onGround && !(Math.abs(dx) < 3 * T && Math.abs(dy) < 1.5 * T)) {
+    } else if (this.nav && me.onGround && !(Math.abs(dx) < 3 * U && Math.abs(dy) < 1.5 * U)) {
       wantJump = this.navigate(cmd, dt);
     } else {
       wantJump = this.approach(cmd, dx, dy, dt);
@@ -130,13 +131,13 @@ export class Bot {
 
     // Opponent standing above: jump up; below on a pass-through: drop.
     // (Following an airborne opponent just makes both hop forever.)
-    if (dy < -2 * T && Math.abs(dx) < 4 * T && me.onGround && op.onGround) wantJump = true;
-    else if (dy > 2 * T && Math.abs(dx) < 3 * T) cmd.down = true;
+    if (dy < -2 * U && Math.abs(dx) < 4 * U && me.onGround && op.onGround) wantJump = true;
+    else if (dy > 2 * U && Math.abs(dx) < 3 * U) cmd.down = true;
 
     // At a ledge: wait a moment (the opponent may come over), then jump the
     // gap if the opponent is standing on the other side.
     if (me.onGround && cmd.dir && !groundAhead(this.stage, me, cmd.dir)) {
-      const across = Math.sign(dx) === cmd.dir && dy < 2 * T && op.onGround;
+      const across = Math.sign(dx) === cmd.dir && dy < 2 * U && op.onGround;
       if (across && this.ledgeWait === null) this.ledgeWait = 0.3 + Math.random();
       if (across && (this.ledgeWait -= dt) <= 0) {
         wantJump = true;
@@ -208,7 +209,7 @@ function groundBelow(stage, body) {
 function groundAhead(stage, body, dir) {
   const col = Math.floor((body.x + dir * (body.w / 2 + 6)) / T);
   const row = Math.round((body.y + body.h / 2) / T);
-  for (let r = row; r < Math.min(stage.rows, row + 3); r++) {
+  for (let r = row; r < Math.min(stage.rows, row + Math.ceil((3 * U) / T)); r++) {
     if (isGround(stage.tiles[r]?.[col])) return true;
   }
   return false;

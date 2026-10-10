@@ -13,7 +13,7 @@ Fair targets for a judge's phone photo at a hackathon table where the card is cl
     empty grid already agrees on ~85% of the tiles, so a lost colour hardly moves it;
   - the scan takes under 500 ms.
 
-Cases vision.py misses today are xfail with the measured root cause (KNOWN_GAPS). They are not
+Cases vision.py cannot read yet are xfail with the measured root cause (KNOWN_GAPS). They are not
 strict: once vision.py or shared/vision.json is fixed they show up as XPASS, and the entry can go.
 """
 
@@ -35,25 +35,10 @@ MIN_RECALL = 0.75
 MIN_PRECISION = 0.75
 MAX_SCAN_MS = 500
 
-KNOWN_GAPS = {
-    "hard-shadow-across-ink": (
-        "flat_field: paper in a shadow that takes half the light falls under 0.5 x the 90th-percentile "
-        "level, is taken for a wide ink area and divided by lit paper, so it turns solid (solid precision 0.57)"),
-    "hard-shadow-half-light": "same flat_field paper test as hard-shadow-across-ink",
-    "hard-shadow-60pct": "same flat_field paper test as hard-shadow-across-ink",
-    "red-photographs-orange": (
-        "hazard hue range stops at hMax 10; this red photographs at hue ~12.4 and is lost entirely "
-        "(recall 0); hMax 16 finds it"),
-    "blue-photographs-purple": (
-        "pass hue range stops at hMax 130; this blue photographs at hue ~132 and is lost entirely "
-        "(recall 0); hMax 142 finds it"),
-    "fingertip-on-corner-light-skin": (
-        "find_card: the fingertip sticks out past the card edge, so the convex hull loses that side; "
-        "hull_to_quad builds a wrong quad, _plausible_card rejects it and nothing else is tried"),
-}
-UPSIDE_DOWN_GAP = ("scan_image only turns sideways cards (ink in the top half -> rotate 180); a card "
-                   "photographed from across the table is warped upside down")
-ONE_PX_GAP = "find_card resizes with fx/fy; a 1 px side scales to 0 px and cv2.resize raises cv2.error"
+# Cases vision.py missed when this file was written, all fixed since (flat_field's paper test,
+# the hazard / pass hue ranges, the raw-outline quad search, the upside-down turn, the 1 px resize).
+# Add a case here, with its measured root cause, if a new one is found that cannot be fixed yet.
+KNOWN_GAPS = {}
 
 FAIR = [c["name"] for c in hard.CASES if c["fair"]]
 UPSIDE_DOWN = [c["name"] for c in hard.CASES if c.get("upside_down")]
@@ -167,7 +152,7 @@ def test_card_turned_sideways_in_a_portrait_photo_comes_out_upright(photo, name)
 
 @pytest.mark.parametrize("name", UPSIDE_DOWN)
 def test_upside_down_card_is_found_and_read(photo, name):
-    """The card is found and read either way up (today: upside down, see the next test)."""
+    """The card is found and read either way up."""
     data, truth = photo(name)
     result = vision.scan_image(data)
     assert result["cardDetected"]
@@ -176,7 +161,6 @@ def test_upside_down_card_is_found_and_read(photo, name):
 
 
 @pytest.mark.parametrize("name", UPSIDE_DOWN)
-@pytest.mark.xfail(reason=UPSIDE_DOWN_GAP, strict=False)
 def test_upside_down_card_comes_out_upright(photo, name):
     data, truth = photo(name)
     assert hard.score(vision.scan_image(data)["grid"], truth)["agreement"] >= 0.95
@@ -208,11 +192,9 @@ ODD = {
     "png-16bit": lambda: _encode(np.random.default_rng(0).integers(0, 65535, (300, 400, 3)).astype(np.uint16), ".png"),
     "png-fully-transparent": lambda: _encode(np.zeros((480, 640, 4), np.uint8), ".png"),
 }
-ODD_CRASHES = {"1x4000-png", "4000x1-png"}
 
 
-@pytest.mark.parametrize("name", [pytest.param(n, marks=pytest.mark.xfail(reason=ONE_PX_GAP, strict=False))
-                                  if n in ODD_CRASHES else n for n in ODD])
+@pytest.mark.parametrize("name", list(ODD))
 def test_odd_upload_never_raises(name):
     data = ODD[name]()
     result = vision.scan_image(data, debug=True)

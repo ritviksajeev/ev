@@ -1,11 +1,13 @@
 import { GAME } from '../config.js';
 
 // Sample stages built by the real pipeline from samples/*.jpg
-// (backend/tools/build_sample_stages.py). Until that file exists the two
-// hand-made stages below stand in for it.
-const built = Object.values(import.meta.glob('@shared/stages/*.json', { eager: true, import: 'default' })).flat();
+// (backend/tools/build_sample_stages.py). A flat floor stands in if that file
+// is missing or was built for a different grid size.
+const built = Object.values(import.meta.glob('@shared/stages/*.json', { eager: true, import: 'default' }))
+  .flat()
+  .filter((s) => s.cols === GAME.cols && s.rows === GAME.rows);
 
-export const SAMPLE_STAGES = built.length ? built : [handmade('sample-a', classic()), handmade('sample-b', towers())];
+export const SAMPLE_STAGES = built.length ? built : [flat()];
 
 export const pickSample = (exceptId) => {
   const pool = SAMPLE_STAGES.filter((s) => s.id !== exceptId);
@@ -16,52 +18,29 @@ export const pickSample = (exceptId) => {
 // The grid view the physics module reads.
 export const gridOf = (stage) => ({ cols: stage.cols, rows: stage.rows, tiles: stage.tiles });
 
-function blank() {
-  return Array.from({ length: GAME.rows }, () => Array(GAME.cols).fill(0));
-}
-
-function put(t, code, row, c0, c1) {
-  for (let c = c0; c <= c1; c++) t[row][c] = code;
-}
-
-function classic() {
-  const t = blank();
-  put(t, 1, 18, 8, 31);
-  put(t, 1, 19, 9, 30);
-  put(t, 2, 14, 11, 15);
-  put(t, 2, 14, 24, 28);
-  put(t, 2, 10, 17, 22);
-  return { tiles: t, spawns: [{ col: 12, row: 17 }, { col: 27, row: 17 }], name: 'Margin Notes' };
-}
-
-function towers() {
-  const t = blank();
-  put(t, 1, 16, 5, 14);
-  put(t, 1, 17, 5, 14);
-  put(t, 1, 16, 25, 34);
-  put(t, 1, 17, 25, 34);
-  put(t, 2, 12, 15, 24);
-  put(t, 3, 22, 13, 26);
-  put(t, 4, 9, 8, 10);
-  put(t, 4, 9, 29, 31);
-  return { tiles: t, spawns: [{ col: 9, row: 15 }, { col: 30, row: 15 }], name: 'Two Desks' };
-}
-
-function handmade(id, { tiles, spawns, name }) {
+// A plain floor across the middle of the grid, mirrored spawns.
+function flat() {
+  const { cols, rows } = GAME;
+  const tiles = Array.from({ length: rows }, () => Array(cols).fill(0));
+  const floor = Math.round(rows * 0.75);
+  const c0 = Math.round(cols * 0.2);
+  const c1 = cols - 1 - c0;
+  for (let c = c0; c <= c1; c++) tiles[floor][c] = 1;
+  const inset = Math.round(cols * 0.1);
   return {
     version: 1,
-    id,
+    id: 'sample-flat',
     source: 'sample',
-    cols: GAME.cols,
-    rows: GAME.rows,
+    cols,
+    rows,
     tileSize: GAME.tileSize,
     tiles,
-    spawns,
+    spawns: [{ col: c0 + inset, row: floor - 1 }, { col: c1 - inset, row: floor - 1 }],
     fixes: [],
     navGraph: { nodes: [], edges: [], moves: [] },
     cardDetected: true,
     photoUrl: null,
     timings: {},
-    extras: { stageName: name, announcerLine: 'Pencils down. Fists up.', accentColor: '#a78bfa', source: 'fallback' },
+    extras: { stageName: 'Margin Notes', announcerLine: 'Pencils down. Fists up.', accentColor: '#a78bfa', source: 'fallback' },
   };
 }

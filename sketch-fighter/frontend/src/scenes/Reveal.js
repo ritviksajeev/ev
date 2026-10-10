@@ -4,7 +4,7 @@ import { COLOR } from '../theme.js';
 import { enrichStage, HAS_API } from '../api.js';
 import { mount, esc } from '../ui/overlay.js';
 import { fitCamera, STAGE_X, STAGE_Y } from '../view.js';
-import { drawPaper, drawTile } from '../stage/StageView.js';
+import { drawPaper, drawRun } from '../stage/StageView.js';
 import { fallbackExtras } from '../stage/names.js';
 import { sfx } from '../audio/sfx.js';
 
@@ -77,21 +77,34 @@ export class Reveal extends Phaser.Scene {
   assemble() {
     this.layer.querySelector('.reveal-photo')?.classList.add('dim');
     const fixed = new Set(this.stage.fixes.filter((f) => f.op === 'add').flatMap((f) => f.cells.map(([c, r]) => `${c},${r}`)));
-    this.stage.tiles.forEach((row, r) => row.forEach((code, c) => {
-      if (!code) return;
-      const g = this.add.graphics({ x: STAGE_X + c * T + T / 2, y: STAGE_Y + r * T + T / 2 });
-      drawTile(g, code, -T / 2, -T / 2);
-      g.setScale(0.3).setAlpha(0);
-      this.tweens.add({
-        targets: g,
-        scale: 1,
-        alpha: 1,
-        delay: (r + c) * 14 + (fixed.has(`${c},${r}`) ? 500 : 0),
-        duration: 260,
-        ease: 'Back.Out',
-      });
-    }));
+    // One object per run of equal tiles (a fine grid has thousands of tiles).
+    this.stage.tiles.forEach((row, r) => {
+      let c = 0;
+      while (c < row.length) {
+        const code = row[c];
+        let end = c;
+        const late = fixed.has(`${c},${r}`);
+        while (end + 1 < row.length && row[end + 1] === code && fixed.has(`${end + 1},${r}`) === late) end++;
+        if (code) this.dropIn(code, c, end, r, late);
+        c = end + 1;
+      }
+    });
     sfx('swing');
+  }
+
+  dropIn(code, c0, c1, r, late) {
+    const w = (c1 - c0 + 1) * T;
+    const g = this.add.graphics({ x: STAGE_X + c0 * T + w / 2, y: STAGE_Y + r * T + T / 2 });
+    drawRun(g, code, -w / 2, -T / 2, w);
+    g.setScale(0.3).setAlpha(0);
+    this.tweens.add({
+      targets: g,
+      scale: 1,
+      alpha: 1,
+      delay: (r + c0) * (14 * T / 24) + (late ? 500 : 0),
+      duration: 260,
+      ease: 'Back.Out',
+    });
   }
 
   showFixes() {
