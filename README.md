@@ -17,6 +17,7 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 | `/spice`             | `spice/index.html`      |
 | `/ais`               | `ais/index.html`        |
 | `/qres`              | `qres/index.html`       |
+| `/sketch`            | `sketch/` (built, see below) |
 
 ## File layout
 
@@ -71,8 +72,10 @@ page and the release can be kept in step without editing markup.
 
 ## Sketch Fighter
 
-`sketch-fighter/` is a separate app (Flask + Phaser), not part of the static
-site. See `sketch-fighter/README.md`.
+`sketch-fighter/` is the source of a separate app (Flask + Phaser). `sketch/` is
+its static web build, served at `/sketch/`; regenerate it with
+`npm run build:web` in `sketch-fighter/frontend` (never edit `sketch/` by hand).
+See `sketch-fighter/README.md`.
 
 ## Notes & TODOs
 

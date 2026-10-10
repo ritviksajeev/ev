@@ -41,6 +41,11 @@
       "source": "/wife",
       "destination": "/wife/",
       "permanent": true
+    },
+    {
+      "source": "/sketch",
+      "destination": "/sketch/",
+      "permanent": true
     }
   ]
 }

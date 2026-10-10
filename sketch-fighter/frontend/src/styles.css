@@ -159,6 +159,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   border-radius: 50%;
   background: var(--white-faint);
 }
+.chip[data-state="idle"] i { background: var(--purple-bright); }
 .chip[data-state="ok"] i { background: var(--p1); animation: ping 2.4s ease-in-out infinite; }
 .chip[data-state="warn"] i { background: var(--p2); }
 .chip[data-state="off"] i { background: var(--ink-hazard); }

@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { apiUrl, HAS_API } from '../api.js';
 import { GAME_HASH } from '../config.js';
 
 // Waits for the UI fonts and pings the server, then hands off to Home.
@@ -22,10 +23,11 @@ function loadFonts() {
 }
 
 async function checkServer() {
+  if (!HAS_API) return { online: false, static: true, inSync: null, gemini: false };
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 2500);
   try {
-    const res = await fetch('/api/health', { signal: ctrl.signal });
+    const res = await fetch(apiUrl('/api/health'), { signal: ctrl.signal });
     const body = await res.json();
     const inSync = body.configHash === GAME_HASH;
     if (!inSync) {

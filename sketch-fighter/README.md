@@ -43,6 +43,10 @@ npm run build   # writes backend/static, then the Flask server alone serves the 
 
 Tests: `cd backend && pytest`.
 
+### On the website (evzero.org/sketch/)
+
+`npm run build:web` writes a static build to `sketch/` at the repo root. Commit it and push to `main`; GitHub Pages publishes it at evzero.org/sketch/ about a minute later. That build has no server behind it (`.env.web` sets `VITE_API_BASE=none`), so it covers everything up to photo scanning. Once the API is on Cloud Run, point `VITE_API_BASE` at it.
+
 Both sides read `shared/game.json`. The frontend bundles it at build time; on start it compares its copy's hash with `/api/health` and logs a warning (and the Home chip turns amber) if the server's file differs, which means the frontend needs a rebuild.
 
 ## Environment

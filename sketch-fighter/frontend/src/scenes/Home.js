@@ -119,11 +119,13 @@ export class Home extends Phaser.Scene {
 
   mountUi() {
     const server = this.registry.get('server') ?? { online: false };
-    const chip = !server.online
-      ? { state: 'off', text: 'api offline' }
-      : server.inSync
-        ? { state: 'ok', text: 'api online' }
-        : { state: 'warn', text: 'config out of date' };
+    const chip = server.static
+      ? { state: 'idle', text: 'web preview' }
+      : !server.online
+        ? { state: 'off', text: 'api offline' }
+        : server.inSync
+          ? { state: 'ok', text: 'api online' }
+          : { state: 'warn', text: 'config out of date' };
     const apexTiles = (P.jumpVelocity ** 2 / (2 * P.gravity) / T).toFixed(1);
 
     mount(this, `
@@ -145,7 +147,7 @@ export class Home extends Phaser.Scene {
         <footer class="bar bottom">
           <span><span class="bracket">[</span> Phase 0 <span class="bracket">]</span> Skeleton</span>
           <span>g ${P.gravity} &middot; jump ${P.jumpVelocity} &middot; apex ${apexTiles} tiles</span>
-          <span>game.json ${server.inSync ? 'in sync' : '&mdash;'}</span>
+          <span>game.json ${server.static ? 'bundled' : server.inSync ? 'in sync' : '&mdash;'}</span>
         </footer>
 
         <aside class="legend card" aria-label="How to draw">
