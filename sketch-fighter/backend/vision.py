@@ -284,22 +284,58 @@ def flat_field(img, kernel):
 
 
 def colour_masks(hsv, cfg):
-    """{solid, pass, hazard}: binary masks after OPEN (drops specks and thin lines) then DILATE."""
-    open_k = _ellipse(cfg["morph"]["openPx"])
-    dilate_k = _ellipse(cfg["morph"]["dilatePx"])
+    """{solid, pass, hazard}: binary masks.
+
+    Per colour: threshold, OPEN (drops specks), fill closed outlines if the colour asks for it
+    (people outline a platform rather than colour it in), then DILATE so thin lines cover tiles.
+    Dark pens are both dark and coloured, so a pixel that matches blue or red is never black ink.
+    """
+    morph = cfg["morph"]
+    open_k = _ellipse(morph["openPx"])
+    dilate_k = _ellipse(morph["dilatePx"])
+    raw = {name: _in_ranges(hsv, spec["ranges"]) for name, spec in cfg["colors"].items()}
+    coloured = np.zeros_like(raw["solid"])
+    for name in ("pass", "hazard"):
+        coloured |= cv2.dilate(raw[name], _ellipse(3))
+    raw["solid"] &= cv2.bitwise_not(coloured)
+
     masks = {}
     for name, spec in cfg["colors"].items():
-        mask = np.zeros(hsv.shape[:2], np.uint8)
-        for r in spec["ranges"]:
-            lo = (r["hMin"], r["sMin"], r["vMin"])
-            hi = (r["hMax"], r["sMax"], r["vMax"])
-            mask |= cv2.inRange(hsv, lo, hi)
+        mask = raw[name]
         if open_k is not None:
             mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, open_k)
+        if spec.get("fillOutlines"):
+            mask = fill_outlines(mask, morph.get("closePx", 9), morph.get("maxFillFraction", 0.3))
         if dilate_k is not None:
             mask = cv2.dilate(mask, dilate_k)
         masks[name] = mask
     return masks
+
+
+def _in_ranges(hsv, ranges):
+    mask = np.zeros(hsv.shape[:2], np.uint8)
+    for r in ranges:
+        mask |= cv2.inRange(hsv, (r["hMin"], r["sMin"], r["vMin"]), (r["hMax"], r["sMax"], r["vMax"]))
+    return mask
+
+
+def fill_outlines(mask, close_px, max_fraction):
+    """Fill regions enclosed by ink, after bridging gaps up to close_px in the hand-drawn line.
+
+    Enclosed regions bigger than max_fraction of the card are left alone: that is the card's own
+    border or a frame drawn round everything, not a platform.
+    """
+    close_k = _ellipse(close_px)
+    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, close_k) if close_k is not None else mask
+    h, w = closed.shape
+    outside = cv2.copyMakeBorder(closed, 1, 1, 1, 1, cv2.BORDER_CONSTANT, value=0)
+    cv2.floodFill(outside, np.zeros((h + 4, w + 4), np.uint8), (0, 0), 255)
+    holes = cv2.bitwise_not(outside)[1:-1, 1:-1]
+    n, labels, stats, _ = cv2.connectedComponentsWithStats(holes, connectivity=4)
+    small = np.zeros(n, bool)
+    small[1:] = stats[1:, cv2.CC_STAT_AREA] <= max_fraction * h * w
+    filled = np.where(small[labels], 255, 0).astype(np.uint8)
+    return closed | filled
 
 
 def _ellipse(px):

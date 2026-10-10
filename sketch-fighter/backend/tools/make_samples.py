@@ -27,6 +27,12 @@ INKS = {
     HAZARD: [(0.18, 0.16, 0.82), (0.14, 0.24, 0.86), (0.30, 0.14, 0.80)],
 }
 
+PEN_INKS = {
+    SOLID: [(0.12, 0.12, 0.13)],
+    PASS: [(0.45, 0.30, 0.14), (0.42, 0.38, 0.16)],  # navy, dark teal
+    HAZARD: [(0.20, 0.16, 0.48), (0.22, 0.14, 0.40)],  # maroon
+}
+
 TABLES = {  # base reflectance (BGR) of dark venue tables
     "walnut": (0.10, 0.15, 0.22),
     "slate": (0.15, 0.15, 0.14),
@@ -41,6 +47,9 @@ LIGHTS = {"neutral": (1.0, 1.0, 1.0), "warm": (0.82, 0.96, 1.07), "cool": (1.08,
 #   ("block", code, r0, r1, c0, c1)  filled marker area
 #   ("stroke", code, r, r, c0, c1)   one marker line about a tile thick
 #   ("zigzag", HAZARD, r, r, c0, c1) red spikes across one row
+#   ("outline", SOLID, r0, r1, c0, c1) a block drawn as a thin pen outline (it means solid ground)
+#   ("pen", code, r, r, c0, c1)      a thin pen line along one row
+# A card's "inks" picks darker pen colours: maroon red and navy / teal blue photograph dark.
 CARDS = [
     {
         "name": "classic", "seed": 101, "frame": (1280, 960), "light": "neutral", "table": "walnut", "curl": True,
@@ -149,6 +158,31 @@ CARDS = [
             ("zigzag", HAZARD, 21, 21, 9, 30),
         ],
     },
+    # Drawn with thin pens the way people actually sketch: outlined blocks, thin lines, dark inks.
+    {
+        "name": "pen outlines", "seed": 1001, "frame": (1280, 960), "light": "neutral", "table": "slate", "pen": True,
+        "shapes": [
+            ("outline", SOLID, 17, 19, 7, 20),
+            ("outline", SOLID, 16, 18, 25, 35),
+            ("outline", SOLID, 9, 11, 29, 36),
+            ("outline", SOLID, 11, 12, 6, 13),
+            ("pen", PASS, 13, 13, 9, 18),
+            ("pen", PASS, 9, 9, 15, 26),
+            ("pen", HAZARD, 5, 5, 10, 19),
+            ("pen", HAZARD, 21, 21, 23, 31),
+        ],
+    },
+    {
+        "name": "pen outlines, warm", "seed": 1002, "frame": (1280, 960), "light": "warm", "table": "walnut", "pen": True,
+        "shadow": True,
+        "shapes": [
+            ("outline", SOLID, 15, 18, 4, 16),
+            ("outline", SOLID, 15, 18, 23, 35),
+            ("outline", SOLID, 8, 9, 17, 22),
+            ("pen", PASS, 11, 11, 13, 26),
+            ("pen", HAZARD, 19, 19, 17, 22),
+        ],
+    },
 ]
 
 
@@ -240,8 +274,20 @@ def _zigzag_points(rng, r, c0, c1, width):
     return np.stack([xs + rng.uniform(-0.05, 0.05, len(xs)), ys], 1)
 
 
+def _outline_points(rng, r0, r1, c0, c1):
+    """The block's wobbly polygon traced as a closed pen line (tile units)."""
+    poly = _block_polygon(rng, r0, r1, c0, c1) / TILE
+    return np.vstack([poly, poly[:1]])
+
+
 def _shape_alpha(rng, shape, item, xx, yy):
     kind, _, r0, r1, c0, c1 = item
+    if kind == "outline":
+        width = rng.uniform(0.14, 0.2)
+        return _polyline_alpha(rng, shape, _outline_points(rng, r0, r1, c0, c1), width)
+    if kind == "pen":
+        width = rng.uniform(0.14, 0.2)
+        return _polyline_alpha(rng, shape, _stroke_points(rng, r0, c0, c1, width), width)
     if kind == "block":
         return _fill_alpha(rng, shape, _block_polygon(rng, r0, r1, c0, c1), xx, yy)
     if kind == "stroke":
@@ -274,8 +320,9 @@ def render_card(rng, card_spec):
     for item in card_spec["shapes"]:
         alpha = _shape_alpha(rng, (h, w), item, xx, yy)
         layers[item[1]] = 1 - (1 - layers[item[1]]) * (1 - alpha)  # overlapping marker gets darker
+    inks = PEN_INKS if card_spec.get("pen") else INKS
     for code, alpha in layers.items():
-        variants = INKS[code]
+        variants = inks[code]
         ink = np.array(variants[rng.integers(len(variants))], np.float32)
         card *= 1 - alpha[..., None] * (1 - ink)
     return card
