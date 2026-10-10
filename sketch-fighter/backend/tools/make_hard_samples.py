@@ -89,6 +89,9 @@ CASES = [
     {"name": "hard-shadow", "seed": 15, "fair": True, "shadow": {"depth": 0.45, "softness": 3.0, "angle": 30.0}},
     {"name": "hard-shadow-across-ink", "seed": 16, "fair": True, "shapes": STAGE_B,
      "shadow": {"depth": 0.5, "softness": 2.0, "angle": 100.0, "offset": 0.05}},
+    {"name": "hard-shadow-half-light", "seed": 32, "fair": True,
+     "shadow": {"depth": 0.5, "softness": 10.0, "angle": 30.0}},
+    {"name": "hard-shadow-60pct", "seed": 33, "fair": True, "shadow": {"depth": 0.6, "softness": 2.0, "angle": 0.0}},
     {"name": "motion-blur", "seed": 17, "fair": True, "motion": 9},
     {"name": "lightgrey-table", "seed": 18, "fair": True, "table": "lightgrey"},
     {"name": "glare-spot", "seed": 19, "fair": True, "glare": {"strength": 0.55, "sigma": 1.6, "at": (18, 14)}},
@@ -114,6 +117,12 @@ CASES = [
     {"name": "upside-down", "seed": 40, "fair": False, "yaw": 180.0 + 6, "upside_down": True},
     {"name": "upside-down-across-table", "seed": 41, "fair": False, "yaw": 180.0 - 8, "pitch": 24.0, "z": 3.6,
      "upside_down": True, "shapes": STAGE_B},
+    # A fingertip pinning a curling card flat, over an empty corner. Skin is orange-red (hue ~8-15),
+    # which is also what a wider hazard hue range would start to pick up.
+    {"name": "fingertip-on-corner-light-skin", "seed": 42, "fair": True, "pitch": 15.0,
+     "thumb": {"at": (24, 38), "length": 7.0, "width": 3.6, "skin": (0.52, 0.62, 0.86)}},
+    {"name": "fingertip-on-corner-dark-skin", "seed": 43, "fair": True, "pitch": 15.0, "light": "tungsten",
+     "thumb": {"at": (24, 2), "length": 7.0, "width": 3.6, "skin": (0.20, 0.30, 0.50)}},
     # Beyond fair: documented only.
     {"name": "x-dry-black-marker", "seed": 50, "fair": False, "inks": {SOLID: DRY_BLACK}, "motion": 5},
     {"name": "x-palegrey-table", "seed": 51, "fair": False, "table": "palegrey"},
@@ -314,6 +323,26 @@ def _glare(scene, warp, spec):
     return scene + glow[..., None] * (1 - scene)
 
 
+def _thumb(scene, warp, spec):
+    """A thumb holding the card at tile (row, col) on its rim, pointing towards the card centre."""
+    h, w = scene.shape[:2]
+    row, col = spec["at"]
+    pts = np.float32([[[col * TILE, row * TILE], [COLS * TILE / 2, ROWS * TILE / 2], [(col + 1) * TILE, row * TILE]]])
+    tip, centre, beside = cv2.perspectiveTransform(pts, warp)[0]
+    tile_px = float(np.linalg.norm(beside - tip))
+    direction = (centre - tip) / np.linalg.norm(centre - tip)
+    middle = tip - direction * spec["length"] * tile_px * 0.35  # most of the thumb is off the card
+    axes = (int(spec["length"] * tile_px / 2), int(spec["width"] * tile_px / 2))
+    mask = np.zeros((h, w), np.float32)
+    angle = math.degrees(math.atan2(direction[1], direction[0]))
+    cv2.ellipse(mask, (tuple(map(int, middle)), (2 * axes[0], 2 * axes[1]), angle), 1.0, -1, cv2.LINE_AA)
+    yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+    shade = 0.85 + 0.15 * np.cos(np.clip(((xx - middle[0]) * -direction[1] + (yy - middle[1]) * direction[0])
+                                         / max(axes[1], 1), -1.5, 1.5))  # rounder: darker at the sides
+    skin = np.array(spec["skin"], np.float32) * shade[..., None]
+    return scene * (1 - mask[..., None]) + skin * mask[..., None]
+
+
 def _motion_kernel(length, angle_deg):
     kernel = np.zeros((length, length), np.float32)
     kernel[length // 2, :] = 1
@@ -339,6 +368,8 @@ def render(spec_or_name):
     table = _table(rng, frame_w, frame_h, spec["table"])
     drop = cv2.GaussianBlur(np.roll(alpha[..., 0], (6, 4), (0, 1)), (0, 0), 8)
     scene = table * (1 - 0.4 * drop[..., None]) * (1 - alpha) + card_img * alpha
+    if spec.get("thumb"):
+        scene = _thumb(scene, warp, spec["thumb"])
 
     yy, xx = np.mgrid[0:frame_h, 0:frame_w].astype(np.float32)
     r2 = ((xx - frame_w / 2) ** 2 + (yy - frame_h / 2) ** 2) / ((frame_w / 2) ** 2 + (frame_h / 2) ** 2)
