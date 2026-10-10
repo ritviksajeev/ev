@@ -20,7 +20,6 @@ export class Home extends Phaser.Scene {
     this.preview = pickSample();
     drawPaper(this);
     drawTiles(this, this.preview.tiles, { alpha: 0.1 });
-    this.mode = this.registry.get('mode') ?? 'cpu';
     this.mountUi();
 
     // The laptop on the table drifts into attract mode when nobody touches it.
@@ -61,13 +60,8 @@ export class Home extends Phaser.Scene {
             <label class="btn hit" for="snap">Snap a stage <span class="arrow">&rarr;</span></label>
             <input id="snap" class="file-input" type="file" accept="image/*" capture="environment" />
             <button class="btn ghost" data-act="sample">Play a sample stage</button>
-            ${IS_TOUCH ? '' : `
-              <div class="seg" role="group" aria-label="Players">
-                <button data-mode="cpu" aria-pressed="${this.mode === 'cpu'}">vs CPU</button>
-                <button data-mode="2p" aria-pressed="${this.mode === '2p'}">2 players</button>
-              </div>`}
           </div>
-          ${IS_TOUCH ? '' : '<div class="home-hint">Enter to play &middot; A D W J K &middot; gamepads work too</div>'}
+          ${IS_TOUCH ? '' : '<div class="home-hint">Enter to play &middot; A D move &middot; W jump &middot; J K attack</div>'}
         </main>
 
         <footer class="bar bottom">
@@ -90,12 +84,6 @@ export class Home extends Phaser.Scene {
       if (f) this.scene.start('Capture', { file: f });
     });
     el.querySelector('[data-act="sample"]').addEventListener('click', () => this.play());
-    el.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => {
-      this.mode = b.dataset.mode;
-      this.registry.set('mode', this.mode);
-      el.querySelectorAll('[data-mode]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      sfx('ui');
-    }));
 
     this.onKey = (e) => {
       if (!IS_TOUCH) this.armIdle();
@@ -107,6 +95,6 @@ export class Home extends Phaser.Scene {
 
   play() {
     sfx('ui');
-    this.scene.start('Fight', { stage: this.preview, mode: this.mode });
+    this.scene.start('Fight', { stage: this.preview });
   }
 }

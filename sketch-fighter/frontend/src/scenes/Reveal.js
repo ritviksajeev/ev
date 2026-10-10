@@ -141,6 +141,6 @@ export class Reveal extends Phaser.Scene {
     if (this.leaving) return;
     this.leaving = true;
     sfx('ui');
-    this.scene.start('Fight', { stage: this.stage, mode: this.registry.get('mode') ?? 'cpu' });
+    this.scene.start('Fight', { stage: this.stage });
   }
 }

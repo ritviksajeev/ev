@@ -7,7 +7,7 @@ import { drawPaper, drawTiles } from '../stage/StageView.js';
 import { gridOf, pickSample } from '../stage/stages.js';
 import { Fighter, overlaps } from '../fighter/Fighter.js';
 import { Controller } from '../controls/input.js';
-import { KeyboardSource, P1_KEYS, P2_KEYS } from '../controls/keyboard.js';
+import { KEYS, KeyboardSource } from '../controls/keyboard.js';
 import { GamepadSource } from '../controls/gamepad.js';
 import { TouchSource } from '../controls/touch.js';
 import { Bot } from '../bot/Bot.js';
@@ -21,7 +21,7 @@ const BZ = GAME.blastZone;
 const IDLE = { dir: 0, down: false, jump: false, quick: false, strong: false };
 const MAX_ZOOM = IS_TOUCH ? 1.45 : 1.25;
 
-// The match. mode: 'cpu' (P1 vs CPU), '2p' (local two players), 'demo' (CPU vs CPU, attract mode).
+// The match. mode: 'cpu' (you vs the CPU) or 'demo' (CPU vs CPU, attract mode).
 export class Fight extends Phaser.Scene {
   constructor() {
     super('Fight');
@@ -50,7 +50,7 @@ export class Fight extends Phaser.Scene {
     const demo = this.mode === 'demo';
     this.fighters = [
       new Fighter(this, { id: 'p1', name: demo ? 'CPU 1' : 'P1', color: COLOR.p1, spawn: s1, facing: face }),
-      new Fighter(this, { id: 'p2', name: this.mode === '2p' ? 'P2' : demo ? 'CPU 2' : 'CPU', color: COLOR.p2, spawn: s2, facing: -face }),
+      new Fighter(this, { id: 'p2', name: demo ? 'CPU 2' : 'CPU', color: COLOR.p2, spawn: s2, facing: -face }),
     ];
     this.drivers = this.makeDrivers();
     this.fx = this.add.graphics().setDepth(20);
@@ -88,20 +88,13 @@ export class Fight extends Phaser.Scene {
     if (this.mode === 'demo') {
       return [new Bot(p1, p2, this.stage), new Bot(p2, p1, this.stage)].map(botDriver);
     }
-    if (this.mode === '2p') {
-      return [
-        padDriver(new Controller([new KeyboardSource(P1_KEYS), new GamepadSource(0)])),
-        padDriver(new Controller([new KeyboardSource(P2_KEYS), new GamepadSource(1)])),
-      ];
-    }
-    const sources = [new KeyboardSource({ ...P1_KEYS, ...P2_KEYS }), new GamepadSource(0)];
+    const sources = [new KeyboardSource(KEYS), new GamepadSource(0)];
     if (IS_TOUCH) sources.push(new TouchSource(document.getElementById('touch')));
     return [padDriver(new Controller(sources)), botDriver(new Bot(p2, p1, this.stage))];
   }
 
   hint() {
     if (IS_TOUCH || this.mode === 'demo') return '';
-    if (this.mode === '2p') return 'P1 &nbsp;A D &middot; W &middot; J K<br/>P2 &nbsp;&larr; &rarr; &middot; &uarr; &middot; . /';
     return 'A D move &middot; W jump<br/>J quick &middot; K strong &middot; S drop';
   }
 

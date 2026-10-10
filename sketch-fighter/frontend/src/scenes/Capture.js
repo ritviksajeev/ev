@@ -67,7 +67,7 @@ export class Capture extends Phaser.Scene {
     });
     this.actions.querySelector('[data-act="sample"]').addEventListener('click', () => {
       sfx('ui');
-      this.scene.start('Fight', { stage: pickSample(), mode: this.registry.get('mode') ?? 'cpu' });
+      this.scene.start('Fight', { stage: pickSample() });
     });
     this.actions.querySelector('[data-act="home"]').addEventListener('click', () => this.scene.start('Home'));
   }

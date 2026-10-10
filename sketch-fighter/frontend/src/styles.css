@@ -252,22 +252,6 @@ button, label { font: inherit; color: inherit; background: none; border: 0; curs
 }
 .btn:not(:disabled):active { transform: scale(0.97); background: var(--purple-bright); border-color: var(--purple-bright); color: var(--bg-0); }
 
-.seg {
-  display: inline-flex;
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.seg button {
-  padding: 8px 12px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.6px;
-  text-transform: uppercase;
-  color: var(--white-faint);
-}
-.seg button[aria-pressed="true"] { color: var(--bg-0); background: var(--white); }
-
 .card {
   background: var(--glass-bg);
   border: 1px solid var(--glass-border);

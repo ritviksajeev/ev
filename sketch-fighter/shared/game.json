@@ -17,7 +17,7 @@
     "runSpeed": 260,
     "maxFallSpeed": 900,
     "maxLaunchSpeed": 2400,
-    "knockbackDecay": 1200,
+    "knockbackDecay": 800,
     "coyoteMs": 80,
     "jumpBufferMs": 100,
     "dropThroughMs": 250

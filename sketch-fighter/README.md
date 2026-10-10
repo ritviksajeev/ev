@@ -63,6 +63,17 @@ Open the Network URL on the phone. If it doesn't load, the laptop's firewall is 
 
 For a production-like run, `npm run build`, then `python app.py` alone serves the game and the API on :8080 (use `http://<laptop-ip>:8080`).
 
+### The Gemini key
+
+Put it in **`sketch-fighter/.env`** (git-ignored, so it never leaves your laptop). `dev.cmd` creates that file from `.env.example` on its first run and opens it in Notepad:
+
+```
+GEMINI_API_KEY=your-key
+GEMINI_MODEL=the-pro-model-name
+```
+
+To see the exact model names your key can use, run `python -m tools.list_models` in `backend/` (on Windows, in `sketch-fighter\backend`: `.venv\Scripts\python -m tools.list_models`). Restart the API window after editing `.env`. Without a key everything still works; stage names then come from a local list.
+
 ## Deploy
 
 ### The game on evzero.org
@@ -73,9 +84,9 @@ cd frontend && npm run build:web      # writes ../../sketch (repo root)
 
 Commit `sketch/` and push to `main`. GitHub Pages publishes it about a minute later. `.env.web` sets `VITE_API_BASE`. Leave it at `none` until the server is deployed, then set it to the server's URL (for example `https://sketch-fighter.up.railway.app`), rebuild and push again. Snap a stage then works from the website.
 
-### The server
+### The server (optional)
 
-The API needs Python and OpenCV, so it runs as a container, as a single instance (the recent-stages gallery lives in memory).
+For now the server runs on your laptop (above). To put it online later: the API needs Python and OpenCV, so it runs as a container, as a single instance (the recent-stages gallery lives in memory).
 
 **Railway** (you already use it for `server/`):
 1. New project, then Deploy from GitHub repo, `ritviksajeev/ev`.
@@ -99,7 +110,7 @@ All optional; see `.env.example`. The stage never waits on Gemini.
 
 | Variable | What it does |
 |---|---|
-| `GEMINI_API_KEY` | Server-side only. Without it, stage names come from a local list. |
+| `GEMINI_API_KEY` | Server-side only (put it in `.env`). Without it, stage names come from a local list. |
 | `GEMINI_MODEL` | Model name (the team uses the latest Gemini Pro). Never hardcoded. Pro models think before answering, so `enrich.py` asks for minimal thinking and gives up after `GEMINI_TIMEOUT_S` (default 8). |
 | `CORS_ORIGINS` | Sites allowed to call the API (evzero.org for the web build). |
 | `DEBUG_TOKEN` | Required to save calibration from `/debug` on a public server. |
@@ -127,7 +138,8 @@ cd backend && pytest                  # physics parity, vision accuracy, analysi
 - [x] 1. Fight scene: movement, jumps, one-way platforms, keyboard
 - [x] 2. Combat, KO, timer, Result
 - [x] 3. Touch controls and mobile web (always landscape, safe areas, fullscreen on Android)
-- [ ] 4. Vision pipeline, `/api/scan`, Capture, `/debug` (frontend done; backend in progress)
-- [ ] 5. Stage analysis, Reveal (frontend done; backend in progress)
-- [x] 6. CPU opponent (nav graph once stages carry one), attract mode
-- [ ] 7. Gemini extras (in progress), gamepads (done), sound (done), polish, deploy
+- [x] 4. Vision pipeline, `/api/scan`, Capture, `/debug`
+- [x] 5. Stage analysis (jump table, checks, fixes, spawns, nav graph), Reveal
+- [x] 6. CPU opponent on the nav graph, attract mode
+- [x] 7. Gemini extras, gamepad, sound
+- [ ] Next: real phone photos for calibration, adversarial review of the backend, polish

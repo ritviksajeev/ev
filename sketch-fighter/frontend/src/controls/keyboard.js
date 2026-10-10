@@ -1,9 +1,8 @@
 import { ButtonSource } from './input.js';
 
-export const P1_KEYS = {
+// WASD + J/K, or the arrow keys + . and / (Numpad 1/2).
+export const KEYS = {
   KeyA: 'left', KeyD: 'right', KeyS: 'down', KeyW: 'jump', Space: 'jump', KeyJ: 'quick', KeyK: 'strong',
-};
-export const P2_KEYS = {
   ArrowLeft: 'left', ArrowRight: 'right', ArrowDown: 'down', ArrowUp: 'jump',
   Numpad1: 'quick', Period: 'quick', Numpad2: 'strong', Slash: 'strong',
 };

@@ -4,7 +4,27 @@ import json
 import os
 from pathlib import Path
 
-SHARED_DIR = Path(os.environ.get("SHARED_DIR", Path(__file__).resolve().parent.parent / "shared"))
+APP_DIR = Path(__file__).resolve().parent.parent
+
+
+def _load_dotenv(path):
+    """KEY=value lines from sketch-fighter/.env, so the Gemini key needs no shell setup.
+
+    Variables already set in the environment win; empty values are skipped.
+    """
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        key, sep, value = line.strip().partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if sep and key and not key.startswith("#") and value:
+            os.environ.setdefault(key, value)
+
+
+_load_dotenv(APP_DIR / ".env")
+
+SHARED_DIR = Path(os.environ.get("SHARED_DIR", APP_DIR / "shared"))
 
 
 def fnv1a32(text):

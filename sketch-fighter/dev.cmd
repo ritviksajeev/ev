@@ -3,6 +3,12 @@ rem Windows: first run installs everything, then starts the API and the game
 rem in two windows. Open the "Network" URL from the game window on your phone.
 cd /d "%~dp0"
 
+if not exist .env (
+  copy .env.example .env >nul
+  echo Created .env - paste your Gemini key and model there, then save.
+  start notepad .env
+)
+
 if not exist backend\.venv\Scripts\python.exe (
   echo Creating the Python environment...
   py -3.11 -m venv backend\.venv 2>nul || python -m venv backend\.venv

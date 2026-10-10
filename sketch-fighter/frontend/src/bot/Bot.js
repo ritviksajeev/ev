@@ -2,6 +2,8 @@ import { GAME } from '../config.js';
 import { NavGraph } from './nav.js';
 
 const T = GAME.tileSize;
+// Recipe times -> physics steps, rounded exactly as backend/stage_analysis.py does.
+const stepOf = (ms) => Math.floor((ms * GAME.physics.fps) / 1000 + 0.5);
 
 // Easy CPU. Produces the same command a Controller does, once per physics step.
 // With a nav graph it paths across the stage and replays the analyzer's
@@ -17,6 +19,7 @@ export class Bot {
     this.wantAttack = null;
     this.prevJump = false;
     this.plan = null; // nav edge being executed
+    this.hesitate = null; // seconds left before starting a jump or drop
     this.crossing = 0; // direction while jumping a gap (no nav graph)
     this.ledgeWait = null; // seconds left before jumping a gap (no nav graph)
   }
@@ -39,7 +42,7 @@ export class Bot {
     this.maybeAttack(cmd, dx, dy, dt);
 
     if (this.plan) {
-      wantJump = this.followPlan(cmd, dt);
+      wantJump = this.followPlan(cmd);
     } else if (!me.onGround && !this.crossing && !groundBelow(this.stage, me)) {
       // Airborne with nothing below: head for the nearest ground and spend
       // the double jump once falling.
@@ -49,7 +52,7 @@ export class Bot {
       cmd.dir = this.crossing;
       wantJump = me.vy > -60 && me.airJumps > 0;
     } else if (this.nav && me.onGround && !(Math.abs(dx) < 3 * T && Math.abs(dy) < 1.5 * T)) {
-      wantJump = this.navigate(cmd);
+      wantJump = this.navigate(cmd, dt);
     } else {
       wantJump = this.approach(cmd, dx, dy, dt);
     }
@@ -62,7 +65,7 @@ export class Bot {
 
   // Walk along the cheapest path toward the opponent's nearest node; for any
   // other edge, line up on the node centre and start its move.
-  navigate(cmd) {
+  navigate(cmd, dt) {
     const me = this.self.body;
     const op = this.opp.body;
     const from = this.nav.nodeUnder(me);
@@ -80,32 +83,37 @@ export class Bot {
       cmd.dir = Math.sign(cx - me.x);
       return false;
     }
-    this.plan = { edge, move: edge.move, t: 0, started: false, doubled: false };
-    return this.followPlan(cmd, 0);
+    // Hesitate a moment, and don't leap at a moving target: two CPUs on a
+    // mirrored stage would otherwise jump in lockstep and swap sides forever.
+    if (this.hesitate === null) this.hesitate = 0.12 + Math.random() * 0.5;
+    if ((this.hesitate -= dt) > 0 || !op.onGround) return false;
+    this.hesitate = null;
+    this.plan = { edge, move: edge.move, step: 0, airborne: false };
+    return this.followPlan(cmd);
   }
 
-  // Replay the move's timing, then steer onto the target node (closed loop:
-  // real jumps are stronger than the analyzer assumed, so they overshoot).
-  followPlan(cmd, dt) {
+  // Replay the move exactly as the analyzer verified it: jump (or press down)
+  // on step 0, the second jump on its step, no direction before holdFromMs, then
+  // steer onto the target node's centre and stop within 3 px.
+  followPlan(cmd) {
     const p = this.plan;
     const m = p.move;
     const me = this.self.body;
-    const tx = this.nav.x(p.edge.to);
+    const s = p.step++;
     let wantJump = false;
-    p.t += dt * 1000;
 
-    if (!p.started) {
-      p.started = true;
-      if (m.type === 'jump' || m.type === 'double_jump') wantJump = true;
-      if (m.type === 'drop') cmd.down = true;
+    if (s === 0 && (m.type === 'jump' || m.type === 'double_jump')) wantJump = true;
+    if (s === 0 && m.type === 'drop') cmd.down = true;
+    if (m.type === 'double_jump' && m.doubleJumpAtMs != null && s === stepOf(m.doubleJumpAtMs)) wantJump = true;
+    if (s >= stepOf(m.holdFromMs)) {
+      const dx = this.nav.x(p.edge.to) - me.x;
+      cmd.dir = Math.abs(dx) > 3 ? Math.sign(dx) : 0;
     }
-    if (m.type === 'fall' && me.onGround) cmd.dir = m.dir || Math.sign(tx - me.x);
-    else if (p.t >= m.holdFromMs) cmd.dir = Math.abs(tx - me.x) > 3 ? Math.sign(tx - me.x) : 0;
-    if (m.type === 'double_jump' && !p.doubled && m.doubleJumpAtMs != null && p.t >= m.doubleJumpAtMs) {
-      wantJump = true;
-      p.doubled = true;
-    }
-    if ((me.onGround && p.t > 60) || p.t > 3000) this.plan = null;
+    // Done once it has left the ground and landed again (a walk-off can take a
+    // while to reach the edge); give up if it never gets airborne.
+    if (!me.onGround) p.airborne = true;
+    const fps = GAME.physics.fps;
+    if ((p.airborne && me.onGround) || (!p.airborne && s > fps) || s > 3 * fps) this.plan = null;
     return wantJump;
   }
 
