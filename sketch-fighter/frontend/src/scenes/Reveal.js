@@ -19,6 +19,8 @@ export class Reveal extends Phaser.Scene {
 
   create({ stage, photoUrl, clientMs }) {
     this.stage = stage;
+    this.alive = true;
+    this.events.once('shutdown', () => { this.alive = false; });
     fitCamera(this);
     drawPaper(this);
 
@@ -116,7 +118,7 @@ export class Reveal extends Phaser.Scene {
     actions.innerHTML = `
       ${retake ? '<span class="muted reveal-note">Couldn\'t find the card edges, so the whole photo was used.</span>' : ''}
       <button class="btn" data-act="fight">Fight <span class="arrow">&rarr;</span></button>
-      ${retake ? '<label class="btn ghost hit" for="retake">Retake</label><input id="retake" type="file" accept="image/*" capture="environment" hidden />' : ''}`;
+      ${retake ? '<label class="btn ghost hit" for="retake">Retake</label><input id="retake" class="file-input" type="file" accept="image/*" capture="environment" />' : ''}`;
     actions.querySelector('[data-act="fight"]').addEventListener('click', () => this.fight());
     actions.querySelector('#retake')?.addEventListener('change', (e) => {
       const f = e.target.files?.[0];
@@ -125,7 +127,7 @@ export class Reveal extends Phaser.Scene {
   }
 
   showName(extras) {
-    if (!this.scene.isActive() || !extras) return;
+    if (!this.alive || !extras) return;
     this.stage.extras = extras;
     const name = this.ui.querySelector('.reveal-title');
     name.textContent = extras.stageName;

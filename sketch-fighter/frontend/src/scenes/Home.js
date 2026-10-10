@@ -59,7 +59,7 @@ export class Home extends Phaser.Scene {
           <h1 class="display home-title">Sketch<br/><span class="accent">Fighter</span></h1>
           <div class="home-actions">
             <label class="btn hit" for="snap">Snap a stage <span class="arrow">&rarr;</span></label>
-            <input id="snap" type="file" accept="image/*" capture="environment" hidden />
+            <input id="snap" class="file-input" type="file" accept="image/*" capture="environment" />
             <button class="btn ghost" data-act="sample">Play a sample stage</button>
             ${IS_TOUCH ? '' : `
               <div class="seg" role="group" aria-label="Players">

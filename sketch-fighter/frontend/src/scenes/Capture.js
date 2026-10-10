@@ -58,7 +58,7 @@ export class Capture extends Phaser.Scene {
     this.status.innerHTML = `<span class="muted">${esc(message)}</span>`;
     this.el.querySelector('.progress').style.display = 'none';
     this.actions.innerHTML = `
-      ${retry ? '<label class="btn hit" for="retake">Retake <span class="arrow">&rarr;</span></label><input id="retake" type="file" accept="image/*" capture="environment" hidden />' : ''}
+      ${retry ? '<label class="btn hit" for="retake">Retake <span class="arrow">&rarr;</span></label><input id="retake" class="file-input" type="file" accept="image/*" capture="environment" />' : ''}
       <button class="btn ${retry ? 'ghost' : ''}" data-act="sample">Play a sample stage</button>
       <button class="btn ghost" data-act="home">Back</button>`;
     this.actions.querySelector('#retake')?.addEventListener('change', (e) => {

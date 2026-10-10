@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => {
       outDir: web ? here('../../sketch') : here('../backend/static'),
       emptyOutDir: true,
       chunkSizeWarningLimit: 2000, // Phaser alone is ~1.2 MB minified
+      rollupOptions: {
+        // /debug (calibration) needs the API, so the static web build skips it.
+        input: web ? { main: here('index.html') } : { main: here('index.html'), debug: here('debug.html') },
+      },
     },
   };
 });

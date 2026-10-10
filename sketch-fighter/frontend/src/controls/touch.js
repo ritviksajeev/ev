@@ -1,5 +1,5 @@
 import { ButtonSource } from './input.js';
-import { toLocal } from '../shell.js';
+import { onLayout, toLocal } from '../shell.js';
 
 const STICK_RADIUS = 52;
 const DEAD_X = 0.32;
@@ -50,6 +50,17 @@ export class TouchSource extends ButtonSource {
       };
       for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) this.listen(el, type, up);
     }
+
+    // A rotation mid-fight moves everything: drop all touches so nothing sticks.
+    this.cleanups.push(onLayout(() => this.reset()));
+  }
+
+  reset() {
+    this.stickId = null;
+    this.stick.classList.remove('on');
+    this.setAxis(0, 0);
+    this.root.querySelectorAll('.tc-btn.down').forEach((el) => el.classList.remove('down'));
+    this.releaseAll();
   }
 
   listen(el, type, fn) {

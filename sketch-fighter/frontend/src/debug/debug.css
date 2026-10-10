@@ -1,0 +1,41 @@
+/* /debug - calibration page. Same tokens as the game, but a normal scrolling page. */
+:root {
+  --bg-0: #050507;
+  --bg-2: #0d0d11;
+  --purple-bright: #a78bfa;
+  --white-dim: rgba(255, 255, 255, 0.62);
+  --white-faint: rgba(255, 255, 255, 0.38);
+  --white-rule: rgba(255, 255, 255, 0.11);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Unbounded', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg-0); color: #fff; font-family: var(--font); font-size: 13px; -webkit-font-smoothing: antialiased; }
+.dbg { display: grid; grid-template-columns: minmax(280px, 360px) 1fr; min-height: 100vh; }
+.dbg-side { border-right: 1px solid var(--white-rule); padding: 20px; overflow-y: auto; max-height: 100vh; position: sticky; top: 0; }
+.dbg-main { padding: 20px; display: grid; gap: 18px; align-content: start; }
+h1 { font-family: var(--font-display); font-size: 15px; font-weight: 600; letter-spacing: -0.01em; display: flex; align-items: center; gap: 8px; }
+h1::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--purple-bright); }
+.kicker { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--white-faint); }
+.group { border-top: 1px solid var(--white-rule); padding-top: 12px; margin-top: 14px; display: grid; gap: 8px; }
+.ctl { display: grid; grid-template-columns: 1fr 56px; gap: 4px 10px; align-items: center; font-family: var(--font-mono); font-size: 11px; color: var(--white-dim); }
+.ctl input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--purple-bright); }
+.ctl output { text-align: right; color: #fff; }
+.ctl.check { grid-template-columns: auto 1fr; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; color: var(--bg-0); background: #fff; border: 1px solid #fff; border-radius: 3px; cursor: pointer; }
+.btn.ghost { color: #fff; background: transparent; border-color: var(--glass-border); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+input[type="text"], input[type="password"] { width: 100%; padding: 8px 10px; background: var(--bg-2); border: 1px solid var(--glass-border); border-radius: 3px; color: #fff; font-family: var(--font-mono); font-size: 11px; }
+.imgs { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+figure { display: grid; gap: 6px; }
+figure img { width: 100%; background: var(--bg-2); border: 1px solid var(--glass-border); border-radius: 4px; image-rendering: pixelated; min-height: 120px; }
+figcaption { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--white-faint); }
+table { border-collapse: collapse; font-family: var(--font-mono); font-size: 11px; }
+td { padding: 4px 14px 4px 0; color: var(--white-dim); }
+td:last-child { color: #fff; text-align: right; }
+.status { font-family: var(--font-mono); font-size: 11px; color: var(--white-dim); min-height: 1.4em; }
+.status.err { color: #ff4d5e; }
+@media (max-width: 760px) { .dbg { grid-template-columns: 1fr; } .dbg-side { position: static; max-height: none; border-right: 0; } }

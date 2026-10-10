@@ -598,3 +598,7 @@ button, label { font: inherit; color: inherit; background: none; border: 0; curs
 @container (max-height: 380px) {
   .reveal-fixes li:nth-child(n + 3) { display: none; }
 }
+
+/* Camera inputs are opened through their <label>. Not display:none: older
+   iOS Safari won't open a hidden file input from a label tap. */
+.file-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }

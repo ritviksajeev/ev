@@ -72,6 +72,8 @@ export class Fight extends Phaser.Scene {
       window.addEventListener('pointerdown', this.onTap);
     }
     this.events.once('shutdown', () => this.cleanup());
+    // Keep a phone from dimming mid-match (where supported).
+    navigator.wakeLock?.request('screen').then((lock) => { this.wakeLock = lock; }).catch(() => {});
 
     this.hud.showBanner('Ready', 0);
     this.time.delayedCall(demo ? 400 : 900, () => {
@@ -321,6 +323,7 @@ export class Fight extends Phaser.Scene {
   }
 
   cleanup() {
+    this.wakeLock?.release().catch(() => {});
     window.removeEventListener('keydown', this.onKey);
     if (this.onTap) window.removeEventListener('pointerdown', this.onTap);
     this.drivers.forEach((d) => d.destroy());
