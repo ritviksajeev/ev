@@ -5,8 +5,8 @@ cd /d "%~dp0"
 
 if not exist .env (
   copy .env.example .env >nul
-  echo Created .env - paste your Gemini key and model there, then save.
-  start notepad .env
+  echo Created .env - paste your Gemini key and model, save, and close Notepad to continue.
+  start "" /wait notepad .env
 )
 
 if not exist backend\.venv\Scripts\python.exe (
