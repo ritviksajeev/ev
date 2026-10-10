@@ -115,6 +115,16 @@ def _recipes():
 #            columns dc0..dc1; a tile there that the body would stand on is the landing
 # Order within a step follows integrate(): X-move cells, the crossing, Y-move cells.
 #
+# The template is flown from one absolute position, but the game flies the move from every
+# node, and the CPU starts it anywhere within START_SLACK px of the node centre (amendment 16).
+# So cells are those of the hitbox widened by START_SLACK on both sides (every start the CPU
+# may use), and a crossing lists the columns any of those starts may cover; the columns that
+# every start covers are "sure". Positions reached by integration are also only known to float
+# precision: a side lying exactly on a tile boundary in the template may cover the next tile by
+# 1e-12 px elsewhere, so integrated positions are widened by BOUNDARY_TOL as well. A landing
+# counts only on a sure column; one that only some starts would make (a pass-through corner
+# cleared by under 3 px) makes the move invalid.
+#
 # Each recipe is traced twice: with the real physics the game and CPU use, and with
 # the pessimistic physics as a safety margin. A move counts only where both traces
 # are valid and land on the same platform (same row, connected by walking); the edge
@@ -124,6 +134,8 @@ def _recipes():
 # would bonk a ceiling or land on a higher pass-through platform is caught.
 
 CELL, CROSS_LAND_PASS, CROSS_DROPPING = 0, 1, 2
+START_SLACK = 3.0
+BOUNDARY_TOL = 1e-7  # far above float error (~1e-11 px), far below physics.EPS and any real step
 _TC, _TR = 40, 12
 _TEMPLATE_SIZE = (_TR + ROWS + 6, 2 * _TC)
 
@@ -136,20 +148,33 @@ def _hitbox_cells(x, y):
     return [(c, r) for r in range(r0, r1 + 1) for c in range(c0, c1 + 1)]
 
 
+def _span(lo, hi, tol):
+    """First and last tile index a box side-to-side [lo, hi) may cover, with tol of slack."""
+    return math.floor((lo - tol) / T), math.floor((hi - physics.EPS + tol) / T)
+
+
 def _trace(recipe, phys):
-    """Events of one recipe: (kind, dc, dr, crossing) with crossing = (dc1, dcc, dx px) or None."""
+    """Events of one recipe: (kind, dc, dr, crossing) with crossing = (dc1, dcc, dx px, sure0, sure1)
+    or None; columns are relative to the start node."""
     tiles = [[EMPTY] * _TEMPLATE_SIZE[1] for _ in range(_TEMPLATE_SIZE[0])]
     tiles[_TR + 1][_TC] = PASS if recipe["type"] == "drop" else SOLID
     grid = physics.Grid(_TEMPLATE_SIZE[1], _TEMPLATE_SIZE[0], tiles)
     b = physics.create_body(GAME, _TC, _TR)
-    x_start = b["x"]
+    x_start, y_start = b["x"], b["y"]
+    slack = 0.0 if recipe["type"] == "fall" else START_SLACK
+    half_w = HALF_W + slack
     events, seen = [], set()
 
     def enter(x, y):
-        for c, r in _hitbox_cells(x, y):
-            if (c, r) not in seen:
-                seen.add((c, r))
-                events.append((CELL, c - _TC, r - _TR, None))
+        tx = BOUNDARY_TOL if x != x_start else 0.0
+        ty = BOUNDARY_TOL if y != y_start else 0.0
+        c0, c1 = _span(x - half_w, x + half_w, tx)
+        r0, r1 = _span(y - HALF_H, y + HALF_H, ty)
+        for r in range(r0, r1 + 1):
+            for c in range(c0, c1 + 1):
+                if (c, r) not in seen:
+                    seen.add((c, r))
+                    events.append((CELL, c - _TC, r - _TR, None))
 
     enter(b["x"], b["y"])
     airborne = False
@@ -170,9 +195,12 @@ def _trace(recipe, phys):
         # While still walking on the support the real grid behaves exactly like the template.
         if row is not None and (airborne or not b["onGround"]):
             kind = CROSS_DROPPING if b["dropTimer"] > 0 else CROSS_LAND_PASS
-            c0 = math.floor((x1 - HALF_W) / T)
-            c1 = math.floor((x1 + HALF_W - physics.EPS) / T)
-            events.append((kind, c0 - _TC, row - _TR, (c1 - _TC, math.floor(x1 / T) - _TC, x1 - x_start)))
+            tx = BOUNDARY_TOL if x1 != x_start else 0.0
+            c0, c1 = _span(x1 - half_w, x1 + half_w, tx)  # any start may cover these
+            s0, s1 = _span(x1 - HALF_W + slack, x1 + HALF_W - slack, -tx)  # every start
+            assert c1 - c0 <= 1 and c0 <= s0 <= s1 <= c1
+            centre = math.floor(x1 / T)
+            events.append((kind, c0 - _TC, row - _TR, (c1 - _TC, centre - _TC, x1 - x_start, s0 - _TC, s1 - _TC)))
 
         if b["onGround"]:
             if airborne:
@@ -213,7 +241,7 @@ class _JumpTable:
 
     def _flatten(self, traces):
         events = []  # (kind, dc, dr, crossing id or -1, segment)
-        crossings = []  # (dr, dc0, dc1, dcc, dx, dropping, segment, index of its first event)
+        crossings = []  # (dr, dc0, dc1, dcc, dx, dropping, segment, index of its first event, sure0, sure1)
         starts = []
         for s, trace in enumerate(traces):
             starts.append(len(events))
@@ -221,8 +249,8 @@ class _JumpTable:
                 if k == CELL:
                     events.append((k, c, r, -1, s))
                     continue
-                c1, cc, dx = extra
-                crossings.append((r, c, c1, cc, dx, k == CROSS_DROPPING, s, len(events)))
+                c1, cc, dx, s0, s1 = extra
+                crossings.append((r, c, c1, cc, dx, k == CROSS_DROPPING, s, len(events), s0, s1))
                 events += [(k, col, r, len(crossings) - 1, s) for col in sorted({c, c1})]
         self.seg_end = np.array(starts[1:] + [len(events)], np.int64)
         kind, dc, dr, cross, seg = zip(*events)
@@ -231,7 +259,7 @@ class _JumpTable:
         self.dr = np.array(dr, np.int32)
         self.cross = np.array(cross, np.int32)
         self.seg = np.array(seg, np.int32)
-        keys = ("dr", "dc0", "dc1", "dcc", "dx", "drop", "seg", "event")
+        keys = ("dr", "dc0", "dc1", "dcc", "dx", "drop", "seg", "event", "sure0", "sure1")
         dtypes = {"drop": bool, "dx": np.float64}
         self.cr = {k: np.array(v, dtypes.get(k, np.int32)) for k, v in zip(keys, zip(*crossings))}
 
@@ -330,16 +358,25 @@ def _landed(first, tiles_pad, node_pad, cols, rows):
     other = np.where(cc == a, b, a)
     dropping = TABLE.cr["drop"][k]
 
+    s0 = c0 + TABLE.cr["sure0"][k] + TABLE.pad_left
+    s1 = c0 + TABLE.cr["sure1"][k] + TABLE.pad_left
+
     def lands(col):
         t = tiles_pad[r, col]
         return (t == SOLID) | (t == FIX) | ((t == PASS) & ~dropping)
 
+    def sure(col):  # every start the CPU may use covers this column (see _trace)
+        return (col >= s0) & (col <= s1)
+
     centre_node = node_pad[r - 1, cc]
     other_node = node_pad[r - 1, other]
-    picked = np.where(lands(other) & (other_node >= 0), other_node, INVALID)
-    picked = np.where(lands(cc) & (centre_node >= 0), centre_node, picked)
+    picked = np.where(lands(other) & sure(other) & (other_node >= 0), other_node, INVALID)
+    picked = np.where(lands(cc) & sure(cc) & (centre_node >= 0), centre_node, picked)
+    # A column only some starts cover lands those starts and not the others: ambiguous.
+    maybe = (lands(a) & ~sure(a)) | (lands(b) & ~sure(b))
+    sure_landing = (lands(a) & sure(a)) | (lands(b) & sure(b))
     hazard = (tiles_pad[r, a] == HAZARD) | (tiles_pad[r, b] == HAZARD)
-    res[is_cross] = np.where(hazard, INVALID, picked)
+    res[is_cross] = np.where(hazard | (maybe & ~sure_landing), INVALID, picked)
     node[ni, si] = res
     dx[ni[is_cross], si[is_cross]] = TABLE.cr["dx"][k]
     return node, dx
@@ -520,6 +557,8 @@ class _Stage:
         self.default_added = False
         self.given_up = set()
         self.bridged = set()
+        self.doored = set()
+        self.added = set()  # cells set by an "add" fix; never removed again by a later fix
         self.work = [0]
         self._nav = None
 
@@ -545,17 +584,19 @@ class _Stage:
             changed.append((c, r))
         if not changed:
             return None
-        undo = (self.tiles, self._nav)
+        undo = (self.tiles, self._nav, self.added)
         self.tiles = self.tiles.copy()
         for c, r in changed:
             self.tiles[r, c] = value
         self._nav = None
         cells = [[int(c), int(r)] for c, r in changed]
         self.fixes.append({"type": kind, "op": op, "cells": cells, "message": message})
+        if op == "add":
+            self.added = self.added | set(changed)
         return undo
 
     def revert(self, undo):
-        self.tiles, self._nav = undo
+        self.tiles, self._nav, self.added = undo
         self.fixes.pop()
 
 
@@ -574,8 +615,9 @@ def _check_ground(stage):
 
 
 def _check_unreachable(stage):
-    """Groups not mutually reachable with the main stage get a stepping platform, else are removed.
-    Candidate searches, verifications (nav rebuilds) and removals all draw on one budget."""
+    """Groups not mutually reachable with the main stage get a stepping platform (or two), else a
+    doorway through the wall between, else are removed. Candidate searches, verifications (nav
+    rebuilds) and removals all draw on one budget."""
     budget = [MAX_CANDIDATES]
     while budget[0] > 0 and not stage.busy():
         nav = stage.nav
@@ -591,17 +633,28 @@ def _check_unreachable(stage):
             src, dst, message = nav.main, group, "Added a step so you can reach a platform"
         else:
             src, dst, message = group, nav.main, "Added a step so you can get back up"
-        joined = lambda new, step: _joined(new, cells, need_in)  # noqa: E731
+        joined = lambda new, step: _joined(new, cells, need_in) and _no_dead_end(new, step, cells)  # noqa: E731
         budget[0] -= 1
         result = _try_steps(stage, _step_candidates(nav, src, dst), joined, message, budget)
         if result is None:
             return
         if result:
             continue
-        if need_in and key not in stage.bridged:
-            stage.bridged.add(key)
+        if key not in stage.doored:
+            # Out of jumping range behind a wall (or a walled-in pit): cut a doorway through it.
+            # Few candidates (only run ends that face a wall), so no search unit is charged.
+            stage.doored.add(key)
+            result = _doorway(stage, cells, need_in, budget)
+            if result is None:
+                return
+            if result:
+                continue
+        if (key, need_in) not in stage.bridged:
+            # Too far for one step: two, the mirror image for the way back up.
+            stage.bridged.add((key, need_in))
             budget[0] -= 1
-            result = _bridge(stage, cells, "Added steps so you can reach a platform", budget)
+            message = "Added steps so you can reach a platform" if need_in else "Added steps so you can get back up"
+            result = _bridge(stage, cells, need_in, message, budget)
             if result is None:
                 return
             if result:
@@ -609,15 +662,67 @@ def _check_unreachable(stage):
         # Every candidate failed: remove the platform (the reserved unit of budget).
         budget[0] -= 1
         protected = set(nav.main) | {i for i in range(nav.n) if not nav.open[i]}
-        if not _remove_platform(stage, nav, group, protected):
+        # A fix never undoes another, except to clear a dead end (worse than a removed step).
+        added = stage.added if need_in else frozenset()
+        if _remove_platform(stage, nav, group, protected, added):
+            continue
+        # The platform is drawn in one piece with the main stage. A dead end you can drop into but
+        # never leave is worse than none: take away just the ground under it.
+        if need_in or not _remove_under(stage, nav, group, added):
             stage.given_up.add(key)
 
 
-def _bridge(stage, cells, message, budget):
+def _bridge(stage, cells, need_in, message, budget):
     """Too far for one step: two steps (a stepping stone and a step), verified together."""
     nav = stage.nav
-    joined = lambda new, step: _joined(new, cells, True)  # noqa: E731
-    return _try_steps(stage, _two_step_candidates(nav, _ids(nav, cells)), joined, message, budget)
+    group = _ids(nav, cells)
+    src, dst = (nav.main, group) if need_in else (group, nav.main)
+    joined = lambda new, step: _joined(new, cells, need_in) and _no_dead_end(new, step, cells)  # noqa: E731
+    return _try_steps(stage, _two_step_candidates(nav, src, dst), joined, message, budget)
+
+
+def _doorway(stage, cells, need_in, budget):
+    """Cut through the wall beside one end of the group's platforms, fighter-high, so it joins the
+    main stage by walking (or a short hop). Kept only if the group joins and the main stage loses
+    nothing."""
+    nav = stage.nav
+    main_before = nav.cells(nav.main)
+
+    def ok(new, door):
+        if not _joined(new, cells, need_in):
+            return False
+        return (main_before - set(door)) - {(c, r - 1) for c, r in door} <= new.cells(new.main)
+
+    message = "Opened a doorway so you can reach a platform" if need_in else "Opened a doorway so you can get back"
+    candidates = _doorway_candidates(nav, _ids(nav, cells), stage.added)
+    return _try_fixes(stage, candidates, ok, "opened_pocket", "remove", message, budget)
+
+
+MAX_DOOR_DEPTH = 3  # tiles of wall a doorway may cut through
+
+
+def _doorway_candidates(nav, group, protected, limit=4):
+    """Cells to clear beside each end of the group's platform runs: the two rows a standing fighter
+    fills, column by column through the wall, until the head row beyond it is clear. Fewest first."""
+    tiles = nav.tiles
+    out = set()
+    for i in group:
+        c, r = int(nav.cols[i]), int(nav.rows[i])
+        for d in (-1, 1):
+            x = c + d
+            if not 0 <= x < COLS or nav.node_grid[r, x] >= 0 or not _blocking(tiles[r - 1:r + 1, x]).any():
+                continue  # not a run end facing a wall
+            door = []
+            for _ in range(MAX_DOOR_DEPTH):
+                door += [(x, rr) for rr in (r - 1, r) if rr >= 0 and _blocking(tiles[rr, x])]
+                x += d
+                if not 0 <= x < COLS or not _blocking(tiles[r - 1, x]):
+                    break
+            else:
+                continue  # wall too thick
+            if 0 <= x < COLS and door and not set(door) & protected:
+                out.add(tuple(sorted(door)))
+    return [list(door) for door in sorted(out, key=lambda d: (len(d), d))][:limit]
 
 
 def _ids(nav, cells):
@@ -625,13 +730,17 @@ def _ids(nav, cells):
 
 
 def _try_steps(stage, candidates, ok, message, budget):
+    return _try_fixes(stage, candidates, ok, "added_step", "add", message, budget)
+
+
+def _try_fixes(stage, candidates, ok, kind, op, message, budget):
     """Apply candidates in order until ok(new_nav, step) holds: True. False when every candidate
     failed, None when out of budget first. Each rebuild costs one unit of budget; one unit stays
     in reserve so the platform can still be removed instead."""
     for step in candidates:
         if budget[0] <= 1 or stage.busy():
             return None
-        undo = stage.apply("added_step", "add", step, message)
+        undo = stage.apply(kind, op, step, message)
         if undo is None:
             continue
         budget[0] -= 1
@@ -654,12 +763,24 @@ def _next_bad_group(nav, given_up):
     return None
 
 
+def _no_dead_end(nav, step, cells):
+    """Every node standing on the new step tiles leads on: back to the main stage or into the group."""
+    on_step = [int(nav.node_grid[r - 1, c]) for c, r in step if r >= 1 and nav.node_grid[r - 1, c] >= 0]
+    if not on_step:
+        return True
+    leads_on = nav.reach(nav.main, backward=True) | nav.reach(_ids(nav, cells), backward=True)
+    return all(i in leads_on for i in on_step)
+
+
 def _joined(nav, cells, need_in):
-    ids = [int(nav.node_grid[r, c]) for c, r in cells]
-    if min(ids) < 0 or not nav.main:
+    """Most of the group now reaches the main stage (need_in) or gets back to it. Most, not all: a
+    stray one-tile speck in the group must not veto a step that frees the rest; whatever stays
+    behind is a smaller group of its own, fixed or removed on a later pass."""
+    if not nav.main:
         return False
+    ids = [int(nav.node_grid[r, c]) for c, r in cells]
     reach = nav.reach(nav.main) if need_in else nav.reach(nav.main, backward=True)
-    return all(i in reach for i in ids)
+    return 2 * sum(i >= 0 and i in reach for i in ids) > len(ids)
 
 
 def _main_landing_spots(nav):
@@ -729,9 +850,13 @@ def _step_candidates(nav, src, dst, spots=60, limit=4):
     return list(itertools.islice((step for step in steps if step), limit))
 
 
-def _two_step_candidates(nav, group, stones=20, seconds=80, limit=3):
-    """Pairs of steps main -> stone -> step -> group for groups too far for one step, best first."""
-    _, flat = _main_landing_spots(nav)
+def _two_step_candidates(nav, src, group, stones=20, seconds=80, limit=3):
+    """Pairs of steps src -> stone -> step -> group for groups too far for one step, best first.
+    src is the main stage (to reach a group) or the group (to get back up to the main stage)."""
+    if src is nav.main:
+        _, flat = _main_landing_spots(nav)
+    else:
+        _, flat = _landing_spots(nav, nav.cols[src], nav.rows[src])
     if len(flat) == 0:
         return []
     spots, counts = np.unique(flat, return_counts=True)
@@ -785,8 +910,9 @@ def _step_cells(tiles, c, r):
     return cells if len(cells) >= 2 else None
 
 
-def _remove_platform(stage, nav, group, protected):
-    """Remove the tile blob under an unreachable group, unless it also holds up a protected node."""
+def _remove_platform(stage, nav, group, protected, added=frozenset()):
+    """Remove the tile blob under an unreachable group, unless it also holds up a protected node
+    or holds tiles an earlier fix added (a fix never undoes another)."""
     tiles = nav.tiles
     ground = ((tiles == SOLID) | (tiles == PASS) | (tiles == FIX)).astype(np.uint8)
     _, labels = cv2.connectedComponents(ground, connectivity=4)
@@ -795,7 +921,29 @@ def _remove_platform(stage, nav, group, protected):
     if any(holds[i] for i in protected):
         return False
     cells = [(int(c), int(r)) for r, c in np.argwhere(blob)]
+    if added & set(cells):
+        return False
     message = "Removed a platform nobody could reach"
+    return stage.apply("removed_platform", "remove", cells, message) is not None
+
+
+def _remove_under(stage, nav, group, added):
+    """Remove the tiles straight under a group's nodes, down to the first gap, stopping at a tile
+    that holds up any other node. False if that would touch a tile an earlier fix added."""
+    tiles = nav.tiles
+    members = set(group)
+    cells = []
+    for i in group:
+        c, r = int(nav.cols[i]), int(nav.rows[i]) + 1
+        while r < ROWS and tiles[r, c] != EMPTY:
+            above = int(nav.node_grid[r - 1, c])
+            if above >= 0 and above not in members:
+                break
+            if (c, r) in added:
+                return False
+            cells.append((c, r))
+            r += 1
+    message = "Removed a dead end you could not get back from"
     return stage.apply("removed_platform", "remove", cells, message) is not None
 
 
@@ -909,7 +1057,16 @@ def _ledge_cell_ok(tiles, c, r):
 
 
 def _check_pockets(stage):
-    """Empty regions sealed off from open air are opened by removing the fewest tiles."""
+    """Empty regions sealed off from open air are opened by removing the fewest tiles.
+
+    Where the fewest is one tile, it matters which: a hole in the roof of a tall box makes a pit you
+    can drop into and never leave. So when the pocket has room for a fighter, a few one-tile
+    openings (in its floor, low in a side wall, high in a side wall, in its roof) and a doorway
+    through a side wall at its floor are tried, in that order; the first that leaves every node in
+    the pocket reachable and escapable is kept, else the one that traps fewest (then strands fewest).
+    Only pockets with room for a platform (MIN_POCKET_ROOM nodes) are judged, at most
+    MAX_POCKETS_JUDGED per pass: each option costs a nav rebuild, and noise is full of tiny pockets."""
+    judged = 0
     for _ in range(MAX_CANDIDATES):
         tiles = stage.tiles
         open_air = _open_air(tiles)
@@ -919,8 +1076,115 @@ def _check_pockets(stage):
         _, labels = cv2.connectedComponents(pockets.astype(np.uint8), connectivity=4)
         sizes = np.bincount(labels.ravel())
         sizes[0] = 0
-        cells = _cheapest_opening(tiles, labels == int(np.argmax(sizes)), open_air)
-        stage.apply("opened_pocket", "remove", cells, "Opened a sealed pocket")
+        pocket = labels == int(np.argmax(sizes))
+        cheapest = _cheapest_opening(tiles, pocket, open_air)
+        options = [(cheapest, "Opened a sealed pocket")]
+        room = int((standable(tiles) & pocket).sum())
+        if room >= MIN_POCKET_ROOM and judged < MAX_POCKETS_JUDGED and not stage.busy():
+            judged += 1
+            if len(cheapest) == 1:
+                options = [([cell], "Opened a sealed pocket") for cell in _one_tile_openings(tiles, pocket, open_air)]
+                options = options or [(cheapest, "Opened a sealed pocket")]
+            door = _pocket_doorway(tiles, pocket, stage.added)
+            if door:
+                options.append((door, "Opened a doorway into a sealed pocket"))
+        best = None
+        for i, (cells, message) in enumerate(options):
+            undo = stage.apply("opened_pocket", "remove", cells, message)
+            if undo is None:
+                continue
+            if len(options) == 1:
+                break
+            score = (_trapped(stage.nav, pocket), _stranded(stage.nav, pocket), i)
+            if score[:2] == (0, 0):
+                best = None
+                break
+            stage.revert(undo)
+            best = min(best or score, score)
+        if best is not None:
+            stage.apply("opened_pocket", "remove", *options[best[2]])
+
+
+MIN_POCKET_ROOM = 3
+MAX_POCKETS_JUDGED = 3
+
+
+def _one_tile_openings(tiles, pocket, open_air):
+    """Single wall tiles between the pocket and open air (or the card edge): the one most central
+    in the pocket's floor, the lowest and the highest in a side wall, the most central in its roof."""
+    wall = _blocking(tiles)
+    outside = np.pad(open_air, 1, constant_values=True)
+    inside = np.pad(pocket, 1, constant_values=False)
+    stand = standable(tiles) & pocket
+    centre = np.nonzero(pocket)[1].mean()
+    floor, side, roof = [], [], []
+    for r, c in zip(*np.nonzero(wall)):
+        r, c = int(r), int(c)
+        pr, pc = r + 1, c + 1  # padded
+        if inside[pr - 1, pc] and outside[pr + 1, pc]:
+            floor.append((abs(c - centre), c, r))
+        if (inside[pr, pc - 1] and outside[pr, pc + 1]) or (inside[pr, pc + 1] and outside[pr, pc - 1]):
+            side.append((r, c))
+        if inside[pr + 1, pc] and outside[pr - 1, pc] and not stand[min(r + 1, ROWS - 1), c]:
+            roof.append((abs(c - centre), c, r))
+    picks = []
+    if floor:
+        picks.append(min(floor)[1:])
+    if side:
+        picks += [max(side)[::-1], min(side)[::-1]]
+    if roof:
+        picks.append(min(roof)[1:])
+    out = []
+    for cell in picks:
+        if cell not in out:
+            out.append(cell)
+    return out
+
+
+def _stranded(nav, region):
+    """How many open-air nodes in region (a cell mask) the main stage cannot reach."""
+    if not nav.main:
+        return 0
+    fwd = nav.reach(nav.main)
+    return sum(1 for i in range(nav.n) if region[nav.rows[i], nav.cols[i]] and i not in fwd)
+
+
+def _trapped(nav, region):
+    """How many nodes in region (a cell mask) the main stage can reach but not get back from."""
+    if not nav.main:
+        return 0
+    inside = [i for i in range(nav.n) if region[nav.rows[i], nav.cols[i]]]
+    if not inside:
+        return 0
+    fwd = nav.reach(nav.main)
+    back = nav.reach(nav.main, backward=True)
+    return sum(i in fwd and i not in back for i in inside)
+
+
+def _pocket_doorway(tiles, pocket, protected):
+    """The fewest wall tiles to clear, two rows tall (a standing fighter), sideways from the end of a
+    floor inside the pocket until the head row and the foot row beyond are open air on the card."""
+    stand = standable(tiles) & pocket
+    open_out = ~_blocking(tiles) & ~pocket
+    best = None
+    for r, c in zip(*np.nonzero(stand)):
+        r, c = int(r), int(c)
+        for d in (-1, 1):
+            x = c + d
+            if not 0 <= x < COLS or stand[r, x] or not _blocking(tiles[r - 1:r + 1, x]).any():
+                continue
+            door = []
+            for _ in range(MAX_DOOR_DEPTH):
+                door += [(x, rr) for rr in (r - 1, r) if rr >= 0 and _blocking(tiles[rr, x])]
+                x += d
+                if not 0 <= x < COLS or (open_out[r - 1, x] and open_out[r, x]):
+                    break
+            if not 0 <= x < COLS or not (open_out[r - 1, x] and open_out[r, x]) or set(door) & protected:
+                continue
+            key = (len(door), -r, sorted(door))
+            if best is None or key < best[0]:
+                best = (key, door)
+    return None if best is None else best[1]
 
 
 def _cheapest_opening(tiles, pocket, open_air):
@@ -980,8 +1244,13 @@ def _edge_distances(nav, ids):
     return np.array(out, float)
 
 
+MIN_SPAWN_GAP = 8  # tiles between the spawns, or half the main stage's width if that is less
+
+
 def _spawns(nav):
-    """Two distinct main-stage nodes: mirrored around the stage centre, far apart, similar edge distance."""
+    """Two distinct main-stage nodes: mirrored around the stage centre, far apart, similar edge distance.
+    Far apart is a hard floor (MIN_SPAWN_GAP), not just a cost: a platform hanging past the end of
+    the floor shifts the centre, and mirroring about it must never put the fighters side by side."""
     ids = nav.main if len(nav.main) >= 2 else list(range(nav.n))
     if len(ids) < 2:
         c0, c1 = DEFAULT_COLS
@@ -1001,7 +1270,8 @@ def _spawns(nav):
         + 6 * ((edge[a] < 2).astype(float) + (edge[b] < 2))
         + 0.1 * (2 * rows.max() - rows[a] - rows[b])  # tie-break: lower platforms (the ground)
     )
-    cost[cols[b] <= cols[a]] = np.inf
+    gap = min(MIN_SPAWN_GAP, (cols.max() - cols.min()) // 2)
+    cost[cols[b] - cols[a] < max(gap, 1)] = np.inf
     i, j = np.unravel_index(int(np.argmin(cost)), cost.shape)
     if not np.isfinite(cost[i, j]):
         i, j = 0, len(ids) - 1
