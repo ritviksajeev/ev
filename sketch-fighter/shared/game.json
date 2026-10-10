@@ -1,16 +1,16 @@
 {
   "_units": "pixels and seconds unless a key says Ms (milliseconds) or Deg (degrees). Read by backend/config.py and frontend/src/config.js.",
 
-  "tileSize": 24,
-  "cols": 40,
-  "rows": 24,
+  "tileSize": 12,
+  "cols": 80,
+  "rows": 48,
   "tileCodes": { "empty": 0, "solid": 1, "pass": 2, "hazard": 3, "fix": 4 },
 
   "canvas": { "width": 1280, "height": 720 },
   "blastZone": { "left": 120, "right": 120, "top": 200, "bottom": 120 },
 
   "physics": {
-    "fps": 120,
+    "fps": 240,
     "gravity": 1500,
     "jumpVelocity": 570,
     "doubleJumpVelocity": 500,
@@ -20,7 +20,8 @@
     "knockbackDecay": 800,
     "coyoteMs": 80,
     "jumpBufferMs": 100,
-    "dropThroughMs": 250
+    "dropThroughMs": 250,
+    "stepUpPx": 12
   },
 
   "fighter": { "width": 18, "height": 34 },

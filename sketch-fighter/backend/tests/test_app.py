@@ -30,8 +30,9 @@ def test_game_config_matches_spec():
     g = config.GAME
     p = g["physics"]
     assert g["cols"] * g["tileSize"] == 960 and g["rows"] * g["tileSize"] == 576
-    apex_tiles = p["jumpVelocity"] ** 2 / (2 * p["gravity"]) / g["tileSize"]
-    assert 4.4 < apex_tiles < 4.6
+    apex_px = p["jumpVelocity"] ** 2 / (2 * p["gravity"])
+    assert 105 < apex_px < 112  # about 4.5 x 24 px
+    assert p["stepUpPx"] <= g["tileSize"]  # climbing is one tile at most
     # Fast knockback must not move more than one tile per physics step (no tunnelling).
     assert p["maxLaunchSpeed"] / p["fps"] < g["tileSize"]
     assert p["maxFallSpeed"] / p["fps"] < g["tileSize"]

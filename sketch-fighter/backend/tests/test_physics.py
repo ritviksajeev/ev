@@ -35,6 +35,7 @@ def test_matches_js_reference(scenario):
 def test_fixture_covers_every_collision_case():
     names = {s["name"] for s in FIXTURE["scenarios"]}
     assert {"bonk_ceiling", "drop_through_pass", "touch_hazard", "coyote_jump", "knockback"} <= names
+    assert {"walk_up_and_down_stairs", "walk_down_stairs_left", "walk_onto_pass_step"} <= names
     hazards = [f[6] for s in FIXTURE["scenarios"] for f in s["frames"] if f[6] is not None]
     assert hazards, "fixture never touches a hazard"
 
@@ -43,17 +44,17 @@ def test_numpy_grid_adapter():
     import numpy as np
 
     tiles = np.zeros((GAME["rows"], GAME["cols"]), dtype=np.uint8)
-    tiles[20, :] = physics.SOLID
+    tiles[40, :] = physics.SOLID
     grid = physics.as_grid(tiles)
-    b = physics.create_body(GAME, 10, 19)
+    b = physics.create_body(GAME, 20, 39)
     dt = 1 / GAME["physics"]["fps"]
-    for _ in range(60):
+    for _ in range(GAME["physics"]["fps"] // 2):
         physics.step_body(b, {"dir": 1, "down": False, "jump": False}, grid, GAME, GAME["physics"], dt)
-    assert b["onGround"] and b["y"] == 20 * GAME["tileSize"] - b["h"] / 2
+    assert b["onGround"] and b["y"] == 40 * GAME["tileSize"] - b["h"] / 2
 
 
 def test_on_pass_only():
     T = GAME["tileSize"]
     grid = physics.as_grid(FIXTURE["grid"])
-    assert physics.on_pass_only(physics.create_body(GAME, 13, 15), grid, T)
-    assert not physics.on_pass_only(physics.create_body(GAME, 8, 19), grid, T)
+    assert physics.on_pass_only(physics.create_body(GAME, 26, 31), grid, T)
+    assert not physics.on_pass_only(physics.create_body(GAME, 16, 39), grid, T)

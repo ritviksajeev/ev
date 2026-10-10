@@ -30,11 +30,14 @@ fill(1, u(17), floorTop - 1, u(25), u(26) - 1); // wall
 fill(1, u(15), u(16) - 1, u(19), u(23) - 1); // low ceiling over the wall's left
 fill(3, floorTop - span(1), floorTop - 1, u(30), u(32) - 1); // hazard on the floor
 fill(4, u(17), u(18) - 1, u(3), u(5) - 1); // fix-tile ledge off the left edge
-// A one-tile staircase going up to the right and back down (a drawn slope),
-// and a pass-through tile at foot level to walk onto.
-const stairs = u(6);
-for (let i = 0; i < 4; i++) fill(1, floorTop - 1 - i, floorTop - 1 - i, stairs + 2 * i, stairs + 2 * i + 1);
-for (let i = 0; i < 3; i++) fill(1, floorTop - 3 + i, floorTop - 3 + i, stairs + 8 + 2 * i, stairs + 9 + 2 * i);
+// Up high, away from the other scenarios: a platform with a one-tile
+// staircase going up to the right and back down (a drawn slope).
+const upper = u(6);
+fill(1, upper, upper + span(2) - 1, u(5), u(35) - 1);
+const stairs = u(10);
+for (let i = 0; i < 4; i++) fill(1, upper - 1 - i, upper - 1 - i, stairs + 2 * i, stairs + 2 * i + 1);
+for (let i = 0; i < 3; i++) fill(1, upper - 3 + i, upper - 3 + i, stairs + 8 + 2 * i, stairs + 9 + 2 * i);
+// A pass-through tile at foot level on the floor, to walk up onto.
 fill(2, floorTop - 1, floorTop - 1, u(14), u(14) + 1);
 const grid = { cols, rows, tiles };
 
@@ -52,8 +55,8 @@ const SCENARIOS = [
   { name: 'touch_hazard', start: [u(27), feet], segs: [[0.5, 1, false, false]] },
   { name: 'coyote_jump', start: [u(33), feet], segs: [[0.2, 1, false, false], [0, 1, false, true], [0.83, 1, false, false]] },
   { name: 'knockback', start: [u(15), feet], kick: { vx: -1300, vy: -900, hitstun: 0.4 }, segs: [[1.8, 1, false, false]] },
-  { name: 'walk_up_and_down_stairs', start: [stairs - 2, feet], segs: [[1.6, 1, false, false]] },
-  { name: 'walk_down_stairs_left', start: [stairs + 13, feet], segs: [[1.6, -1, false, false]] },
+  { name: 'walk_up_and_down_stairs', start: [stairs - 2, upper - 1], segs: [[1.6, 1, false, false]] },
+  { name: 'walk_down_stairs_left', start: [stairs + 16, upper - 1], segs: [[1.0, -1, false, false]] },
   { name: 'walk_onto_pass_step', start: [u(12), feet], segs: [[0.6, 1, false, false]] },
 ];
 

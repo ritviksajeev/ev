@@ -120,45 +120,97 @@ def _decay_x(b, phys, dt, floor):
 
 
 def integrate(b, grid, game, phys, dt):
-    """Semi-implicit Euler: velocity, then X moved and resolved, then Y."""
+    """Semi-implicit Euler: velocity, then X moved and resolved, then Y.
+
+    Per step a body moves less than one tile, so at most one tile boundary is crossed. A grounded
+    body walks up and down steps of at most stepUpPx, so a hand-drawn slanted line plays as a
+    slope rather than a staircase of walls."""
     grid = as_grid(grid)
     T = game["tileSize"]
+    step = phys.get("stepUpPx", 0)
+    grounded = b["onGround"]  # from the previous step
     b["vy"] = min(b["vy"] + phys["gravity"] * dt, phys["maxFallSpeed"])
 
     b["x"] += b["vx"] * dt
-    _resolve_x(b, grid, T)
+    _resolve_x(b, grid, T, step if grounded else 0)
 
     prev_top = b["y"] - b["h"] / 2
     prev_bottom = b["y"] + b["h"] / 2
     b["y"] += b["vy"] * dt
     _resolve_y(b, grid, T, prev_top, prev_bottom)
+    if grounded and step > 0 and not b["onGround"] and b["vy"] >= 0:
+        _snap_down(b, grid, T, step)
 
 
-def _resolve_x(b, grid, T):
+def _resolve_x(b, grid, T, step):
     if b["vx"] == 0:
         return
     r0 = math.floor((b["y"] - b["h"] / 2) / T)
     r1 = math.floor((b["y"] + b["h"] / 2 - EPS) / T)
     if b["vx"] > 0:
         c = math.floor((b["x"] + b["w"] / 2 - EPS) / T)
-        for r in range(r0, r1 + 1):
-            t = tile_at(grid, c, r)
-            if blocks(t):
-                b["x"] = c * T - b["w"] / 2
-                b["vx"] = 0
-                if t == HAZARD:
-                    b["hazard"] = [c, r]
-                return
     else:
         c = math.floor((b["x"] - b["w"] / 2) / T)
-        for r in range(r0, r1 + 1):
-            t = tile_at(grid, c, r)
-            if blocks(t):
-                b["x"] = (c + 1) * T + b["w"] / 2
-                b["vx"] = 0
-                if t == HAZARD:
-                    b["hazard"] = [c, r]
-                return
+    hit = -1  # topmost blocking row in the leading column
+    for r in range(r0, r1 + 1):
+        if blocks(tile_at(grid, c, r)):
+            hit = r
+            break
+    if hit < 0:
+        # Walking into a pass-through tile at foot level: climb onto it.
+        if step > 0 and b["vy"] >= 0 and b["dropTimer"] <= 0 and tile_at(grid, c, r1) == PASS:
+            _step_up(b, grid, T, step, r1)
+        return
+    if step > 0 and b["vy"] >= 0 and _step_up(b, grid, T, step, hit):
+        return
+    b["x"] = c * T - b["w"] / 2 if b["vx"] > 0 else (c + 1) * T + b["w"] / 2
+    b["vx"] = 0
+    if tile_at(grid, c, hit) == HAZARD:
+        b["hazard"] = [c, hit]
+
+
+def _step_up(b, grid, T, step, top):
+    """Lift the body onto row `top` if that is at most `step` px above its feet and it fits there."""
+    lift = b["y"] + b["h"] / 2 - top * T
+    if lift <= EPS or lift > step + EPS:
+        return False
+    y = top * T - b["h"] / 2
+    if _overlaps_blocking(grid, T, b["x"], y, b["w"], b["h"]):
+        return False
+    b["y"] = y
+    return True
+
+
+def _snap_down(b, grid, T, step):
+    """Just walked off a step no taller than `step`: stay on the ground below it."""
+    bottom = b["y"] + b["h"] / 2
+    r = math.ceil(bottom / T - EPS)
+    if r * T - bottom > step + EPS:
+        return
+    c0 = math.floor((b["x"] - b["w"] / 2) / T)
+    c1 = math.floor((b["x"] + b["w"] / 2 - EPS) / T)
+    for c in range(c0, c1 + 1):
+        t = tile_at(grid, c, r)
+        if blocks(t) or (t == PASS and b["dropTimer"] <= 0):
+            b["y"] = r * T - b["h"] / 2
+            b["vy"] = 0
+            b["onGround"] = True
+            b["airJumps"] = 1
+            if t == HAZARD:
+                b["hazard"] = [c, r]
+            return
+
+
+def _overlaps_blocking(grid, T, x, y, w, h):
+    c0 = math.floor((x - w / 2) / T)
+    c1 = math.floor((x + w / 2 - EPS) / T)
+    r0 = math.floor((y - h / 2) / T)
+    r1 = math.floor((y + h / 2 - EPS) / T)
+    for r in range(r0, r1 + 1):
+        for c in range(c0, c1 + 1):
+            if blocks(tile_at(grid, c, r)):
+                return True
+    return False
 
 
 def _resolve_y(b, grid, T, prev_top, prev_bottom):

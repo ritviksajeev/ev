@@ -16,7 +16,7 @@ import { sfx, vibrate } from '../audio/sfx.js';
 
 const STEP_MS = 1000 / GAME.physics.fps;
 const DT = 1 / GAME.physics.fps;
-const MAX_STEPS = 8;
+const MAX_STEPS = Math.ceil(GAME.physics.fps / 10); // at most 100 ms of catch-up per frame
 const BZ = GAME.blastZone;
 const IDLE = { dir: 0, down: false, jump: false, quick: false, strong: false };
 const MAX_ZOOM = IS_TOUCH ? 1.45 : 1.25;
