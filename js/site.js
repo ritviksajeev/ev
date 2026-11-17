@@ -369,7 +369,7 @@
       '<a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a><i>&middot;</i>' +
       '<a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a><i>&middot;</i>' +
       '<a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a><i>&middot;</i>' +
-      '<a href="mailto:evzeroholder@gmail.com">Email</a></div></div>';
+      '<a href="mailto:r@evzero.org">Email</a></div></div>';
     document.body.appendChild(menuEl);
 
     menuBtn.addEventListener('click', () => toggleMenu());
@@ -1304,7 +1304,7 @@
   // --------------------------------------------
   let paletteEl = null;
   function initPalette() {
-    const EMAIL = 'evzeroholder@gmail.com';
+    const EMAIL = 'r@evzero.org';
     const here = document.body.getAttribute('data-page') || '';
     const go = (href) => () => {
       const url = new URL(ROOT + href, location.href);
