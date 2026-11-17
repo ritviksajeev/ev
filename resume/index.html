@@ -4,13 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#09090b"/>
-  <meta name="description" content="Ritvik, cyber security student. Projects, skills and how to reach me, on one page."/>
-  <title>Ritvik / Résumé / EvZero</title>
+  <meta name="description" content="Ritvik Sajeev, cybersecurity student at Rider University. Education, projects, experience and skills on one page."/>
+  <title>Ritvik Sajeev / Résumé / EvZero</title>
   <link rel="canonical" href="https://evzero.org/resume/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="EvZero"/>
-  <meta property="og:title" content="Ritvik / Résumé / EvZero"/>
-  <meta property="og:description" content="Ritvik, cyber security student. Projects, skills and how to reach me, on one page."/>
+  <meta property="og:title" content="Ritvik Sajeev / Résumé / EvZero"/>
+  <meta property="og:description" content="Ritvik Sajeev, cybersecurity student at Rider University. Education, projects, experience and skills on one page."/>
   <meta property="og:url" content="https://evzero.org/resume/"/>
   <meta property="og:image" content="https://evzero.org/assets/og.png"/>
   <meta property="og:image:width" content="1200"/>
@@ -22,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/site.css?v=3.2"/>
-  <link rel="stylesheet" href="../css/resume.css?v=3.2"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.3"/>
+  <link rel="stylesheet" href="../css/resume.css?v=3.3"/>
 </head>
 <body data-page="resume">
 
@@ -59,7 +59,8 @@
   <div class="panels">
   <main class="page panel-group">
 
-    <!-- RESUME - one page. "Save as PDF" prints just the sheet (see css/resume.css). -->
+    <!-- RESUME - one page. "Save as PDF" prints just the sheet (see css/resume.css).
+         Phone number deliberately left off the public page. -->
     <section class="section resume-sec panel">
       <div class="wrap resume-wrap">
 
@@ -77,81 +78,136 @@
         <article class="paper glow intro-fade" style="--id: 0.55s">
           <header class="paper-head">
             <div>
-              <h1 class="paper-name">Ritvik</h1>
-              <p class="paper-role">Cyber security student. <span class="serif">I build the tools I wish existed.</span></p>
+              <h1 class="paper-name">Ritvik Sajeev</h1>
+              <p class="paper-role">Cybersecurity student at Rider University. <span class="serif">I build the tools I wish existed.</span></p>
             </div>
             <ul class="paper-contact">
+              <li><span>Based in</span>Lawrenceville, NJ</li>
               <li><span>Email</span><a href="mailto:r@evzero.org">r@evzero.org</a></li>
               <li><span>Site</span><a href="https://evzero.org">evzero.org</a></li>
               <li><span>GitHub</span><a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">github.com/ritviksajeev</a></li>
-              <li><span>Discord</span><a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">evzero</a></li>
             </ul>
           </header>
 
           <section class="paper-sec">
-            <h2>Profile</h2>
-            <p>I study cyber security and spend the rest of my time shipping side projects in public: a sandbox that checks what AI coding agents actually do, desktop tools for people who play competitive games, and a way to watch video in sync. I build everything from zero, I write down what my tools cannot do, and I would rather show working code than describe it.</p>
+            <h2>Education</h2>
+            <div class="paper-item">
+              <div class="paper-item-head">
+                <h3>Rider University<span>Lawrenceville, NJ</span></h3>
+                <span class="paper-meta">Expected May 2027</span>
+              </div>
+              <p class="paper-line">B.S. Cybersecurity &middot; GPA 3.94</p>
+            </div>
+            <div class="paper-item">
+              <div class="paper-item-head">
+                <h3>Thakur College of Science and Commerce<span>Mumbai, India</span></h3>
+                <span class="paper-meta">2023 to 2025</span>
+              </div>
+              <p class="paper-line">B.S. Computer Science</p>
+            </div>
           </section>
 
           <section class="paper-sec">
-            <h2>Selected projects</h2>
+            <h2>Projects</h2>
 
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3><a href="../ais/" data-transition>AiS</a><span>Agent-in-Sandbox</span></h3>
-                <span class="paper-meta">Python &middot; Docker &middot; v0.1.6-alpha</span>
+                <h3><a href="../ais/" data-transition>AiS</a><span>Execution-verified sandbox for AI coding agents</span></h3>
+                <span class="paper-meta">Independent &middot; 2026</span>
               </div>
+              <p class="paper-tech">Python &middot; Docker &middot; SQLite &middot; v0.1.6-alpha, MIT, public on GitHub</p>
               <ul>
-                <li>A mediation layer that keeps AI coding agents away from real files: every proposed edit runs in a locked-down container, and a person approves it on a plain security-check screen.</li>
-                <li>21 detection rules, a hash-chained audit log and 437 tests. A red-team harness generates new attacks and scores them blind: 18 of 21 caught, with no false positives.</li>
+                <li>Built a sandboxing system that runs AI-proposed code edits in disposable, network-isolated Docker containers and requires human approval before any real file is touched.</li>
+                <li>Implemented a 21-rule detection engine on CPython audit hooks (PEP 578) that attributes every file, network and subprocess event to its source line, plus a SHA-256 hash-chained audit log and a differential execution oracle.</li>
+                <li>Ran a blind adversarial red-team evaluation (attack catalog grown from 12 to 25): caught 18 of 21 exploits with 0 false positives on benign edits. 437 automated tests, about 0.5 s per verification.</li>
               </ul>
             </div>
 
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3><a href="../spice/" data-transition>Spice</a><span>Desktop overlay for gamers</span></h3>
-                <span class="paper-meta">Electron &middot; React &middot; TypeScript &middot; v0.1.3-alpha</span>
+                <h3><a href="../spice/" data-transition>Spice</a> &amp; <a href="../qres/" data-transition>Qres</a><span>Windows system utilities for gamers</span></h3>
+                <span class="paper-meta">Independent &middot; 2026</span>
               </div>
+              <p class="paper-tech">Electron &middot; React &middot; TypeScript &middot; Node.js &middot; C# &middot; Win32 API &middot; MIT</p>
               <ul>
-                <li>A transparent, always-on-top overlay that puts crosshairs, custom images and input visualizers over any game on any monitor.</li>
-                <li>Designed around anti-cheat from the start: no process injection, no game memory access and no synthetic input.</li>
+                <li><b>Spice:</b> a desktop overlay (crosshairs, input visualizers) built to be anti-cheat-conscious, with no code injection, memory access or synthetic input. Works alongside EAC, BattlEye, FACEIT and Vanguard.</li>
+                <li><b>Qres:</b> a hotkey resolution and refresh-rate switcher that bridges Node.js to a native C# Win32 helper compiled on first run (no node-gyp, no prebuilt binaries), at about 20 ms per switch, with per-game profiles and an auto-revert safety net.</li>
               </ul>
             </div>
 
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3><a href="../qres/" data-transition>Qres</a><span>Resolution hotkeys for Windows</span></h3>
-                <span class="paper-meta">Electron &middot; C# &middot; Win32 &middot; v1.0.3</span>
+                <h3>AI-assisted CPU scheduling<span>for mixed workloads</span></h3>
+                <span class="paper-meta">Team &middot; 2026</span>
               </div>
+              <p class="paper-tech">Rider University, CSC-240 term project &middot; Python &middot; scikit-learn</p>
               <ul>
-                <li>A tray app that switches display resolution and refresh rate from a global hotkey or per-game profiles, with a countdown that reverts a mode the monitor cannot show.</li>
-                <li>The Win32 layer is a small C# command-line tool the app compiles on first run, so there is no native module to keep in step.</li>
+                <li>Built a two-level online learning framework (SGDClassifier) that predicts the best CPU scheduling algorithm from live ready-queue features, cutting average waiting time by 22 to 43% against static algorithms (FCFS, SJF, RR, Priority) across 2,250 simulated scenarios, validated with SHAP feature-importance analysis.</li>
               </ul>
             </div>
 
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3><a href="../watchparty/" data-transition>Watchparty</a><span>Synced video across browsers</span></h3>
-                <span class="paper-meta">Node &middot; WebSockets &middot; browser extension</span>
+                <h3>Sakura Bot<span>Autonomous restaurant service robot</span></h3>
+                <span class="paper-meta">Team &middot; 2026</span>
               </div>
+              <p class="paper-tech">Rider University, CSC-240 term project &middot; Raspberry Pi 5 &middot; Linux &middot; Python</p>
               <ul>
-                <li>Keeps YouTube and Twitch in step for everyone in a room through a small WebSocket relay, with an extension that does the same on sites that block embedding.</li>
+                <li>Built a PID-navigated service robot with an IMU-stabilized (100 Hz) balancing arm, using POSIX message-queue IPC and SCHED_FIFO real-time scheduling for deterministic task priority.</li>
               </ul>
             </div>
+
+            <div class="paper-item">
+              <div class="paper-item-head">
+                <h3>Also built</h3>
+              </div>
+              <ul>
+                <li><b>evzero.org:</b> this site, framework-free (HTML, CSS, vanilla JS).</li>
+                <li><b><a href="../watchparty/" data-transition>Watchparty</a>:</b> Dockerized Node and WebSocket cross-browser playback sync, plus a Chrome extension.</li>
+                <li><b>Sketch Fighter:</b> an OpenCV pipeline that turns a hand-drawn stage into a playable browser game.</li>
+                <li><b><a href="../valorant/" data-transition>Valorant tracker</a>:</b> a Riot API stat tracker behind a Node proxy that keeps the API key off the client.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="paper-sec">
+            <h2>Experience</h2>
+            <div class="paper-item">
+              <div class="paper-item-head">
+                <h3>Resident Assistant<span>Office of Residence Life, Rider University</span></h3>
+                <span class="paper-meta">Jan 2026 to present</span>
+              </div>
+              <ul>
+                <li>Foster an inclusive residential community through programming and weekly one-on-ones. Respond to on-call emergencies, document incidents and escalate per university policy.</li>
+              </ul>
+            </div>
+          </section>
+
+          <section class="paper-sec">
+            <h2>Leadership</h2>
+            <ul class="paper-list">
+              <li><b>MAAC Program (Overwatch 2), Rider University:</b> selected to represent Rider in intercollegiate gaming tournaments.</li>
+              <li><b>Green Club, Thakur College:</b> led sustainability initiatives including campus clean-ups and awareness drives.</li>
+            </ul>
+          </section>
+
+          <section class="paper-sec">
+            <h2>Honors &amp; certifications</h2>
+            <ul class="paper-list">
+              <li><b>1st place, National ABACUS (Mental Math) Competition</b> <span class="paper-meta">Feb 2015</span></li>
+              <li><b>Spoken Tutorial Project, IIT Bombay:</b> Python, Java, HTML, RDBMS, Introduction to Computers <span class="paper-meta">2023 to 2024</span></li>
+              <li><b>Cyber Security Training, Acmegrade</b>, in association with Mood Indigo, IIT Bombay <span class="paper-meta">2024</span></li>
+            </ul>
           </section>
 
           <section class="paper-sec">
             <h2>Skills</h2>
             <dl class="paper-skills">
-              <div><dt>Security</dt><dd>Sandboxing and container isolation, runtime audit hooks, detection rules, red-team style evaluation, anti-cheat-aware design</dd></div>
-              <div><dt>Languages</dt><dd>Python, TypeScript, JavaScript, C#, HTML, CSS</dd></div>
-              <div><dt>Tools</dt><dd>Docker, Electron, React, Node.js, WebSockets, Flask, Git</dd></div>
+              <div><dt>Languages</dt><dd>Python, Java, C, C++, Kotlin, JavaScript, TypeScript, SQL, HTML/CSS</dd></div>
+              <div><dt>Security &amp; systems</dt><dd>Docker sandboxing, runtime audit hooks (PEP 578), Win32 API, POSIX IPC, real-time scheduling, API key management</dd></div>
+              <div><dt>ML &amp; data</dt><dd>scikit-learn, online and incremental learning, feature engineering, SHAP, discrete-event simulation</dd></div>
+              <div><dt>Desktop, web &amp; cloud</dt><dd>Electron, React, Node.js/Express, WebSockets, REST APIs, Docker, Git, GitHub Pages, Railway</dd></div>
             </dl>
-          </section>
-
-          <section class="paper-sec">
-            <h2>Also</h2>
-            <p>This site is hand-written HTML, CSS and JavaScript with no framework and no build step. Everything above is public, with source, at <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">github.com/ritviksajeev</a>.</p>
           </section>
         </article>
 
@@ -211,8 +267,8 @@
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=3.2"></script>
-  <script src="../js/site.js?v=3.2"></script>
-  <script src="../js/cat.js?v=3.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.3"></script>
+  <script src="../js/site.js?v=3.3"></script>
+  <script src="../js/cat.js?v=3.3"></script>
 </body>
 </html>
