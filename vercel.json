@@ -41,6 +41,11 @@
       "source": "/sketch",
       "destination": "/sketch/",
       "permanent": true
+    },
+    {
+      "source": "/resume",
+      "destination": "/resume/",
+      "permanent": true
     }
   ]
 }

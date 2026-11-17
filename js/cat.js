@@ -127,9 +127,12 @@ function bootCat() {
     targetY = 140 + Math.random() * (window.innerHeight - 240);
   }
 
-  function meow() {
+  // aloud: also play the meow sound (only when the visitor asked for it by
+  // clicking or petting, and only if they turned sound on)
+  function meow(aloud) {
     const bubble = cat.querySelector('.cat-meow');
     if (!bubble) return;
+    if (aloud && window.EV && typeof window.EV.sfx === 'function') window.EV.sfx('meow');
     bubble.textContent = bubbles[Math.floor(Math.random() * bubbles.length)];
     cat.dataset.meowing = 'true';
     clearTimeout(meow._t);
@@ -239,10 +242,17 @@ function bootCat() {
   document.addEventListener('click', (e) => {
     const r = cat.getBoundingClientRect();
     if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
-      meow();
+      meow(true);
       setState('playing');
       stateTimer = 60;
     }
+  });
+
+  // "Pet the cat" from the command palette
+  window.addEventListener('evz:pet', () => {
+    meow(true);
+    setState('playing');
+    stateTimer = 60;
   });
 
   // Keep cat inside viewport on resize

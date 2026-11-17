@@ -1,10 +1,10 @@
 /* ============================================
    EvZero - Site JS (v3)
    Page curtain + homepage welcome, Lenis scroll,
-   custom cursor, sticker menu, chapter dock,
-   page panels, reveal system (split letters /
-   lit words), warp field, stickers, glow cards,
-   marquees, footer wordmark.
+   custom cursor, sticker menu, command palette,
+   chapter dock, page panels, scroll motion
+   (reveals, scrubbed drift, velocity), warp field,
+   stickers, glow cards, sound, build log.
    (js/common.js is the frozen v2 script, kept
    only for the sealed page that still links it.)
    ============================================ */
@@ -74,7 +74,7 @@
     if (reduceMotion || typeof window.Lenis !== 'function') return;
     lenis = new window.Lenis({
       autoRaf: true,
-      lerp: 0.1,
+      lerp: 0.085,
       smoothWheel: true,
       allowNestedScroll: true,
     });
@@ -301,6 +301,13 @@
             <path d="M44 104Q62 88 80 104T116 104T152 104" fill="none" stroke="${DEEP}" stroke-width="8"/>
             <path d="M44 134Q62 118 80 134T116 134T152 134" fill="none" stroke="${P1}" stroke-width="8"/>`,
     },
+    resume: {   // a page with a name on it
+      cut: '<path d="M52 22H126L158 54V170Q158 180 148 180H52Q42 180 42 170V32Q42 22 52 22Z"/>',
+      art: `<path d="M52 22H126L158 54V170Q158 180 148 180H52Q42 180 42 170V32Q42 22 52 22Z" fill="${WHITE}"/>
+            <path d="M126 22V54H158" fill="${LAV}"/>
+            <circle cx="76" cy="74" r="13" fill="${P1}"/>
+            <path d="M64 112H136M64 134H136M64 156H108" fill="none" stroke="${DEEP}" stroke-width="8"/>`,
+    },
     mystery: {
       cut: '<circle cx="100" cy="100" r="74"/>',
       art: `<circle cx="100" cy="100" r="74" fill="${INK}" stroke="${P2}" stroke-dasharray="15 13"/>
@@ -329,13 +336,13 @@
     { key: 'home',    label: 'Home',    note: 'start',      href: '',          r: -7 },
     { key: 'work',    label: 'Work',    note: '9 on shelf', href: 'projects/', r: 5 },
     { key: 'contact', label: 'Say hi',  note: 'reach me',   href: 'contact/',  r: -4 },
+    { key: 'resume',  label: 'R\u00e9sum\u00e9',  note: 'one page',   href: 'resume/',   r: 6 },
   ];
   const MENU_PROJECTS = [
     { key: 'ais',        label: 'AiS',            href: 'ais/',        r: -6 },
     { key: 'spice',      label: 'Spice',          href: 'spice/',      r: 7 },
     { key: 'qres',       label: 'Qres',           href: 'qres/',       r: -4 },
     { key: 'watchparty', label: 'Watchparty',     href: 'watchparty/', r: 6 },
-    { key: 'sketch',     label: 'Sketch Fighter', href: 'sketch/',     r: -8 },
     { key: 'tracker',    label: 'Tracker',        href: 'valorant/',   r: 4 },
   ];
   let menuBtn = null;
@@ -357,7 +364,7 @@
     menuEl.innerHTML =
       '<nav class="menu-main" aria-label="Menu">' + MENU_PAGES.map(item).join('') + '</nav>' +
       '<div class="menu-sub"><div class="menu-sub-label">( or jump straight into a project )</div>' +
-      '<nav class="menu-sub-row" aria-label="Projects">' + MENU_PROJECTS.map((m, i) => item(m, i + 3)).join('') + '</nav></div>' +
+      '<nav class="menu-sub-row" aria-label="Projects">' + MENU_PROJECTS.map((m, i) => item(m, i + 4)).join('') + '</nav></div>' +
       '<div class="menu-foot"><b>EVZERO</b><div class="menu-foot-links">' +
       '<a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a><i>&middot;</i>' +
       '<a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a><i>&middot;</i>' +
@@ -382,6 +389,7 @@
     if (label) label.textContent = open ? 'Close' : 'Menu';
     if (menuEl) menuEl.setAttribute('aria-hidden', String(!open));
     applyLock();
+    sfx(open ? 'open' : 'close');
     if (open) {
       const first = menuEl && $('a', menuEl);
       if (first) setTimeout(() => first.focus({ preventScroll: true }), 500);
@@ -870,14 +878,16 @@
   }
 
   // --------------------------------------------
-  // Hero: blur/fade text + grow object on scroll,
-  // mouse tilt on anything with [data-tilt]
+  // Hero: as you scroll away the content blurs and
+  // lifts, title lines slide apart, the object grows.
+  // Plus mouse tilt on anything with [data-tilt].
   // --------------------------------------------
   function initHeroFx() {
-    const hero = $('[data-hero-fx]');
+    const hero = $('.section.hero');
     if (hero && !reduceMotion) {
-      const content = $('[data-hero-content]', hero);
+      const content = $('[data-hero-content]', hero) || $('.ph', hero) || $('.wrap', hero);
       const object = $('[data-hero-object]', hero);
+      const lines = $$('.ph-title .line-mask', hero);
       onScroll((y) => {
         const h = hero.offsetHeight || window.innerHeight;
         const p = clamp(y / (h * 0.9), 0, 1);
@@ -886,6 +896,9 @@
           content.style.filter = p > 0.002 ? 'blur(' + (p * 14).toFixed(2) + 'px)' : '';
           content.style.translate = '0 ' + (-p * 70).toFixed(1) + 'px';
         }
+        lines.forEach((line, i) => {
+          line.style.translate = ((i % 2 ? 1 : -1) * p * 9).toFixed(2) + 'vw 0';
+        });
         if (object) {
           object.style.scale = (1 + p * 1.5).toFixed(4);
           object.style.opacity = clamp(1 - p * 0.95, 0, 1).toFixed(3);
@@ -914,6 +927,74 @@
   }
 
   // --------------------------------------------
+  // Scroll motion
+  // 1. Scrub: big titles drift sideways, asides and
+  //    tables float, screenshots grow as they cross
+  //    the screen (CSS reads --p, 0 at the bottom
+  //    edge of the screen, 1 at the top).
+  // 2. Rows of a list get a staggered reveal.
+  // 3. Velocity: marquees speed up while you scroll.
+  // --------------------------------------------
+  const SCRUB = [
+    ['.sec-title', 'slide'],
+    ['.sec-aside', 'rise'],
+    ['.statement', 'rise'],
+    ['.tbl-wrap', 'rise'],
+    ['.shot', 'zoom'],
+    ['.feature-visual > *', 'depth'],
+  ];
+  const STAGGER = ['.rows > .row-link', '.cmd-table > .cmd-row', '.pd-spec > .spec-row', '.log > *'];
+  function initMotion() {
+    STAGGER.forEach((sel) => {
+      const seen = new Map();
+      $$(sel).forEach((el) => {
+        const n = seen.get(el.parentElement) || 0;
+        seen.set(el.parentElement, n + 1);
+        el.classList.add('reveal');
+        if (n % 7) el.classList.add('d' + (n % 7));
+      });
+    });
+    if (reduceMotion) return;
+
+    const scrubbed = [];
+    SCRUB.forEach(([sel, kind]) => $$(sel).forEach((el) => {
+      if (el.hasAttribute('data-scrub')) return;
+      el.setAttribute('data-scrub', kind);
+      scrubbed.push(el);
+    }));
+    $$('[data-scrub]').forEach((el) => { if (!scrubbed.includes(el)) scrubbed.push(el); });
+    if (scrubbed.length) {
+      onScroll(() => {
+        if (window.innerWidth <= 860) return;
+        const vh = window.innerHeight;
+        const rects = scrubbed.map((el) => el.getBoundingClientRect());   // reads first
+        scrubbed.forEach((el, i) => {
+          const r = rects[i];
+          if (r.bottom < -80 || r.top > vh + 80) return;
+          el.style.setProperty('--p', clamp((vh - r.top) / (vh + r.height), 0, 1).toFixed(4));
+        });
+      });
+      queueScroll();
+    }
+
+    // Marquees lean into the scroll: faster while the page is moving.
+    const tracks = $$('.marquee-track');
+    if (tracks.length && lenis) {
+      let running = false;
+      const tick = () => {
+        const v = Math.abs(lenis.velocity || 0);
+        const rate = 1 + Math.min(7, v * 0.09);
+        tracks.forEach((t) => {
+          const anim = t.getAnimations ? t.getAnimations()[0] : null;
+          if (anim) anim.playbackRate = rate;
+        });
+        if (v > 0.05) requestAnimationFrame(tick); else running = false;
+      };
+      onScroll(() => { if (!running) { running = true; requestAnimationFrame(tick); } });
+    }
+  }
+
+  // --------------------------------------------
   // Page panels - each panel pins once its bottom
   // reaches the bottom of the screen; the next one
   // slides over it with a slanted lip while the
@@ -939,7 +1020,8 @@
           lip.setAttribute('aria-hidden', 'true');
           next.prepend(lip);
         }
-        pairs.push({ el, next, lip, active: false });
+        const inner = next.matches('.panel') ? next.querySelector(':scope > .wrap, :scope > .ph, :scope > .footer-inner') : null;
+        pairs.push({ el, next, lip, inner, active: false });
       });
     });
     if (!pinned.length) return;
@@ -980,16 +1062,26 @@
         const t = clamp(1 - tops[i] / vh, 0, 1);
         if (!reduceMotion) {
           if (t > 0) {
-            p.el.style.opacity = (1 - t).toFixed(3);
-            p.el.style.translate = '0 ' + (-t * 10).toFixed(2) + 'vh';
-            p.el.style.scale = (1 - t * 0.05).toFixed(4);
+            // the page being left shrinks into a rounded, outlined card and sinks back
+            const radius = (t * 36).toFixed(1) + 'px';
+            p.el.style.opacity = (1 - t * t).toFixed(3);
+            p.el.style.translate = '0 ' + (-t * 9).toFixed(2) + 'vh';
+            p.el.style.scale = (1 - t * 0.085).toFixed(4);
+            p.el.style.borderRadius = radius;
+            p.el.style.clipPath = 'inset(0 round ' + radius + ')';
+            p.el.style.boxShadow = 'inset 0 0 0 1px rgba(220, 214, 255, ' + (t * 0.3).toFixed(3) + ')';
             p.active = true;
           } else if (p.active) {
             p.el.style.opacity = '';
             p.el.style.translate = '';
             p.el.style.scale = '';
+            p.el.style.borderRadius = '';
+            p.el.style.clipPath = '';
+            p.el.style.boxShadow = '';
             p.active = false;
           }
+          // ...while the incoming page's content rides in a little behind its edge
+          if (p.inner) p.inner.style.transform = t > 0 && t < 1 ? 'translate3d(0,' + ((1 - t) * 110).toFixed(1) + 'px,0)' : '';
         }
         if (p.lip) {
           p.lip.style.transform = 'translate3d(0,' + (-t * 18).toFixed(2) + 'vh,0) skewY(' + (-t * 5).toFixed(3) + 'deg)';
@@ -1089,6 +1181,7 @@
   }
 
   function initCopy() {
+    $$('[data-print]').forEach((btn) => btn.addEventListener('click', () => window.print()));
     $$('[data-copy]').forEach((btn) => {
       const label = $('[data-copy-label]', btn) || btn;
       const idle = label.textContent;
@@ -1110,6 +1203,329 @@
   }
 
   // --------------------------------------------
+  // Sound - off by default. Tiny synthesised blips
+  // (no audio files), toggled from the top bar.
+  // --------------------------------------------
+  let audio = null;
+  let soundOn = false;
+  try { soundOn = localStorage.getItem('evz-sound') === '1'; } catch (err) { /* storage blocked */ }
+  function tone(o) {
+    const t = audio.currentTime + (o.delay || 0);
+    const osc = audio.createOscillator();
+    const gain = audio.createGain();
+    osc.type = o.type || 'sine';
+    osc.frequency.setValueAtTime(o.from, t);
+    if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + o.dur);
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(o.vol, t + 0.012);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + o.dur);
+    osc.connect(gain).connect(audio.destination);
+    osc.start(t);
+    osc.stop(t + o.dur + 0.03);
+  }
+  const SFX = {
+    tick:  () => tone({ from: 1900, to: 1500, dur: 0.045, vol: 0.016 }),
+    click: () => tone({ type: 'triangle', from: 520, to: 240, dur: 0.09, vol: 0.05 }),
+    open:  () => {
+      tone({ from: 320, to: 760, dur: 0.22, vol: 0.04 });
+      tone({ from: 640, to: 1280, dur: 0.26, vol: 0.02, delay: 0.05 });
+    },
+    close: () => tone({ from: 700, to: 300, dur: 0.2, vol: 0.035 }),
+    meow:  () => {   // "me" rises, "ow" falls, through a filter that opens and closes like a mouth
+      const t = audio.currentTime;
+      const osc = audio.createOscillator();
+      const mouth = audio.createBiquadFilter();
+      const gain = audio.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(520, t);
+      osc.frequency.linearRampToValueAtTime(860, t + 0.14);
+      osc.frequency.linearRampToValueAtTime(600, t + 0.42);
+      mouth.type = 'bandpass';
+      mouth.Q.value = 5;
+      mouth.frequency.setValueAtTime(900, t);
+      mouth.frequency.linearRampToValueAtTime(2300, t + 0.16);
+      mouth.frequency.linearRampToValueAtTime(1100, t + 0.42);
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.09, t + 0.05);
+      gain.gain.setValueAtTime(0.09, t + 0.3);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.46);
+      osc.connect(mouth).connect(gain).connect(audio.destination);
+      osc.start(t);
+      osc.stop(t + 0.5);
+    },
+  };
+  function sfx(name) {
+    if (!soundOn || !SFX[name]) return;
+    try {
+      if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+      if (audio.state === 'suspended') audio.resume();
+      SFX[name]();
+    } catch (err) { /* no audio on this device */ }
+  }
+  function setSound(on) {
+    soundOn = on;
+    try { localStorage.setItem('evz-sound', on ? '1' : '0'); } catch (err) { /* storage blocked */ }
+    doc.classList.toggle('sound-on', on);
+    $$('.sound-btn').forEach((b) => {
+      b.setAttribute('aria-pressed', String(on));
+      b.setAttribute('aria-label', on ? 'Turn sound off' : 'Turn sound on');
+    });
+    if (on) sfx('open');
+  }
+  function initSound() {
+    doc.classList.toggle('sound-on', soundOn);
+    $$('.sound-btn').forEach((b) => {
+      b.setAttribute('aria-pressed', String(soundOn));
+      b.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on');
+      b.addEventListener('click', () => setSound(!soundOn));
+    });
+    const hot = 'a, button, [role="button"]';
+    let last = null;
+    let lastAt = 0;
+    document.addEventListener('mouseover', (e) => {
+      if (!soundOn) return;
+      const el = e.target.closest && e.target.closest(hot);
+      if (!el) { last = null; return; }
+      const now = performance.now();
+      if (el === last || now - lastAt < 70) return;
+      last = el;
+      lastAt = now;
+      sfx('tick');
+    });
+    document.addEventListener('pointerdown', (e) => {
+      if (soundOn && e.target.closest && e.target.closest(hot)) sfx('click');
+    });
+  }
+
+  // --------------------------------------------
+  // Command palette (Ctrl / Cmd + K) - type to
+  // jump to a page or a project, or run a small
+  // action.
+  // --------------------------------------------
+  let paletteEl = null;
+  function initPalette() {
+    const EMAIL = 'evzeroholder@gmail.com';
+    const here = document.body.getAttribute('data-page') || '';
+    const go = (href) => () => {
+      const url = new URL(ROOT + href, location.href);
+      if (url.pathname !== location.pathname) { leave(url.href); return; }
+      // already on that page: a hash means "open this", otherwise just go back up
+      if (url.hash) { location.hash = url.hash; location.reload(); } else scrollToTop();
+    };
+    const ITEMS = [
+      { group: 'Pages', label: 'Home', hint: 'start here', stk: 'home', key: 'home', run: go('') },
+      { group: 'Pages', label: 'Work', hint: 'all nine projects', stk: 'work', key: 'work', run: go('projects/') },
+      { group: 'Pages', label: 'Say hi', hint: 'contact', stk: 'contact', key: 'contact', words: 'email discord message', run: go('contact/') },
+      { group: 'Pages', label: 'Résumé', hint: 'one page, printable', stk: 'resume', key: 'resume', words: 'resume cv hire internship', run: go('resume/') },
+      { group: 'Projects', label: 'AiS', hint: 'anti-cheat for AI agents', stk: 'ais', key: 'ais', words: 'sandbox security agent', run: go('ais/') },
+      { group: 'Projects', label: 'Spice', hint: 'overlay for gamers', stk: 'spice', key: 'spice', words: 'crosshair overlay', run: go('spice/') },
+      { group: 'Projects', label: 'Qres', hint: 'one key, new resolution', stk: 'qres', key: 'qres', words: 'stretched resolution hotkey', run: go('qres/') },
+      { group: 'Projects', label: 'Watchparty', hint: 'same frame, two couches', stk: 'watchparty', key: 'watchparty', words: 'watch together youtube twitch netflix', run: go('watchparty/') },
+      { group: 'Projects', label: 'Pixel cat', hint: 'the one stalking your cursor', stk: 'cat', words: 'cat pet', run: go('projects/#pixel-cat') },
+      { group: 'Projects', label: 'Valorant tracker', hint: 'outdated', stk: 'tracker', key: 'tracker', words: 'val rank', run: go('valorant/') },
+      { group: 'Actions', label: 'Copy my email address', hint: EMAIL, icon: '@', words: 'mail contact', keep: true,
+        run: (it) => navigator.clipboard.writeText(EMAIL).then(() => flash(it, 'Copied'), () => flash(it, EMAIL)) },
+      { group: 'Actions', label: 'Open the Discord server', hint: 'new tab', icon: '↗', words: 'chat', run: () => window.open('https://discord.gg/hrN8ye6nrF', '_blank', 'noopener') },
+      { group: 'Actions', label: 'Open GitHub', hint: 'new tab', icon: '↗', words: 'source code repo', run: () => window.open('https://github.com/ritviksajeev', '_blank', 'noopener') },
+      { group: 'Actions', label: 'Toggle sound', hint: 'clicks and a meow', icon: '♪', words: 'audio mute volume', keep: true,
+        run: (it) => { setSound(!soundOn); flash(it, soundOn ? 'Sound on' : 'Sound off'); } },
+      { group: 'Actions', label: 'Pet the cat', hint: 'it likes that', icon: '♥', words: 'meow', run: () => window.dispatchEvent(new Event('evz:pet')) },
+      { group: 'Actions', label: 'Back to the top', hint: 'of this page', icon: '↑', words: 'scroll up', run: () => scrollToTop() },
+      { group: 'Actions', label: 'Replay the intro', hint: 'evzero, then welcome', icon: '↻', words: 'welcome loader curtain',
+        run: () => { try { sessionStorage.removeItem('evz-welcomed'); } catch (err) { /* fine */ } window.location.href = new URL(ROOT || './', location.href).href; } },
+    ];
+
+    paletteEl = document.createElement('div');
+    paletteEl.className = 'palette';
+    paletteEl.setAttribute('role', 'dialog');
+    paletteEl.setAttribute('aria-modal', 'true');
+    paletteEl.setAttribute('aria-label', 'Command palette');
+    paletteEl.setAttribute('aria-hidden', 'true');
+    paletteEl.innerHTML =
+      '<div class="palette-backdrop"></div>' +
+      '<div class="palette-box">' +
+      '<div class="palette-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>' +
+      '<input class="palette-input" type="text" placeholder="Where to? Try “ais”, “résumé” or “cat”" autocomplete="off" spellcheck="false" aria-label="Search pages, projects and actions"/>' +
+      '<kbd>Esc</kbd></div>' +
+      '<div class="palette-list" role="listbox" data-lenis-prevent></div>' +
+      '<div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>Esc</kbd> close</span></div>' +
+      '</div>';
+    document.body.appendChild(paletteEl);
+
+    const input = $('.palette-input', paletteEl);
+    const list = $('.palette-list', paletteEl);
+    let shown = [];
+    let active = 0;
+    let lastFocus = null;
+
+    function flash(it, text) {
+      const row = list.children[shown.indexOf(it) + groupOffset(shown.indexOf(it))];
+      const hint = row && $('.palette-hint', row);
+      if (hint) hint.textContent = text;
+      setTimeout(closePalette, 650);
+    }
+    // rows and group headings share the list, so a row's DOM index is its
+    // item index plus the number of headings above it
+    function groupOffset(index) {
+      let n = 0;
+      let g = null;
+      for (let i = 0; i <= index; i++) { if (shown[i].group !== g) { g = shown[i].group; n++; } }
+      return n;
+    }
+    function matches(it, q) {
+      if (!q) return true;
+      const hay = (it.label + ' ' + (it.hint || '') + ' ' + (it.words || '')).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      return q.split(/\s+/).every((part) => hay.includes(part));
+    }
+    function render() {
+      const q = input.value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      shown = ITEMS.filter((it) => matches(it, q));
+      active = clamp(active, 0, Math.max(0, shown.length - 1));
+      let html = '';
+      let group = null;
+      shown.forEach((it, i) => {
+        if (it.group !== group) { group = it.group; html += '<div class="palette-group">' + group + '</div>'; }
+        html += '<button type="button" class="palette-item' + (i === active ? ' active' : '') + '" role="option" data-i="' + i + '" aria-selected="' + (i === active) + '">' +
+          '<span class="palette-ico">' + (it.stk ? sticker(it.stk) : '<i>' + it.icon + '</i>') + '</span>' +
+          '<span class="palette-label">' + it.label + (it.key && it.key === here ? '<em>you are here</em>' : '') + '</span>' +
+          '<span class="palette-hint">' + (it.hint || '') + '</span></button>';
+      });
+      list.innerHTML = html || '<div class="palette-empty">Nothing matches that. Try “work” or “cat”.</div>';
+      const row = $('.palette-item.active', list);
+      if (row) row.scrollIntoView({ block: 'nearest' });
+    }
+    function runActive() {
+      const it = shown[active];
+      if (!it) return;
+      sfx('click');
+      if (!it.keep) closePalette();
+      it.run(it);
+    }
+    function openPalette() {
+      if (doc.classList.contains('palette-open')) return;
+      closeMenu();
+      lastFocus = document.activeElement;
+      input.value = '';
+      active = 0;
+      render();
+      doc.classList.add('palette-open');
+      paletteEl.setAttribute('aria-hidden', 'false');
+      lockScroll();
+      sfx('open');
+      setTimeout(() => input.focus({ preventScroll: true }), 60);
+    }
+    function closePalette() {
+      if (!doc.classList.contains('palette-open')) return;
+      doc.classList.remove('palette-open');
+      paletteEl.setAttribute('aria-hidden', 'true');
+      unlockScroll();
+      if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus({ preventScroll: true });
+    }
+    window.EV.palette = openPalette;
+
+    input.addEventListener('input', () => { active = 0; render(); });
+    list.addEventListener('mousemove', (e) => {
+      const row = e.target.closest && e.target.closest('.palette-item');
+      if (!row) return;
+      const i = Number(row.getAttribute('data-i'));
+      if (i === active) return;
+      active = i;
+      $$('.palette-item', list).forEach((r) => {
+        const on = Number(r.getAttribute('data-i')) === active;
+        r.classList.toggle('active', on);
+        r.setAttribute('aria-selected', String(on));
+      });
+    });
+    list.addEventListener('click', (e) => {
+      const row = e.target.closest && e.target.closest('.palette-item');
+      if (!row) return;
+      active = Number(row.getAttribute('data-i'));
+      runActive();
+    });
+    $('.palette-backdrop', paletteEl).addEventListener('click', closePalette);
+    $$('.palette-btn').forEach((b) => {
+      const k = $('kbd', b);
+      if (k && /Mac|iPhone|iPad/.test(navigator.platform || '')) k.textContent = '⌘K';
+      b.addEventListener('click', openPalette);
+    });
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (doc.classList.contains('palette-open')) closePalette(); else openPalette();
+        return;
+      }
+      if (!doc.classList.contains('palette-open')) return;
+      if (e.key === 'Escape') { e.preventDefault(); closePalette(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); active = (active + 1) % Math.max(1, shown.length); render(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); active = (active - 1 + shown.length) % Math.max(1, shown.length); render(); }
+      else if (e.key === 'Enter') { e.preventDefault(); runActive(); }
+    });
+  }
+
+  // --------------------------------------------
+  // Build log - the latest commits across the
+  // public repos, straight from GitHub's API
+  // (cached for 20 minutes per visitor).
+  // --------------------------------------------
+  function initBuildLog() {
+    const host = $('[data-buildlog]');
+    if (!host) return;
+    const REPOS = ['ais', 'spice', 'Qres', 'ev'];
+    const SKIP = /^merge |\bwip\b|private|seal|solren/i;   // housekeeping commits nobody needs to read
+    const KEY = 'evz-buildlog-v2';
+    const TTL = 20 * 60 * 1000;
+
+    const ago = (iso) => {
+      const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+      if (days < 1) return 'today';
+      if (days < 2) return 'yesterday';
+      if (days < 14) return days + 'd ago';
+      if (days < 60) return Math.floor(days / 7) + 'w ago';
+      if (days < 365) return Math.floor(days / 30) + 'mo ago';
+      return Math.floor(days / 365) + 'y ago';
+    };
+    const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const render = (rows) => {
+      host.innerHTML = rows.map((r) =>
+        '<a class="log-row" href="' + esc(r.url) + '" target="_blank" rel="noreferrer noopener">' +
+        '<span class="log-repo">' + esc(r.repo) + '</span>' +
+        '<span class="log-msg">' + esc(r.msg) + '</span>' +
+        '<span class="log-sha">' + esc(r.sha) + '</span>' +
+        '<span class="log-time">' + ago(r.date) + '</span></a>').join('');
+      host.classList.add('is-live');
+      $$('.log-row', host).forEach((el, i) => { el.classList.add('reveal'); if (i) el.classList.add('d' + Math.min(i, 7)); });
+      if (window.EV.observeReveals) window.EV.observeReveals(host);
+    };
+    const fail = () => {
+      host.innerHTML = '<div class="log-empty">GitHub is not answering right now. The commits are all on <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">github.com/ritviksajeev</a>.</div>';
+    };
+
+    let cached = null;
+    try { cached = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (err) { /* ignore */ }
+    if (cached && cached.rows && Date.now() - cached.at < TTL) { render(cached.rows); return; }
+
+    Promise.all(REPOS.map((repo) =>
+      fetch('https://api.github.com/repos/ritviksajeev/' + repo + '/commits?per_page=6', { headers: { Accept: 'application/vnd.github+json' } })
+        .then((res) => (res.ok ? res.json() : []))
+        .then((list) => (Array.isArray(list) ? list : []).map((c) => ({
+          repo,
+          msg: String(c.commit.message).split('\n')[0],
+          date: c.commit.author.date,
+          url: c.html_url,
+          sha: c.sha.slice(0, 7),
+        })).filter((r) => !SKIP.test(r.msg)).slice(0, 2))   // two per repo keeps the list varied
+        .catch(() => [])
+    )).then((groups) => {
+      const rows = [].concat(...groups)
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 6);
+      if (!rows.length) { if (cached && cached.rows) render(cached.rows); else fail(); return; }
+      try { localStorage.setItem(KEY, JSON.stringify({ at: Date.now(), rows })); } catch (err) { /* storage blocked */ }
+      render(rows);
+    });
+  }
+
+  // --------------------------------------------
   // Boot
   // --------------------------------------------
   window.EV = window.EV || {};
@@ -1119,6 +1535,7 @@
   window.EV.lock = lockScroll;
   window.EV.unlock = unlockScroll;
   window.EV.sticker = sticker;
+  window.EV.sfx = sfx;
   window.EV.stickers = initStickers;
   window.EV.root = ROOT;
   Object.defineProperty(window.EV, 'lenis', { get: () => lenis, configurable: true });
@@ -1131,9 +1548,10 @@
     safe('transitions', initTransitions);
     safe('split', initSplit);
     safe('lit', initLit);
-    safe('reveals', initReveals);
     safe('marquee', initMarquees);
     safe('panels', initPanels);
+    safe('motion', initMotion);     // before reveals: it tags list rows for them
+    safe('reveals', initReveals);
     safe('hero', initHeroFx);
     safe('warp', initWarp);
     safe('dock', initDock);
@@ -1144,6 +1562,9 @@
     safe('magnetic', initMagnetic);
     safe('topbar', initTopbar);
     safe('copy', initCopy);
+    safe('sound', initSound);
+    safe('palette', initPalette);
+    safe('buildlog', initBuildLog);
     safe('year', initYearStamps);
     safe('loader', initLoader);   // last - it flips the page to ready
     // the cat boots itself from cat.js

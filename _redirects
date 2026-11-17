@@ -2,6 +2,7 @@
 # Allows /projects to map to /projects/ (which serves /projects/index.html)
 /projects      /projects/      301
 /contact       /contact/       301
+/resume        /resume/        301
 /watchparty    /watchparty/    301
 /ais           /ais/           301
 /spice         /spice/         301

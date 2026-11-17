@@ -123,13 +123,13 @@
     'sketch-fighter': {
       title: 'Sketch Fighter',
       sticker: 'sketch',
-      type: 'Game (working title)',
+      type: 'Game (abandoned)',
       stack: 'Flask · Phaser 3 · OpenCV',
       since: '2026',
       desc: [
         'Draw a fighting-game stage on an index card, photograph it with your phone, and fight on it seconds later.',
         'The photo goes through an OpenCV pipeline that turns pen lines into a 40 &times; 24 tile grid, then a stage analyser works out what is actually reachable, fixes what isn&rsquo;t, picks spawn points and builds a navigation graph so the CPU opponent can get around a level it has never seen.',
-        'The build on this site plays the sample stages in your browser, in landscape on a phone too. Scanning your own card needs the local server for now.',
+        'I have stopped working on it, so it is marked abandoned. The build on this site still plays the sample stages in your browser, in landscape on a phone too. Scanning your own card only ever worked against a local server.',
       ],
       files: [
         'backend/vision.py',

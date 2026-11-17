@@ -6,13 +6,24 @@
   <meta name="theme-color" content="#09090b"/>
   <meta name="description" content="The EvZero workshop: every project on the shelf: AiS, Spice, Qres, Watchparty, Sketch Fighter and more."/>
   <title>EvZero / Work</title>
+  <link rel="canonical" href="https://evzero.org/projects/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="EvZero"/>
+  <meta property="og:title" content="EvZero / Work"/>
+  <meta property="og:description" content="The EvZero workshop: every project on the shelf: AiS, Spice, Qres, Watchparty, Sketch Fighter and more."/>
+  <meta property="og:url" content="https://evzero.org/projects/"/>
+  <meta property="og:image" content="https://evzero.org/assets/og.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:image" content="https://evzero.org/assets/og.png"/>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
-  <link rel="stylesheet" href="../css/projects.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.1"/>
+  <link rel="stylesheet" href="../css/projects.css?v=3.1"/>
 </head>
 <body data-page="work">
 
@@ -29,10 +40,19 @@
         <a href="../projects/" class="active" aria-current="page" data-transition><span data-scramble>Work</span></a>
         <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
       </nav>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
-        <span class="menu-btn-label">Menu</span>
-        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      </button>
+      <div class="topbar-tools">
+        <button class="palette-btn" type="button" aria-label="Search the site">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="sound-btn" type="button" aria-pressed="false" aria-label="Turn sound on">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path class="wave" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a8 8 0 0 1 0 11"/><path class="mute" d="M16 9.8l4.4 4.4M20.4 9.8L16 14.2"/></svg>
+        </button>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+          <span class="menu-btn-label">Menu</span>
+          <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -55,7 +75,7 @@
           <button class="pick" type="button" data-project="spice" style="--i: 1; --r: 6deg"><span class="tip">Spice<small>Alpha</small></span><span data-sticker="spice"></span></button>
           <button class="pick" type="button" data-project="qres" style="--i: 2; --r: -4deg"><span class="tip">Qres<small>Shipped</small></span><span data-sticker="qres"></span></button>
           <button class="pick" type="button" data-project="watchparty" style="--i: 3; --r: 8deg"><span class="tip">Watchparty<small>Live</small></span><span data-sticker="watchparty"></span></button>
-          <button class="pick" type="button" data-project="sketch-fighter" style="--i: 4; --r: -9deg"><span class="tip">Sketch Fighter<small>In dev</small></span><span data-sticker="sketch"></span></button>
+          <button class="pick" type="button" data-project="sketch-fighter" style="--i: 4; --r: -9deg"><span class="tip">Sketch Fighter<small>Abandoned</small></span><span data-sticker="sketch"></span></button>
           <button class="pick" type="button" data-project="pixel-cat" style="--i: 5; --r: 5deg"><span class="tip">Pixel cat<small>Live</small></span><span data-sticker="cat"></span></button>
           <button class="pick" type="button" data-project="evzero-org" style="--i: 6; --r: -5deg"><span class="tip">evzero.org<small>Shipped</small></span><span data-sticker="site"></span></button>
           <button class="pick" type="button" data-project="valorant-tracker" style="--i: 7; --r: 7deg"><span class="tip">Valorant tracker<small>Outdated</small></span><span data-sticker="tracker"></span></button>
@@ -63,7 +83,7 @@
         </div>
 
         <div class="ph-bottom intro-fade" style="--id: 1.5s">
-          <p class="ph-lead">Nine side projects, <span class="serif">all built from zero.</span> Two in alpha, four shipped, one playable, one past its prime and one I&rsquo;m not allowed to talk about.</p>
+          <p class="ph-lead">Nine side projects, <span class="serif">all built from zero.</span> Two in alpha, four shipped, one abandoned, one past its prime and one I&rsquo;m not allowed to talk about.</p>
           <span>Hover for a name &middot; click to open &darr;</span>
         </div>
       </div>
@@ -117,13 +137,13 @@
             <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">Live</span></span>
           </div>
 
-          <div class="pr-row reveal" data-project="sketch-fighter" data-status="In dev" data-kind="wip" data-version="Playable" role="button" tabindex="0" data-cursor-label="View">
+          <div class="pr-row reveal" data-project="sketch-fighter" data-status="Abandoned" data-kind="old" data-version="Playable" role="button" tabindex="0" data-cursor-label="View">
             <span class="pr-idx">/ 05</span>
             <span class="pr-stk" data-sticker="sketch" aria-hidden="true"></span>
             <span class="pr-title">Sketch Fighter</span>
-            <span class="pr-desc">Draw a fighting-game stage on an index card, photograph it, and fight on it seconds later. The sample stages are playable in the browser now.</span>
+            <span class="pr-desc">Draw a fighting-game stage on an index card, photograph it, and fight on it seconds later. Abandoned now, but the sample stages still play in the browser.</span>
             <span class="pr-tags">flask &middot; phaser &middot; opencv</span>
-            <span class="pr-status"><span class="chip wip">In dev</span><span class="pr-ver">Playable</span></span>
+            <span class="pr-status"><span class="chip old">Abandoned</span><span class="pr-ver">Playable</span></span>
           </div>
 
           <div class="pr-row reveal" data-project="pixel-cat" data-status="Shipped" data-kind="live" data-version="Live" role="button" tabindex="0" data-cursor-label="View">
@@ -135,13 +155,13 @@
             <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">Live</span></span>
           </div>
 
-          <div class="pr-row reveal" data-project="evzero-org" data-status="Shipped" data-kind="live" data-version="v3.0" role="button" tabindex="0" data-cursor-label="View">
+          <div class="pr-row reveal" data-project="evzero-org" data-status="Shipped" data-kind="live" data-version="v3.1" role="button" tabindex="0" data-cursor-label="View">
             <span class="pr-idx">/ 07</span>
             <span class="pr-stk" data-sticker="site" aria-hidden="true"></span>
             <span class="pr-title">evzero.org</span>
             <span class="pr-desc">The site you&rsquo;re on. Warp-field heroes, a sticker menu, pages that slide over each other, and an obsessive amount of purple. No framework.</span>
             <span class="pr-tags">html &middot; css &middot; js</span>
-            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">v3.0</span></span>
+            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">v3.1</span></span>
           </div>
 
           <div class="pr-row reveal" data-project="valorant-tracker" data-status="Outdated" data-kind="old" data-version="v0.1" role="button" tabindex="0" data-cursor-label="View">
@@ -188,6 +208,7 @@
             <a href="../" data-transition>Home</a>
             <a href="../projects/" data-transition>Work</a>
             <a href="../contact/" data-transition>Contact</a>
+            <a href="../resume/" data-transition>R&eacute;sum&eacute;</a>
           </nav>
           <nav class="footer-col" aria-label="Projects">
             <h3>Projects</h3>
@@ -195,7 +216,7 @@
             <a href="../spice/" data-transition>Spice</a>
             <a href="../qres/" data-transition>Qres</a>
             <a href="../watchparty/" data-transition>Watchparty</a>
-            <a href="../sketch/">Sketch Fighter</a>
+            <a href="../projects/#pixel-cat" data-transition>Pixel cat</a>
           </nav>
           <nav class="footer-col" aria-label="Elsewhere">
             <h3>Elsewhere</h3>
@@ -206,7 +227,7 @@
           </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.1</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
       <div class="wordpill" aria-hidden="true">
         <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
         <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
@@ -242,9 +263,9 @@
     </article>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
-  <script src="../js/site.js?v=3.0"></script>
-  <script src="../js/cat.js?v=3.0"></script>
-  <script src="../js/projects.js?v=3.0"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.1"></script>
+  <script src="../js/site.js?v=3.1"></script>
+  <script src="../js/cat.js?v=3.1"></script>
+  <script src="../js/projects.js?v=3.1"></script>
 </body>
 </html>

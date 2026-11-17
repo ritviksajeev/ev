@@ -1,0 +1,209 @@
+/* ============================================
+   Resume page (v3.1)
+   One glass sheet on screen. "Save as PDF" calls
+   window.print(), and the print rules at the
+   bottom turn the sheet into a plain black on
+   white page with everything else hidden.
+   ============================================ */
+
+.resume-wrap { max-width: 980px; }
+
+.resume-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.resume-bar-left { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.resume-crumb {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.resume-crumb a:hover { color: var(--white); }
+.resume-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.resume-actions .btn { min-height: 44px; }
+
+.paper { padding: clamp(26px, 5vw, 68px); }
+.paper-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 56px);
+  align-items: end;
+  padding-bottom: clamp(24px, 3vw, 40px);
+  border-bottom: 1px solid var(--white-rule);
+}
+.paper-name {
+  font-size: clamp(56px, 9vw, 128px);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.07em;
+}
+.paper-role {
+  margin-top: 16px;
+  font-size: clamp(16px, 1.5vw, 20px);
+  line-height: 1.4;
+  color: var(--white-dim);
+}
+.paper-role .serif { font-size: 1.25em; color: var(--purple-bright); }
+.paper-contact li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 8px 0;
+  border-top: 1px solid var(--white-line);
+  font-size: 14px;
+}
+.paper-contact span {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.paper-contact a { transition: color 0.3s var(--ease-out); }
+.paper-contact a:hover { color: var(--purple-bright); }
+
+.paper-sec {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: clamp(14px, 3vw, 40px);
+  padding: clamp(22px, 2.8vw, 36px) 0;
+  border-bottom: 1px solid var(--white-line);
+}
+.paper-sec:last-child { border-bottom: 0; padding-bottom: 0; }
+.paper-sec > h2 {
+  grid-row: 1 / span 20;
+  padding-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.8px;
+  line-height: 1.4;
+  color: var(--purple-bright);
+}
+.paper-sec > *:not(h2) { grid-column: 2; }
+.paper-sec p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--white-dim);
+}
+.paper-sec p a { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+
+.paper-item + .paper-item { margin-top: 22px; }
+.paper-item-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-bottom: 8px;
+}
+.paper-item h3 {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+  text-transform: none;
+}
+.paper-item h3 a { transition: color 0.3s var(--ease-out); }
+.paper-item h3 a:hover { color: var(--purple-bright); }
+.paper-item h3 span {
+  margin-left: 12px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 0;
+  color: var(--white-dim);
+}
+.paper-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--white-faint);
+}
+.paper-item ul { display: flex; flex-direction: column; gap: 6px; }
+.paper-item li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--white-dim);
+}
+.paper-item li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.72em;
+  width: 8px; height: 1px;
+  background: var(--purple-bright);
+}
+
+.paper-skills div {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 16px;
+  padding: 9px 0;
+  border-top: 1px solid var(--white-line);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.paper-skills div:first-child { border-top: 0; padding-top: 0; }
+.paper-skills dt { color: var(--white); }
+.paper-skills dd { color: var(--white-dim); }
+
+@media (max-width: 760px) {
+  .paper-head { grid-template-columns: 1fr; }
+  .paper-sec { grid-template-columns: 1fr; }
+  .paper-sec > h2 { grid-row: auto; }
+  .paper-sec > *:not(h2) { grid-column: 1; }
+  .paper-skills div { grid-template-columns: 1fr; gap: 2px; }
+}
+
+/* ---- Save as PDF: just the sheet, black on white ---- */
+@media print {
+  @page { margin: 13mm 14mm; }
+  html, body { background: #fff !important; }
+  body::after,
+  .topbar, .dock, .site-footer, .loader, .menu, .palette, .pixel-cat,
+  .cursor-dot, .cursor-ring, .ambient, .resume-bar, .panel-lip { display: none !important; }
+  html, html * { cursor: auto !important; }
+  .panels, .panel-group, .panel, .section, .wrap {
+    position: static !important;
+    display: block !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    transform: none !important;
+    clip-path: none !important;
+    box-shadow: none !important;
+  }
+  .intro-fade, .reveal { opacity: 1 !important; animation: none !important; }
+  .paper {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .paper::before, .paper::after { display: none; }
+  .paper, .paper * { color: #111 !important; border-color: #d4d4d4 !important; }
+  .paper-role, .paper-sec p, .paper-item li, .paper-skills dd, .paper-item h3 span { color: #333 !important; }
+  .paper-meta, .paper-contact span { color: #666 !important; }
+  .paper-sec > h2, .paper-role .serif { color: #4c3aa8 !important; }
+  .paper-item li::before { background: #4c3aa8; }
+  .paper-name { font-size: 54pt; }
+  .paper-sec { padding: 14pt 0; break-inside: avoid; }
+  .paper-item { break-inside: avoid; }
+  .paper a { text-decoration: none !important; }
+}

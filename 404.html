@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="/css/site.css?v=3.1"/>
 </head>
 <body data-page="lost">
 
@@ -28,10 +28,19 @@
         <a href="/projects/" data-transition><span data-scramble>Work</span></a>
         <a href="/contact/" data-transition><span data-scramble>Contact</span></a>
       </nav>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
-        <span class="menu-btn-label">Menu</span>
-        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-      </button>
+      <div class="topbar-tools">
+        <button class="palette-btn" type="button" aria-label="Search the site">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="sound-btn" type="button" aria-pressed="false" aria-label="Turn sound on">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path class="wave" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a8 8 0 0 1 0 11"/><path class="mute" d="M16 9.8l4.4 4.4M20.4 9.8L16 14.2"/></svg>
+        </button>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+          <span class="menu-btn-label">Menu</span>
+          <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -80,6 +89,7 @@
             <a href="/" data-transition>Home</a>
             <a href="/projects/" data-transition>Work</a>
             <a href="/contact/" data-transition>Contact</a>
+            <a href="/resume/" data-transition>R&eacute;sum&eacute;</a>
           </nav>
           <nav class="footer-col" aria-label="Projects">
             <h3>Projects</h3>
@@ -87,7 +97,7 @@
             <a href="/spice/" data-transition>Spice</a>
             <a href="/qres/" data-transition>Qres</a>
             <a href="/watchparty/" data-transition>Watchparty</a>
-            <a href="/sketch/">Sketch Fighter</a>
+            <a href="/projects/#pixel-cat" data-transition>Pixel cat</a>
           </nav>
           <nav class="footer-col" aria-label="Elsewhere">
             <h3>Elsewhere</h3>
@@ -98,7 +108,7 @@
           </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.1</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
       <div class="wordpill" aria-hidden="true">
         <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
         <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
@@ -110,8 +120,8 @@
   </footer>
   </div>
 
-  <script src="/js/vendor/lenis.min.js?v=3.0"></script>
-  <script src="/js/site.js?v=3.0"></script>
-  <script src="/js/cat.js?v=3.0"></script>
+  <script src="/js/vendor/lenis.min.js?v=3.1"></script>
+  <script src="/js/site.js?v=3.1"></script>
+  <script src="/js/cat.js?v=3.1"></script>
 </body>
 </html>

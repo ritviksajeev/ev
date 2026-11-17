@@ -68,6 +68,29 @@ a.channel-handle:hover { color: var(--purple-bright); }
 .channel-actions .btn { min-height: 40px; padding: 0 18px; }
 a.channel:hover .ulink { color: var(--purple-bright); background-size: 0% 1px; background-position: 100% 100%; }
 
+/* hire block */
+.hire {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) auto;
+  align-items: center;
+  gap: clamp(20px, 4vw, 60px);
+  margin-top: 16px;
+  padding: clamp(24px, 3vw, 44px);
+}
+.hire-text { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
+.hire-title {
+  font-size: clamp(30px, 4vw, 60px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+.hire-text p { max-width: 560px; font-size: 15px; line-height: 1.7; color: var(--white-dim); }
+.hire-actions { display: flex; flex-direction: column; gap: 10px; }
+@media (max-width: 860px) {
+  .hire { grid-template-columns: 1fr; }
+  .hire-actions { flex-direction: row; flex-wrap: wrap; }
+}
+
 .elsewhere {
   display: flex;
   align-items: center;
