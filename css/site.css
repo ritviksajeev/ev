@@ -133,6 +133,7 @@ ul, ol { list-style: none; }
   border: 0;
 }
 .hidden { display: none !important; }
+.keep-case { text-transform: none !important; }   /* names with deliberate casing (AiS) */
 
 .accent { color: var(--purple-bright); }
 /* in big titles the accent phrase switches to the italic serif */

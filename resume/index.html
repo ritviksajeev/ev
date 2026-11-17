@@ -22,8 +22,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/site.css?v=3.3"/>
-  <link rel="stylesheet" href="../css/resume.css?v=3.3"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.5"/>
+  <link rel="stylesheet" href="../css/resume.css?v=3.5"/>
 </head>
 <body data-page="resume">
 
@@ -59,33 +59,396 @@
   <div class="panels">
   <main class="page panel-group">
 
-    <!-- RESUME - one page. "Save as PDF" prints just the sheet (see css/resume.css).
-         Personal details (location, phone) are redacted on the public copy:
-         the real values are not in this file at all. Each bar emails Ritvik. -->
-    <section class="section resume-sec panel">
-      <div class="wrap resume-wrap">
+    <!-- RESUME (screen). The plain one-page sheet after the panels is the copy
+         "Save as PDF" prints. Personal details (location, phone) are redacted:
+         the real values are not in this file at all, and every bar emails Ritvik.
+         Content lives in both places, so update both. -->
 
-        <div class="resume-bar">
-          <div class="resume-bar-left intro-fade" style="--id: 0.3s">
-            <span class="chip live">Open to internships</span>
-            <span class="resume-crumb"><a href="../" data-transition>evzero</a> / r&eacute;sum&eacute;</span>
+    <!-- 01 / HERO: name on the left, an ID badge on a lanyard on the right -->
+    <section class="section hero rs-hero panel" data-chapter="R&eacute;sum&eacute;" data-tilt-zone>
+      <div class="warp" data-warp></div>
+      <div class="wrap rs-hero-wrap" data-hero-content>
+        <div class="ph-top intro-fade" style="--id: 0.3s"><span><i class="dot"></i>( R&eacute;sum&eacute; / public copy )</span><span>Updated November 2026</span></div>
+
+        <div class="rs-hero-grid">
+          <div class="rs-hero-text">
+            <h1 class="rs-name">
+              <span class="sr-only">Ritvik Sajeev</span>
+              <span class="line-mask" aria-hidden="true"><span class="line">Ritvik</span></span>
+              <span class="line-mask" aria-hidden="true"><span class="line"><span class="accent">Sajeev.</span></span></span>
+            </h1>
+            <p class="rs-role intro-fade" style="--id: 0.8s">Cybersecurity student at Rider University. <span class="serif">I build the tools I wish existed.</span></p>
+            <div class="chips intro-fade" style="--id: 0.9s">
+              <span class="chip live">Open to internships</span>
+              <span class="chip accent">B.S. Cybersecurity &middot; May 2027</span>
+              <span class="chip">GPA 3.94</span>
+            </div>
+            <div class="rs-cta intro-fade" style="--id: 1s">
+              <button type="button" class="btn shine big" data-print data-magnetic="0.15">Save as PDF <span class="arrow">&darr;</span></button>
+              <a class="btn ghost big" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" data-magnetic="0.15">Request the full version</a>
+            </div>
           </div>
-          <div class="resume-actions intro-fade" style="--id: 0.45s">
-            <button type="button" class="btn shine" data-print data-magnetic>Save as PDF <span class="arrow">&darr;</span></button>
-            <a class="btn ghost" href="mailto:r@evzero.org?subject=Internship">Email me</a>
+
+          <div class="rs-lanyard intro-fade" style="--id: 0.6s">
+            <span class="rs-strap" aria-hidden="true"></span>
+            <span class="rs-clip" aria-hidden="true"></span>
+            <div class="rs-badge" data-tilt="9" data-flipcard role="button" tabindex="0" aria-pressed="false" aria-label="ID badge. Press to flip it over." data-cursor-label="Flip">
+              <div class="rs-badge-inner">
+                <div class="rs-face rs-front">
+                  <div class="rs-badge-top"><span>evzero / ID</span><span class="rs-chipcard" aria-hidden="true"></span></div>
+                  <div class="rs-badge-id">
+                    <span class="rs-badge-stk" data-sticker="cat" aria-hidden="true"></span>
+                    <div>
+                      <div class="rs-badge-name">Ritvik Sajeev</div>
+                      <div class="rs-badge-role">Cybersecurity &middot; Rider &rsquo;27</div>
+                    </div>
+                  </div>
+                  <dl class="rs-badge-rows">
+                    <div><dt>Based in</dt><dd><a class="redact" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" style="--w: 7.5em" title="Redacted on the public copy. Click to ask me for it." aria-label="Location redacted. Email me for the full r&eacute;sum&eacute;."></a></dd></div>
+                    <div><dt>Phone</dt><dd><a class="redact" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" style="--w: 6.5em" title="Redacted on the public copy. Click to ask me for it." aria-label="Phone number redacted. Email me for the full r&eacute;sum&eacute;."></a></dd></div>
+                    <div><dt>Email</dt><dd><a href="mailto:r@evzero.org">r@evzero.org</a></dd></div>
+                    <div><dt>GitHub</dt><dd><a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">ritviksajeev</a></dd></div>
+                  </dl>
+                  <div class="rs-badge-foot"><span class="rs-barcode" aria-hidden="true"></span><span>Clearance: public</span></div>
+                </div>
+                <div class="rs-face rs-back">
+                  <span class="rs-back-stamp">Classified</span>
+                  <p class="rs-back-title">The full file is <span class="serif">one email away.</span></p>
+                  <p class="rs-back-text">Location, phone and anything else you need: ask, and I&rsquo;ll send the complete r&eacute;sum&eacute; over.</p>
+                  <a class="btn shine" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request">Ask for it <span class="arrow">&rarr;</span></a>
+                  <span class="rs-back-hint">Tap to flip back</span>
+                </div>
+              </div>
+            </div>
+            <span class="rs-flip-hint" aria-hidden="true">( tap the badge )</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 / PROFILE: statement + numbers -->
+    <section class="section panel" data-chapter="Profile">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Profile</span><span class="k-line"></span><span class="k-meta">In one breath</span></div>
+
+        <p class="rs-statement" data-lit>I study cybersecurity at Rider University and spend the rest of my time shipping side projects in public: a sandbox that checks what AI coding agents actually do, tools for people who play competitive games, and a way to watch video in sync. <span class="serif">Everything built from zero, and honest about its limits.</span></p>
+
+        <div class="rs-stats">
+          <div class="rs-stat glow reveal">
+            <div class="rs-stat-num"><span data-count="3.94">3.94</span></div>
+            <div class="rs-stat-label">GPA</div>
+            <div class="rs-stat-sub">B.S. Cybersecurity</div>
+          </div>
+          <div class="rs-stat glow reveal d1">
+            <div class="rs-stat-num"><span data-count="437">437</span></div>
+            <div class="rs-stat-label">automated tests</div>
+            <div class="rs-stat-sub">guarding AiS</div>
+          </div>
+          <div class="rs-stat glow reveal d2">
+            <div class="rs-stat-num"><span data-count="18">18</span><small>/21</small></div>
+            <div class="rs-stat-label">exploits caught blind</div>
+            <div class="rs-stat-sub">0 false positives</div>
+          </div>
+          <div class="rs-stat glow reveal d3">
+            <div class="rs-stat-num"><span data-count="43">43</span><small>%</small></div>
+            <div class="rs-stat-label">less waiting time</div>
+            <div class="rs-stat-sub">ML CPU scheduler, best case</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 / PATH: a timeline whose line fills as you scroll -->
+    <section class="section panel" data-chapter="Path">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Path</span><span class="k-line"></span><span class="k-meta">2015 to now</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>How I <span class="accent">got here.</span></h2>
+          <div class="sec-aside reveal"><p>Education, certifications, work and the odd trophy, in order. The line fills in as you scroll.</p></div>
+        </div>
+
+        <ol class="tl" data-scrub="line">
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">Feb 2015</span><span class="tl-tag">Honor</span></div>
+              <h3>1st place, National ABACUS</h3>
+              <p>National mental math competition.</p>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">2023 to 2025</span><span class="tl-tag">Education</span></div>
+              <h3>Thakur College of Science and Commerce</h3>
+              <p>B.S. Computer Science. Also led the Green Club&rsquo;s sustainability work: campus clean-ups and awareness drives.</p>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">2023 to 2024</span><span class="tl-tag">Certification</span></div>
+              <h3>Spoken Tutorial Project, IIT Bombay</h3>
+              <p>Python, Java, HTML, RDBMS and Introduction to Computers.</p>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">2024</span><span class="tl-tag">Certification</span></div>
+              <h3>Cyber Security Training, Acmegrade</h3>
+              <p>In association with Mood Indigo, IIT Bombay.</p>
+            </div>
+          </li>
+
+          <li class="tl-item reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">Expected May 2027</span><span class="tl-tag accent">Education</span></div>
+              <h3>Rider University</h3>
+              <p>B.S. Cybersecurity, GPA 3.94. Selected for the MAAC Program to represent Rider in intercollegiate Overwatch 2 tournaments.</p>
+            </div>
+          </li>
+
+          <li class="tl-item now reveal">
+            <span class="tl-dot" aria-hidden="true"></span>
+            <div class="tl-card glow">
+              <div class="tl-meta"><span class="tl-when">Jan 2026 to now</span><span class="tl-tag live">Work</span></div>
+              <h3>Resident Assistant, Rider University</h3>
+              <p>Office of Residence Life. I build an inclusive residential community through programming and weekly one-on-ones, respond to on-call emergencies, document incidents and escalate them per university policy.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- 04 / PROJECTS -->
+    <section class="section panel" data-chapter="Projects">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(03)</span><span class="k-name">Projects</span><span class="k-line"></span><span class="k-meta">Independent + team</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Built, shipped, <span class="accent">tested.</span></h2>
+          <div class="sec-aside reveal"><p>Three independent projects that are public on GitHub, and two team builds from Rider&rsquo;s CSC-240.</p></div>
+        </div>
+
+        <div class="rs-projects">
+          <article class="rs-proj featured glow reveal">
+            <div class="rs-proj-head">
+              <span class="rs-proj-stk" data-sticker="ais" aria-hidden="true"></span>
+              <span class="chip">Independent &middot; 2026</span>
+            </div>
+            <h3 class="rs-proj-title keep-case">AiS</h3>
+            <p class="rs-proj-sub">Execution-verified sandbox for AI coding agents</p>
+            <ul class="rs-bullets">
+              <li>Runs AI-proposed code edits in disposable, network-isolated Docker containers and requires human approval before any real file is touched.</li>
+              <li>A 21-rule detection engine on CPython audit hooks (PEP 578) attributes every file, network and subprocess event to its source line, backed by a SHA-256 hash-chained audit log and a differential execution oracle.</li>
+              <li>A blind adversarial red-team evaluation (attack catalog grown from 12 to 25) caught 18 of 21 exploits with 0 false positives on benign edits.</li>
+            </ul>
+            <div class="rs-nums">
+              <div><b>21</b><span>detection rules</span></div>
+              <div><b>437</b><span>automated tests</span></div>
+              <div><b>~0.5s</b><span>per verification</span></div>
+            </div>
+            <div class="rs-proj-foot">
+              <div class="chips"><span class="chip">Python</span><span class="chip">Docker</span><span class="chip">SQLite</span><span class="chip">v0.1.6-alpha</span></div>
+              <a class="ulink" href="../ais/" data-transition>Open the case</a>
+            </div>
+          </article>
+
+          <article class="rs-proj glow reveal d1">
+            <div class="rs-proj-head">
+              <span class="rs-proj-stk" data-sticker="spice" aria-hidden="true"></span>
+              <span class="chip">Independent &middot; 2026</span>
+            </div>
+            <h3 class="rs-proj-title">Spice</h3>
+            <p class="rs-proj-sub">Desktop overlay for gamers</p>
+            <ul class="rs-bullets">
+              <li>Crosshairs and input visualizers over any game, built to be anti-cheat-conscious: no code injection, memory access or synthetic input. Works alongside EAC, BattlEye, FACEIT and Vanguard.</li>
+            </ul>
+            <div class="rs-proj-foot">
+              <div class="chips"><span class="chip">Electron</span><span class="chip">React</span><span class="chip">TypeScript</span></div>
+              <a class="ulink" href="../spice/" data-transition>Open the case</a>
+            </div>
+          </article>
+
+          <article class="rs-proj glow reveal d2">
+            <div class="rs-proj-head">
+              <span class="rs-proj-stk" data-sticker="qres" aria-hidden="true"></span>
+              <span class="chip">Independent &middot; 2026</span>
+            </div>
+            <h3 class="rs-proj-title">Qres</h3>
+            <p class="rs-proj-sub">Resolution hotkeys for Windows</p>
+            <ul class="rs-bullets">
+              <li>Bridges Node.js to a native C# Win32 helper compiled on first run (no node-gyp, no prebuilt binaries), switching resolution and refresh rate in about 20 ms, with per-game profiles and an auto-revert safety net.</li>
+            </ul>
+            <div class="rs-proj-foot">
+              <div class="chips"><span class="chip">Node.js</span><span class="chip">C#</span><span class="chip">Win32 API</span></div>
+              <a class="ulink" href="../qres/" data-transition>Open the case</a>
+            </div>
+          </article>
+
+          <article class="rs-proj glow reveal">
+            <div class="rs-proj-head">
+              <span class="rs-proj-stk" data-sticker="cpu" aria-hidden="true"></span>
+              <span class="chip">Team &middot; CSC-240 &middot; 2026</span>
+            </div>
+            <h3 class="rs-proj-title">AI-assisted CPU scheduling</h3>
+            <p class="rs-proj-sub">For mixed workloads</p>
+            <ul class="rs-bullets">
+              <li>A two-level online learning framework (SGDClassifier) that picks the best scheduling algorithm from live ready-queue features, cutting average waiting time by 22 to 43% against FCFS, SJF, RR and Priority across 2,250 simulated scenarios, validated with SHAP.</li>
+            </ul>
+            <div class="rs-proj-foot">
+              <div class="chips"><span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">SHAP</span></div>
+            </div>
+          </article>
+
+          <article class="rs-proj glow reveal d1">
+            <div class="rs-proj-head">
+              <span class="rs-proj-stk" data-sticker="bot" aria-hidden="true"></span>
+              <span class="chip">Team &middot; CSC-240 &middot; 2026</span>
+            </div>
+            <h3 class="rs-proj-title">Sakura Bot</h3>
+            <p class="rs-proj-sub">Autonomous restaurant service robot</p>
+            <ul class="rs-bullets">
+              <li>A PID-navigated service robot with an IMU-stabilized (100 Hz) balancing arm, using POSIX message-queue IPC and SCHED_FIFO real-time scheduling for deterministic task priority.</li>
+            </ul>
+            <div class="rs-proj-foot">
+              <div class="chips"><span class="chip">Raspberry Pi 5</span><span class="chip">Linux</span><span class="chip">Python</span></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="rs-also reveal">
+          <span class="rs-also-label">Also built</span>
+          <a class="rs-also-item" href="../" data-transition><span data-sticker="site" aria-hidden="true"></span>evzero.org</a>
+          <a class="rs-also-item" href="../watchparty/" data-transition><span data-sticker="watchparty" aria-hidden="true"></span>Watchparty</a>
+          <a class="rs-also-item" href="../projects/#sketch-fighter" data-transition><span data-sticker="sketch" aria-hidden="true"></span>Sketch Fighter</a>
+          <a class="rs-also-item" href="../valorant/" data-transition><span data-sticker="tracker" aria-hidden="true"></span>Valorant tracker</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 / SKILLS -->
+    <section class="section panel" data-chapter="Skills">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(04)</span><span class="k-name">Skills</span><span class="k-line"></span><span class="k-meta">Four toolboxes</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>What I <span class="accent">work with.</span></h2>
+          <div class="sec-aside reveal"><p>The languages and tools behind everything above, grouped the way I actually use them.</p></div>
+        </div>
+
+        <div class="rs-skills">
+          <div class="rs-skill glow reveal">
+            <div class="rs-skill-num">01</div>
+            <h3>Security &amp; systems</h3>
+            <div class="chips"><span class="chip">Docker sandboxing</span><span class="chip">Runtime audit hooks (PEP 578)</span><span class="chip">Win32 API</span><span class="chip">POSIX IPC</span><span class="chip">Real-time scheduling</span><span class="chip">API key management</span></div>
+          </div>
+          <div class="rs-skill glow reveal d1">
+            <div class="rs-skill-num">02</div>
+            <h3>Languages</h3>
+            <div class="chips"><span class="chip">Python</span><span class="chip">Java</span><span class="chip">C</span><span class="chip">C++</span><span class="chip">Kotlin</span><span class="chip">JavaScript</span><span class="chip">TypeScript</span><span class="chip">SQL</span><span class="chip">HTML/CSS</span></div>
+          </div>
+          <div class="rs-skill glow reveal">
+            <div class="rs-skill-num">03</div>
+            <h3>ML &amp; data</h3>
+            <div class="chips"><span class="chip">scikit-learn</span><span class="chip">Online learning</span><span class="chip">Feature engineering</span><span class="chip">SHAP</span><span class="chip">Discrete-event simulation</span></div>
+          </div>
+          <div class="rs-skill glow reveal d1">
+            <div class="rs-skill-num">04</div>
+            <h3>Desktop, web &amp; cloud</h3>
+            <div class="chips"><span class="chip">Electron</span><span class="chip">React</span><span class="chip">Node.js / Express</span><span class="chip">WebSockets</span><span class="chip">REST APIs</span><span class="chip">Git</span><span class="chip">GitHub Pages</span><span class="chip">Railway</span></div>
           </div>
         </div>
 
-        <div class="classified glow intro-fade" style="--id: 0.5s">
-          <span class="classified-stamp">Public copy</span>
-          <p>A few personal details are blacked out here. Want the full r&eacute;sum&eacute;, or just want to get to know me? Reach out and I&rsquo;ll send it over.</p>
-          <a class="btn ghost" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request">Request the full version <span class="arrow">&rarr;</span></a>
+        <div class="rs-mq marquee reveal d2" data-marquee data-speed="44" aria-hidden="true">
+          <div class="marquee-track"><div class="mq-group"><span>Python</span><i class="mq-dia"></i><span>Docker</span><i class="mq-dia"></i><span>TypeScript</span><i class="mq-dia"></i><span>C#</span><i class="mq-dia"></i><span>Kotlin</span><i class="mq-dia"></i><span>C++</span><i class="mq-dia"></i><span>scikit-learn</span><i class="mq-dia"></i><span>Electron</span><i class="mq-dia"></i><span>SQL</span><i class="mq-dia"></i><span>Java</span><i class="mq-dia"></i></div></div>
         </div>
+      </div>
+    </section>
 
-        <article class="paper glow intro-fade" style="--id: 0.55s">
+    <!-- 06 / FULL COPY -->
+    <section class="section panel rs-close" data-chapter="Full copy">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(05)</span><span class="k-name">Full copy</span><span class="k-line"></span><span class="k-meta">One email away</span></div>
+
+        <div class="rs-close-box glow reveal">
+          <span class="rs-stamp reveal" aria-hidden="true">Redacted</span>
+          <h2 class="sec-title rs-close-title">Want the <span class="accent">full file?</span></h2>
+          <p class="lead">This is the public copy, so a few personal details are blacked out. If you&rsquo;re hiring, collaborating or just curious, reach out and I&rsquo;ll send the complete r&eacute;sum&eacute; and happily tell you more.</p>
+          <div class="rs-close-actions">
+            <a class="btn shine big" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" data-magnetic="0.15">Request the full version <span class="arrow">&rarr;</span></a>
+            <button type="button" class="btn ghost big" data-print data-magnetic="0.15">Save this copy as PDF <span class="arrow">&darr;</span></button>
+            <a class="btn ghost big" href="../contact/" data-transition data-magnetic="0.15">Other ways to reach me</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer panel" data-chapter="Say hi">
+    <div class="footer-inner">
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / resume</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:r@evzero.org">r@evzero.org</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
+            <a href="../projects/" class="btn ghost" data-transition data-magnetic>See the work <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
+            <a href="../resume/" data-transition>R&eacute;sum&eacute;</a>
+          </nav>
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../projects/#pixel-cat" data-transition>Pixel cat</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / v3.1</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
+    </div>
+  </footer>
+  </div>
+
+  <!-- Print-only copy: what "Save as PDF" produces (hidden on screen). -->
+  <div class="print-sheet" aria-hidden="true">
+        <article class="paper">
           <header class="paper-head">
             <div>
-              <h1 class="paper-name">Ritvik Sajeev</h1>
+              <div class="paper-name">Ritvik Sajeev</div>
               <p class="paper-role">Cybersecurity student at Rider University. <span class="serif">I build the tools I wish existed.</span></p>
             </div>
             <ul class="paper-contact">
@@ -220,65 +583,10 @@
 
           <footer class="paper-note">Public copy: personal details redacted. Full version on request at <a href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request">r@evzero.org</a>.</footer>
         </article>
-
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Footer -->
-  <footer class="site-footer panel" data-chapter="Say hi">
-    <div class="footer-inner">
-      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / resume</span></div>
-      <div class="footer-top">
-        <div class="footer-cta">
-          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
-          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
-          <div class="reveal d1"><a class="footer-mail" href="mailto:r@evzero.org">r@evzero.org</a></div>
-          <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
-            <a href="../projects/" class="btn ghost" data-transition data-magnetic>See the work <span class="arrow">&rarr;</span></a>
-          </div>
-        </div>
-        <div class="footer-cols reveal d2">
-          <nav class="footer-col" aria-label="Site">
-            <h3>Site</h3>
-            <a href="../" data-transition>Home</a>
-            <a href="../projects/" data-transition>Work</a>
-            <a href="../contact/" data-transition>Contact</a>
-            <a href="../resume/" data-transition>R&eacute;sum&eacute;</a>
-          </nav>
-          <nav class="footer-col" aria-label="Projects">
-            <h3>Projects</h3>
-            <a href="../ais/" data-transition>AiS</a>
-            <a href="../spice/" data-transition>Spice</a>
-            <a href="../qres/" data-transition>Qres</a>
-            <a href="../watchparty/" data-transition>Watchparty</a>
-            <a href="../projects/#pixel-cat" data-transition>Pixel cat</a>
-          </nav>
-          <nav class="footer-col" aria-label="Elsewhere">
-            <h3>Elsewhere</h3>
-            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
-            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
-            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
-          </nav>
-        </div>
-      </div>
-      <div class="footer-bottom"><span>evzero.org / v3.1</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="wordpill" aria-hidden="true">
-        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
-        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
-        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
-        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
-        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
-      </div>
-    </div>
-  </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=3.3"></script>
-  <script src="../js/site.js?v=3.3"></script>
-  <script src="../js/cat.js?v=3.3"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.5"></script>
+  <script src="../js/site.js?v=3.5"></script>
+  <script src="../js/cat.js?v=3.5"></script>
 </body>
 </html>

@@ -308,6 +308,22 @@
             <circle cx="76" cy="74" r="13" fill="${P1}"/>
             <path d="M64 112H136M64 134H136M64 156H108" fill="none" stroke="${DEEP}" stroke-width="8"/>`,
     },
+    cpu: {   // a chip with a bar chart on the die (scheduling)
+      cut: '<rect x="40" y="40" width="120" height="120" rx="20"/><path d="M70 24V40M100 24V40M130 24V40M70 160V176M100 160V176M130 160V176M24 70H40M24 100H40M24 130H40M160 70H176M160 100H176M160 130H176"/>',
+      art: `<path d="M70 26V40M100 26V40M130 26V40M70 160V174M100 160V174M130 160V174M26 70H40M26 100H40M26 130H40M160 70H174M160 100H174M160 130H174" fill="none"/>
+            <rect x="40" y="40" width="120" height="120" rx="20" fill="${P1}"/>
+            <rect x="62" y="62" width="76" height="76" rx="12" fill="${INK}" stroke="none"/>
+            <path d="M80 122V108M95 122V90M110 122V100M125 122V80" fill="none" stroke="${LAV}" stroke-width="9"/>`,
+    },
+    bot: {   // a service robot's head
+      cut: '<rect x="32" y="58" width="136" height="106" rx="28"/><path d="M100 58V30"/><circle cx="100" cy="26" r="14"/>',
+      art: `<path d="M100 58V36" fill="none"/>
+            <circle cx="100" cy="28" r="11" fill="${P2}"/>
+            <rect x="32" y="58" width="136" height="106" rx="28" fill="${LAV}"/>
+            <rect x="52" y="80" width="96" height="58" rx="16" fill="${INK}" stroke="none"/>
+            <circle cx="80" cy="106" r="9" fill="${P2}" stroke="none"/><circle cx="120" cy="106" r="9" fill="${P2}" stroke="none"/>
+            <path d="M88 124Q100 132 112 124" fill="none" stroke="${P2}" stroke-width="5"/>`,
+    },
     mystery: {
       cut: '<circle cx="100" cy="100" r="74"/>',
       art: `<circle cx="100" cy="100" r="74" fill="${INK}" stroke="${P2}" stroke-dasharray="15 13"/>
@@ -1180,6 +1196,26 @@
     queueScroll();
   }
 
+  // Flip cards: [data-flipcard] turns over on click (or Enter / Space),
+  // except when the click lands on a link or button inside it.
+  function initFlipCards() {
+    $$('[data-flipcard]').forEach((card) => {
+      const flip = () => {
+        const on = card.classList.toggle('flipped');
+        card.setAttribute('aria-pressed', String(on));
+        sfx('click');
+      };
+      card.addEventListener('click', (e) => {
+        if (e.target.closest && e.target.closest('a, button')) return;
+        flip();
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.target !== card) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flip(); }
+      });
+    });
+  }
+
   function initCopy() {
     $$('[data-print]').forEach((btn) => btn.addEventListener('click', () => window.print()));
     $$('[data-copy]').forEach((btn) => {
@@ -1562,6 +1598,7 @@
     safe('magnetic', initMagnetic);
     safe('topbar', initTopbar);
     safe('copy', initCopy);
+    safe('flipcards', initFlipCards);
     safe('sound', initSound);
     safe('palette', initPalette);
     safe('buildlog', initBuildLog);
