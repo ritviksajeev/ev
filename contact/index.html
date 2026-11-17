@@ -1,160 +1,182 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="EvZero — get in touch."/>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="Say hi to EvZero on Discord or by email."/>
   <title>EvZero / Contact</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/contact.css?v=2.2"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/contact.css?v=3.0"/>
 </head>
-<body>
+<body data-page="contact">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <!-- Background -->
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <!-- Nav -->
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="../projects/" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="mailto:evzeroholder@gmail.com" class="nav-cta" data-magnetic>Say hi</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" class="active" aria-current="page" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
-    <!-- SECTION 1: HERO -->
-    <section class="section hero panel" data-event="contact-hero">
-      <div class="section-inner contact-hero">
-        <div class="hero-eyebrow intro-fade" style="--id: 0.3s">
-          <span class="bracket">[</span>
-          <span>Reach out</span>
-          <span class="bracket">]</span>
-        </div>
-        <h1 class="display-xl ev-text contact-title">
-          <span class="sr-only">Say hi</span>
-          <span class="line-mask" aria-hidden="true"><span class="line"><span class="ev">SAY</span><span class="zero">HI</span></span></span>
+    <!-- HERO -->
+    <section class="section hero panel" data-chapter="Say hi">
+      <div class="warp" data-warp></div>
+      <div class="ph">
+        <div class="ph-top intro-fade" style="--id: 0.4s"><span><i class="dot"></i>( Contact )</span><span>Two ways in &middot; both go straight to me</span></div>
+        <h1 class="ph-title contact-title">
+          <span class="sr-only">Say hi.</span>
+          <span class="line-mask" aria-hidden="true"><span class="line">Say <span class="accent">hi.</span></span></span>
         </h1>
-        <div class="tagline-mono intro-fade" style="--id: 0.75s">
-          Collab <span class="sep">·</span> Hire <span class="sep">·</span> Just vibes
+        <div class="ph-bottom intro-fade" style="--id: 0.8s">
+          <p class="ph-lead">A collab, a bug you found, a job, or just a good meme. <span class="serif">I read all of it.</span></p>
+          <span>Pick a channel &darr;</span>
         </div>
-      </div>
-      <div class="scroll-hint intro-fade" style="--id: 1s">
-        <span>Find the channels</span>
-        <span class="line"></span>
       </div>
     </section>
 
-    <!-- SECTION 2: LINKS -->
-    <section class="section panel" data-event="contact-links">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Channels)</span><span>02 ways in</span></div>
+    <!-- CHANNELS -->
+    <section class="section panel" data-chapter="Channels">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Channels</span><span class="k-line"></span><span class="k-meta">02 ways in</span></div>
 
         <div class="sec-head">
-          <h2 class="sec-title" data-split>Where to <span class="accent">find me</span></h2>
-          <p class="sec-sub reveal">Two channels. Pick the one that matches the vibe of your message and I'll probably reply too fast.</p>
+          <h2 class="sec-title" data-split>Pick your <span class="accent">frequency.</span></h2>
+          <div class="sec-aside reveal"><p>Match the channel to the vibe of the message. Quick and chaotic goes to Discord; anything with paragraphs goes to email.</p></div>
         </div>
 
-        <div class="rows">
-          <a class="row-link" href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">
-            <span class="row-idx">(01)
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.791 19.791 0 0 0 16.885 3.1a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.273 18.273 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 6.683 4.37a.07.07 0 0 0-.032.027C2.533 10.46 1.492 16.373 2.001 22.21a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-6.747-.838-12.612-3.548-17.814a.061.061 0 0 0-.031-.028zM8.02 18.263c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
-            </span>
-            <span class="row-title" data-split>Discord</span>
-            <span class="row-meta"><small>Join the server</small>discord / @evzero</span>
-            <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+        <div class="channel-grid">
+          <a class="channel glow reveal" href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener" data-cursor-label="Join">
+            <div class="channel-top">
+              <span class="channel-icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.791 19.791 0 0 0 16.885 3.1a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.273 18.273 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 6.683 4.37a.07.07 0 0 0-.032.027C2.533 10.46 1.492 16.373 2.001 22.21a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-6.747-.838-12.612-3.548-17.814a.061.061 0 0 0-.031-.028zM8.02 18.263c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></span>
+              <span class="chip live">Fastest</span>
+            </div>
+            <h3 class="channel-name">Discord</h3>
+            <p class="channel-desc">Join the server and ping me. Best for quick questions, feedback on a project, or hanging out while something compiles.</p>
+            <div class="channel-foot"><span class="channel-handle">discord / @evzero</span><span class="ulink">Join the server</span></div>
           </a>
 
-          <a class="row-link" href="mailto:evzeroholder@gmail.com">
-            <span class="row-idx">(02)
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="1"/><path d="M22 7l-10 6L2 7"/></svg>
-            </span>
-            <span class="row-title" data-split>Email</span>
-            <span class="row-meta"><small>Drop a line</small>evzeroholder@gmail.com</span>
-            <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
-          </a>
+          <div class="channel glow reveal d1">
+            <div class="channel-top">
+              <span class="channel-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg></span>
+              <span class="chip">For the long version</span>
+            </div>
+            <h3 class="channel-name">Email</h3>
+            <p class="channel-desc">Collabs, work, security reports for anything I&rsquo;ve shipped, or a proper introduction. Paragraphs welcome.</p>
+            <div class="channel-foot">
+              <a class="channel-handle" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a>
+              <span class="channel-actions">
+                <button type="button" class="btn ghost" data-copy="evzeroholder@gmail.com"><span data-copy-label>Copy address</span></button>
+                <a class="btn" href="mailto:evzeroholder@gmail.com">Write <span class="arrow">&rarr;</span></a>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="elsewhere reveal d2">
+          <span>Also on</span>
+          <a class="chip" href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube &#8599;</a>
+          <a class="chip" href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch &#8599;</a>
+          <a class="chip" href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub &#8599;</a>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: SIGN-OFF -->
-    <section class="section panel" data-event="contact-signoff">
-      <div class="section-inner signoff">
-        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Sign-off)</span><span>I read all of it</span></div>
-        <h2 class="sec-title signoff-title" data-split>
-          <span class="l1">See you</span><br/>
-          <span class="l2 accent">on the other side.</span>
-        </h2>
-        <p class="reveal d1">Whether it's a collab, a bug report, a job, or a cat picture — I read all of it.</p>
-        <div class="sig reveal d2">&mdash; <span>ev</span>zero&nbsp;&nbsp;/&nbsp;&nbsp;<span>00</span></div>
+    <!-- SIGN-OFF -->
+    <section class="section panel signoff" data-chapter="Sign-off">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Sign-off</span><span class="k-line"></span><span class="k-meta">No form, no bot</span></div>
+
+        <h2 class="sec-title signoff-title" data-split>See you <span class="accent">on the other side.</span></h2>
+
+        <div class="signoff-grid">
+          <p class="lead reveal">There&rsquo;s no contact form here on purpose. A message from you lands in the same inbox I actually read, and the reply comes from me.</p>
+          <ul class="send-list">
+            <li class="reveal"><span>01</span>A project you want to build together</li>
+            <li class="reveal d1"><span>02</span>A bug or a hole you found in something of mine</li>
+            <li class="reveal d2"><span>03</span>Work, internships, anything with a start date</li>
+            <li class="reveal d3"><span>04</span>A picture of your cat</li>
+          </ul>
+        </div>
+
+        <div class="sig reveal d2"><span class="serif">Ritvik</span><span class="sig-sub">/ evzero</span></div>
       </div>
     </section>
 
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / contact</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../projects/" class="btn" data-transition data-magnetic>See projects <span class="arrow">&rarr;</span></a>
-            <a href="../" class="btn ghost" data-transition data-magnetic>Back home <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
+            <a href="../projects/" class="btn ghost" data-transition data-magnetic>See the work <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="./" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / contact</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
 </body>
 </html>

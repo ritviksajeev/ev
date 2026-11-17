@@ -8,11 +8,6 @@
       "permanent": true
     },
     {
-      "source": "/solren",
-      "destination": "/solren/",
-      "permanent": true
-    },
-    {
       "source": "/contact",
       "destination": "/contact/",
       "permanent": true

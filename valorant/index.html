@@ -1,47 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="EvZero Valorant Tracker — search a Riot ID and see rank, stats, and recent matches."/>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="EvZero Valorant Tracker: search a Riot ID and see rank, stats and recent matches. Outdated build."/>
   <title>EvZero / Valorant Tracker</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/valorant.css?v=2.2"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/valorant.css?v=3.0"/>
 </head>
-<body>
+<body data-page="tracker">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="../projects/" class="active" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
+  </header>
 
   <div class="panels">
   <main class="val-page panel">
@@ -50,13 +43,15 @@
          Hero + search
          ============================================ -->
     <section class="section val-hero">
+      <div class="warp" data-warp></div>
       <div class="section-inner val-hero-inner">
-        <div class="eyebrow centered reveal">Projects / Tracker</div>
-        <h1 class="display-lg reveal d1">Valorant<br/><span class="accent">Tracker.</span></h1>
+        <div class="eyebrow centered reveal"><a href="../projects/" data-transition>Work</a> / Tracker</div>
+        <h1 class="display-lg reveal d1">Valorant <span class="accent title-accent">tracker.</span></h1>
         <p class="val-tagline reveal d2">
-          Search a Riot ID. See rank, recent form, and a full match log.
+          Search a Riot ID. See rank, recent form and a full match log.
           <span class="val-tagline-dim">Data via Henrik&rsquo;s API.</span>
         </p>
+        <div class="val-outdated reveal d2"><span class="chip old">Outdated</span><span>This build isn&rsquo;t being kept up to date, so ranks and match data may be stale or missing.</span></div>
 
         <div class="val-favs reveal d3" id="val-favs" hidden>
           <span class="val-favs-label">Saved</span>
@@ -289,35 +284,51 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / valorant</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
             <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / valorant</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
@@ -327,9 +338,9 @@
     <span id="val-toast-text">Link copied</span>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
-  <script src="../js/valorant.js?v=2.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
+  <script src="../js/valorant.js?v=3.0"></script>
 </body>
 </html>

@@ -1,107 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="Qres — change your monitor resolution and refresh rate from a hotkey. By EvZero."/>
-  <title>EvZero / Qres</title>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="Qres: press a key, your resolution changes. Stretched-res toggling, refresh-rate control and game profiles for Windows."/>
+  <title>Qres: resolution hotkeys for Windows / EvZero</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/qres.css?v=2.2"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/product.css?v=3.0"/>
 </head>
-<body>
+<body data-page="qres">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="../projects/" class="active" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
     <!-- HERO -->
-    <section class="section hero qr-hero panel" data-event="qr-hero">
-      <div class="section-inner">
-        <div class="qr-hero-grid">
-          <div class="qr-hero-left">
-            <div class="eyebrow reveal">Projects / Qres</div>
-            <h1 class="display-xl reveal d1">
-              <span class="qr-mark" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <rect x="1.6" y="4.4" width="20.8" height="15.2" rx="3" stroke="currentColor" stroke-width="1.9"/>
-                  <path d="M8.2 12h7.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                  <path d="M8.6 9.6 6 12l2.6 2.4M15.4 9.6 18 12l-2.6 2.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <span class="qr-name">QRES</span>
+    <section class="section hero pd-hero panel" data-chapter="Qres">
+      <div class="warp" data-warp></div>
+      <div class="wrap">
+        <div class="pd-grid">
+          <div class="pd-text">
+            <div class="pd-crumb intro-fade" style="--id: 0.3s"><i class="dot"></i><a href="../projects/" data-transition>Work</a><span>/</span><span>Qres</span></div>
+            <h1 class="pd-title">
+              <span class="pd-stk" data-sticker="qres" aria-hidden="true"></span>
+              <span class="line-mask"><span class="line">Qres</span></span>
             </h1>
-            <div class="qr-pill-row reveal d2">
-              <span class="qr-pill accent">v1.0.3</span>
-              <span class="qr-pill">Windows · x64</span>
-              <span class="qr-pill">MIT</span>
+            <div class="chips intro-fade" style="--id: 0.7s">
+              <span class="chip accent">v1.0.3</span>
+              <span class="chip">Windows &middot; x64</span>
+              <span class="chip">MIT</span>
             </div>
-            <p class="qr-tag reveal d3">
-              Press a key. Your resolution changes. Press it again, it changes back.
+            <p class="pd-lead intro-fade" style="--id: 0.8s">
+              Press a key. Your resolution changes. <span class="serif">Press it again, it changes back.</span>
             </p>
-            <p class="qr-sub reveal d4">
+            <p class="pd-sub intro-fade" style="--id: 0.85s">
               Built for stretched-res players tired of Settings &rarr; System &rarr; Display &rarr; Advanced &rarr; three dropdowns &rarr; confirm, every single time they switch games.
             </p>
-            <div class="qr-cta-row reveal d5">
-              <a href="https://github.com/ritviksajeev/Qres/releases" class="qr-btn primary" target="_blank" rel="noreferrer noopener">
-                <span class="qr-btn-arrow">&darr;</span>
-                <span>
-                  <span class="qr-btn-line">DOWNLOAD</span>
-                  <span class="qr-btn-sub">Windows x64 · installer or portable zip</span>
-                </span>
+            <div class="pd-cta intro-fade" style="--id: 0.9s">
+              <a href="https://github.com/ritviksajeev/Qres/releases" class="btn shine big" target="_blank" rel="noreferrer noopener" data-magnetic="0.15">
+                <span aria-hidden="true">&darr;</span>
+                <span class="btn-col">Download<small>Windows x64 &middot; installer or portable zip</small></span>
               </a>
-              <a href="https://github.com/ritviksajeev/Qres" class="qr-btn ghost" target="_blank" rel="noreferrer noopener">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
-                <span>Source on GitHub</span>
+              <a href="https://github.com/ritviksajeev/Qres" class="btn ghost big" target="_blank" rel="noreferrer noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+                Source on GitHub
               </a>
             </div>
-            <div class="qr-cta-note reveal d6">
-              No admin needed · Settings live in <code>%APPDATA%\Qres\</code>
-            </div>
+            <p class="pd-note intro-fade" style="--id: 1s">
+              No admin needed &middot; Settings live in <code>%APPDATA%\Qres\</code>
+            </p>
           </div>
 
           <!-- Right: the app window, rebuilt in markup -->
-          <div class="qr-hero-right reveal d3" aria-hidden="true">
+          <div class="pd-visual intro-fade" style="--id: 0.6s" aria-hidden="true">
             <div class="qr-mock">
               <div class="qr-mock-titlebar">
                 <div class="qr-mock-brand">
-                  <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
-                    <rect x="1.6" y="4.4" width="20.8" height="15.2" rx="3" stroke="#a78bfa" stroke-width="1.9"/>
-                    <path d="M8.2 12h7.6" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round"/>
-                    <path d="M8.6 9.6 6 12l2.6 2.4M15.4 9.6 18 12l-2.6 2.4" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                  <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="#b4a5ff" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1.6" y="4.4" width="20.8" height="15.2" rx="3" stroke-width="1.9"/>
+                    <path d="M8.2 12h7.6" stroke-width="1.7"/>
+                    <path d="M8.6 9.6 6 12l2.6 2.4M15.4 9.6 18 12l-2.6 2.4" stroke-width="1.7"/>
                   </svg>
                   <span class="qr-mock-name">Qres</span>
                   <span class="qr-mock-ver">v1.0.3</span>
@@ -145,131 +128,128 @@
     </section>
 
     <!-- FEATURES -->
-    <section class="section qr-features panel" data-event="qr-features">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Capability)</span><span>06 features</span></div>
-        <h2 class="sec-title" data-split>What it<br/><span class="accent">does.</span></h2>
+    <section class="section panel" data-chapter="What it does">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Capability</span><span class="k-line"></span><span class="k-meta">06 features</span></div>
 
-        <div class="qr-feat-grid">
-          <div class="qr-feat reveal d2">
-            <div class="qr-feat-num">01</div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>One key. <span class="accent">Everything else is detail.</span></h2>
+          <div class="sec-aside reveal"><p>The hotkey is the product. The rest exists so that pressing it always does the right thing.</p></div>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat glow reveal">
+            <div class="feat-num">01</div>
             <h3>Hotkey toggle</h3>
-            <p>Click the key field and press whatever combination you want &mdash; it records what you actually pressed, not a guess from a dropdown. Works from inside a fullscreen game. Pick the native/stretched pair once; the hotkey and the tray menu both use it.</p>
+            <p>Click the key field and press whatever combination you want. It records what you actually pressed, not a guess from a dropdown. Works from inside a fullscreen game. Pick the native/stretched pair once; the hotkey and the tray menu both use it.</p>
           </div>
-
-          <div class="qr-feat reveal d3">
-            <div class="qr-feat-num">02</div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">02</div>
             <h3>Refresh rate, done right</h3>
-            <p>Every change carries a rate. Leave it on <em>Highest available</em> and Qres asks for the fastest rate <strong>at that resolution</strong> &mdash; so dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60. Or pin one.</p>
+            <p>Every change carries a rate. Leave it on <em>Highest available</em> and Qres asks for the fastest rate <strong>at that resolution</strong>, so dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60. Or pin one.</p>
           </div>
-
-          <div class="qr-feat reveal d4">
-            <div class="qr-feat-num">03</div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">03</div>
             <h3>Grid built from your panel</h3>
             <p>No hardcoded list. Qres enumerates every mode your display reports and lays out the useful ones: native, the stretched widths that keep your vertical lines, and same-shape lower resolutions.</p>
           </div>
-
-          <div class="qr-feat reveal d5">
-            <div class="qr-feat-num">04</div>
+          <div class="feat glow reveal">
+            <div class="feat-num">04</div>
             <h3>Game profiles</h3>
             <p>Name a process and a resolution. Qres switches when the game launches and restores native when it exits. No hotkey, no thinking. Presets for Valorant, CS2, Apex, Fortnite, Overwatch and more.</p>
           </div>
-
-          <div class="qr-feat reveal d6">
-            <div class="qr-feat-num">05</div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">05</div>
             <h3>Per-monitor targeting</h3>
-            <p><code>Auto</code> changes whichever monitor your mouse is on when the hotkey fires &mdash; the one you're playing on. Or pin a specific display. Rename them too: "LG ULTRAGEAR" becomes "Main", stored against the monitor's hardware id so it survives a replug.</p>
+            <p><code>Auto</code> changes whichever monitor your mouse is on when the hotkey fires, the one you&rsquo;re playing on. Or pin a specific display. Rename them too: &ldquo;LG ULTRAGEAR&rdquo; becomes &ldquo;Main&rdquo;, stored against the monitor&rsquo;s hardware id so it survives a replug.</p>
           </div>
-
-          <div class="qr-feat reveal d7">
-            <div class="qr-feat-num">06</div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">06</div>
             <h3>A real safety net</h3>
-            <p>Changes made in the window start a 15-second countdown and revert themselves if you never confirm, so a mode your monitor can't display never leaves you on a black screen. Hotkey switches skip the dialog &mdash; nothing lands on top of your game.</p>
+            <p>Changes made in the window start a 15-second countdown and revert themselves if you never confirm, so a mode your monitor can&rsquo;t display never leaves you on a black screen. Hotkey switches skip the dialog, so nothing lands on top of your game.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- HOW IT WORKS -->
-    <section class="section qr-how panel" data-event="qr-how">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Under the hood)</span><span>No native module</span></div>
-        <h2 class="sec-title" data-split>No native<br/><span class="accent">module.</span></h2>
-        <p class="qr-lead reveal d2">
-          Node can't call Win32 display APIs on its own, and shipping a prebuilt binary or a native addon means an ABI to keep matched forever. Qres takes a third route.
-        </p>
+    <section class="section panel" data-chapter="Under the hood">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Under the hood</span><span class="k-line"></span><span class="k-meta">No native module</span></div>
 
-        <div class="qr-how-grid">
-          <div class="qr-how-step reveal d3">
-            <div class="qr-how-num">01</div>
-            <div>
-              <div class="qr-how-title">A 500-line C# CLI</div>
-              <p><code>native/QresDisplay.cs</code> enumerates displays and applies modes through <code>ChangeDisplaySettingsEx</code>, printing JSON.</p>
-            </div>
-          </div>
-          <div class="qr-how-step reveal d4">
-            <div class="qr-how-num">02</div>
-            <div>
-              <div class="qr-how-title">Compiled on first run</div>
-              <p>With the <code>csc.exe</code> already inside Windows. Cached in <code>%LOCALAPPDATA%</code>, keyed by a hash of the source. No SDK, no node-gyp, no committed binary.</p>
-            </div>
-          </div>
-          <div class="qr-how-step reveal d5">
-            <div class="qr-how-num">03</div>
-            <div>
-              <div class="qr-how-title">~20 ms a call</div>
-              <p>Every switch after that is a plain <code>execFile</code>. Fast enough that the hotkey feels instant, and the helper is runnable by hand if you ever want to debug it.</p>
-            </div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>No native <span class="accent">module.</span></h2>
+          <div class="sec-aside reveal">
+            <p>Node can&rsquo;t call Win32 display APIs on its own, and shipping a prebuilt binary or a native addon means an ABI to keep matched forever. Qres takes a third route.</p>
           </div>
         </div>
 
-        <div class="qr-ac reveal d6">
-          <div class="qr-ac-head">Anti-cheat</div>
-          <p>
+        <div class="steps three">
+          <div class="step glow reveal">
+            <div class="step-num">01</div>
+            <h3>A 500-line C# CLI</h3>
+            <p><code>native/QresDisplay.cs</code> enumerates displays and applies modes through <code>ChangeDisplaySettingsEx</code>, printing JSON.</p>
+          </div>
+          <div class="step glow reveal d1">
+            <div class="step-num">02</div>
+            <h3>Compiled on first run</h3>
+            <p>With the <code>csc.exe</code> already inside Windows. Cached in <code>%LOCALAPPDATA%</code>, keyed by a hash of the source. No SDK, no node-gyp, no committed binary.</p>
+          </div>
+          <div class="step glow reveal d2">
+            <div class="step-num">03</div>
+            <h3>~20 ms a call</h3>
+            <p>Every switch after that is a plain <code>execFile</code>. Fast enough that the hotkey feels instant, and the helper is runnable by hand if you ever want to debug it.</p>
+          </div>
+        </div>
+
+        <div class="callout glow reveal">
+          <div class="callout-mark">&check;</div>
+          <div>
+            <h3>Anti-cheat</h3>
             Qres calls the same Windows API the Settings app uses. Nothing is injected into any process, no game memory is read, no input is synthesised. The global hotkey is an OS-level key reservation, not a keyboard hook. There is nothing here for EAC, BattlEye or Vanguard to object to.
-          </p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- SCALING NOTE + DOWNLOAD -->
-    <section class="section qr-install panel" data-event="qr-install">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(03)</span><span>(One thing to set)</span><span>Windows 10 / 11</span></div>
-        <h2 class="sec-title" data-split>GPU scaling,<br/><span class="accent">once.</span></h2>
-        <p class="qr-lead reveal d2">
-          Qres sets the resolution. Whether the picture fills your panel or sits in black bars is your GPU's scaling setting &mdash; no application can change that for you. Set it once and forget it.
-        </p>
+    <section class="section panel" data-chapter="GPU scaling">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(03)</span><span class="k-name">One thing to set</span><span class="k-line"></span><span class="k-meta">Windows 10 / 11</span></div>
 
-        <div class="qr-gpu-grid">
-          <div class="qr-gpu reveal d3">
-            <div class="qr-gpu-name">NVIDIA</div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>GPU scaling, <span class="accent">once.</span></h2>
+          <div class="sec-aside reveal">
+            <p>Qres sets the resolution. Whether the picture fills your panel or sits in black bars is your GPU&rsquo;s scaling setting, and no application can change that for you. Set it once and forget it.</p>
+          </div>
+        </div>
+
+        <div class="steps three">
+          <div class="step glow reveal">
+            <span class="tag">NVIDIA</span>
             <p>Control Panel &rarr; Adjust desktop size and position &rarr; Scaling <code>Full-screen</code>, Perform scaling on <code>GPU</code>, tick <em>Override the scaling mode set by games and programs</em>.</p>
           </div>
-          <div class="qr-gpu reveal d4">
-            <div class="qr-gpu-name">AMD</div>
+          <div class="step glow reveal d1">
+            <span class="tag">AMD</span>
             <p>Adrenalin &rarr; Display &rarr; GPU Scaling <code>On</code>, Scaling Mode <code>Full panel</code>.</p>
           </div>
-          <div class="qr-gpu reveal d5">
-            <div class="qr-gpu-name">Intel</div>
+          <div class="step glow reveal d2">
+            <span class="tag">Intel</span>
             <p>Graphics Command Center &rarr; Display &rarr; Scale <code>Full Screen</code>.</p>
           </div>
         </div>
 
-        <div class="qr-sysreq reveal d6">
-          <div class="qr-sysreq-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64)</span></div>
-          <div class="qr-sysreq-row"><span class="k">PERMS</span><span class="v">No admin. No code-signing yet &rarr; SmartScreen may warn on first run · "More info &rarr; Run anyway".</span></div>
-          <div class="qr-sysreq-row"><span class="k">CONFIG</span><span class="v"><code>%APPDATA%\Qres\qres.json</code> · safe to delete</span></div>
-          <div class="qr-sysreq-row"><span class="k">LICENSE</span><span class="v">MIT · source is on GitHub</span></div>
+        <div class="spec pd-spec reveal">
+          <div class="spec-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64)</span></div>
+          <div class="spec-row"><span class="k">Perms</span><span class="v">No admin. No code-signing yet &rarr; SmartScreen may warn on first run &middot; &ldquo;More info &rarr; Run anyway&rdquo;.</span></div>
+          <div class="spec-row"><span class="k">Config</span><span class="v"><code>%APPDATA%\Qres\qres.json</code> &middot; safe to delete</span></div>
+          <div class="spec-row"><span class="k">License</span><span class="v">MIT &middot; source is on GitHub</span></div>
         </div>
 
-        <div class="qr-bottom-cta reveal d7">
-          <a href="https://github.com/ritviksajeev/Qres/releases" class="qr-btn primary big" target="_blank" rel="noreferrer noopener">
-            <span class="qr-btn-arrow">&darr;</span>
-            <span>
-              <span class="qr-btn-line">DOWNLOAD QRES v1.0.3</span>
-              <span class="qr-btn-sub">Windows x64 · installer or portable zip</span>
-            </span>
+        <div class="pd-bottom-cta reveal">
+          <a href="https://github.com/ritviksajeev/Qres/releases" class="btn shine big" target="_blank" rel="noreferrer noopener" data-magnetic="0.15">
+            <span aria-hidden="true">&darr;</span>
+            <span class="btn-col">Download Qres v1.0.3<small>Windows x64 &middot; installer or portable zip</small></span>
           </a>
         </div>
       </div>
@@ -278,41 +258,57 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / qres</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
             <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / qres</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
 </body>
 </html>

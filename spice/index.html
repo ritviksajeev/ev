@@ -1,118 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="Spice — hardware-level desktop overlay for gamers. By EvZero."/>
-  <title>EvZero / Spice</title>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="Spice, a desktop overlay for gamers. Crosshairs, custom images and input visualizers over any game, on any monitor. Anti-cheat-conscious by default."/>
+  <title>Spice: desktop overlay for gamers / EvZero</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/spice.css?v=2.2"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/product.css?v=3.0"/>
 </head>
-<body>
+<body data-page="spice">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="../projects/" class="active" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
     <!-- HERO -->
-    <section class="section hero spice-hero panel" data-event="spice-hero">
-      <div class="section-inner">
-        <div class="spice-hero-grid">
-          <div class="spice-hero-left">
-            <div class="eyebrow reveal">Projects / Spice</div>
-            <h1 class="display-xl reveal d1">
-              <span class="spice-mark" aria-hidden="true">
-                <svg viewBox="0 0 22 22" fill="none">
-                  <path d="M2 8L2 2L8 2"      stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M14 2L20 2L20 8"   stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M2 14L2 20L8 20"   stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M14 20L20 20L20 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <line x1="11" y1="7"    x2="11" y2="9.5"  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  <line x1="11" y1="12.5" x2="11" y2="15"   stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  <line x1="7"  y1="11"   x2="9.5"  y2="11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                  <line x1="12.5" y1="11" x2="15" y2="11"   stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <span class="spice-name">SPICE</span>
+    <section class="section hero pd-hero panel" data-chapter="Spice">
+      <div class="warp" data-warp></div>
+      <div class="wrap">
+        <div class="pd-grid">
+          <div class="pd-text">
+            <div class="pd-crumb intro-fade" style="--id: 0.3s"><i class="dot"></i><a href="../projects/" data-transition>Work</a><span>/</span><span>Spice</span></div>
+            <h1 class="pd-title">
+              <span class="pd-stk" data-sticker="spice" aria-hidden="true"></span>
+              <span class="line-mask"><span class="line">Spice</span></span>
             </h1>
-            <div class="spice-version-row reveal d2">
-              <span class="spice-version-pill">v0.1.3-alpha</span>
-              <span class="spice-platform-pill">Windows · x64</span>
-              <span class="spice-size-pill">115 MB</span>
+            <div class="chips intro-fade" style="--id: 0.7s">
+              <span class="chip accent">v0.1.3-alpha</span>
+              <span class="chip">Windows &middot; x64</span>
+              <span class="chip">115 MB</span>
             </div>
-            <p class="spice-tag reveal d3">
-              A hardware-level desktop overlay for gamers. Floats crosshairs, custom images, and input visualizers over any active game on any monitor.
+            <p class="pd-lead intro-fade" style="--id: 0.8s">
+              A desktop overlay for gamers. It floats crosshairs, your own images and input visualizers over
+              any game, on any monitor, <span class="serif">and it stays out of the game&rsquo;s way.</span>
             </p>
-            <div class="spice-cta-row reveal d4">
-              <a href="https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip" class="spice-btn primary">
-                <span class="spice-btn-arrow">↓</span>
-                <span>
-                  <span class="spice-btn-line">DOWNLOAD</span>
-                  <span class="spice-btn-sub">Spice-v0.1.3-alpha-win-x64.zip · 115 MB</span>
-                </span>
+            <div class="pd-cta intro-fade" style="--id: 0.9s">
+              <a href="https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip" class="btn shine big" data-magnetic="0.15">
+                <span aria-hidden="true">&darr;</span>
+                <span class="btn-col">Download<small>Spice-v0.1.3-alpha-win-x64.zip &middot; 115 MB</small></span>
               </a>
-              <a href="https://github.com/ritviksajeev/spice" class="spice-btn ghost" target="_blank" rel="noreferrer noopener">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
-                <span>Source on GitHub</span>
+              <a href="https://github.com/ritviksajeev/spice" class="btn ghost big" target="_blank" rel="noreferrer noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+                Source on GitHub
               </a>
             </div>
-            <div class="spice-cta-note reveal d5">
-              Login password (alpha): <code>alphatest1</code> · Settings save to <code>%APPDATA%\spice\</code>
-            </div>
+            <p class="pd-note intro-fade" style="--id: 1s">
+              Login password (alpha): <code>alphatest1</code> &middot; Settings save to <code>%APPDATA%\spice\</code>
+            </p>
           </div>
 
-          <!-- Right: animated mock window -->
-          <div class="spice-hero-right reveal d3" aria-hidden="true">
+          <!-- Right: the manager window, rebuilt in markup -->
+          <div class="pd-visual intro-fade" style="--id: 0.6s" aria-hidden="true">
             <div class="spice-mock">
               <div class="spice-mock-titlebar">
                 <div class="spice-mock-brand">
-                  <svg viewBox="0 0 22 22" fill="none" width="14" height="14">
-                    <path d="M2 8L2 2L8 2"      stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M14 2L20 2L20 8"   stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 14L2 20L8 20"   stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M14 20L20 20L20 14" stroke="#a78bfa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <svg viewBox="0 0 22 22" fill="none" width="14" height="14" stroke="#b4a5ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 8L2 2L8 2"/><path d="M14 2L20 2L20 8"/><path d="M2 14L2 20L8 20"/><path d="M14 20L20 20L20 14"/>
                   </svg>
                   <span>SPICE</span>
                   <span class="spice-mock-by">by EvZero</span>
                   <span class="spice-mock-alpha">ALPHA</span>
                 </div>
-                <div class="spice-mock-tools">
-                  <span></span><span></span><span></span>
-                </div>
+                <div class="spice-mock-tools"><span></span><span></span><span></span></div>
               </div>
               <div class="spice-mock-body">
                 <div class="spice-mock-side">
@@ -124,11 +98,9 @@
                 </div>
                 <div class="spice-mock-content">
                   <div class="spice-mock-preview">
-                    <svg viewBox="0 0 100 100" fill="none">
-                      <line x1="50" y1="20" x2="50" y2="40" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
-                      <line x1="50" y1="60" x2="50" y2="80" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
-                      <line x1="20" y1="50" x2="40" y2="50" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
-                      <line x1="60" y1="50" x2="80" y2="50" stroke="#a78bfa" stroke-width="1.8" stroke-linecap="round"/>
+                    <svg viewBox="0 0 100 100" fill="none" stroke="#b4a5ff" stroke-width="1.8" stroke-linecap="round">
+                      <line x1="50" y1="20" x2="50" y2="40"/><line x1="50" y1="60" x2="50" y2="80"/>
+                      <line x1="20" y1="50" x2="40" y2="50"/><line x1="60" y1="50" x2="80" y2="50"/>
                     </svg>
                   </div>
                   <div class="spice-mock-controls">
@@ -139,67 +111,72 @@
                 </div>
               </div>
             </div>
+            <div class="pd-caption">The manager. The overlay itself is just the crosshair.</div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- WHAT IT DOES -->
-    <section class="section spice-features panel" data-event="spice-features">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Capability)</span><span>06 features</span></div>
-        <h2 class="sec-title" data-split>What it<br/><span class="accent">does.</span></h2>
+    <section class="section panel" data-chapter="What it does">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Capability</span><span class="k-line"></span><span class="k-meta">06 features</span></div>
 
-        <div class="spice-feat-grid">
-          <div class="spice-feat reveal d2">
-            <div class="spice-feat-num">01</div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Everything on <span class="accent">top of the game.</span></h2>
+          <div class="sec-aside reveal"><p>One transparent layer, always on top, on the monitor you actually play on. What goes on it is up to you.</p></div>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat glow reveal">
+            <div class="feat-num">01</div>
             <h3>Crosshair overlay</h3>
-            <p>Six built-in presets (classic, dot, cross, circle, T, chevron) with full color, opacity, scale, and outline control. Or upload your own PNG / GIF / WEBP — the image overrides the preset and renders at any scale, dead-center on the chosen display.</p>
+            <p>Six built-in presets (classic, dot, cross, circle, T, chevron) with full color, opacity, scale and outline control. Or upload your own PNG / GIF / WEBP. The image overrides the preset and renders at any scale, dead-center on the chosen display.</p>
           </div>
-
-          <div class="spice-feat reveal d3">
-            <div class="spice-feat-num">02</div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">02</div>
             <h3>Custom image library</h3>
-            <p>Drop logos, animated GIFs, anything. Each image gets its own opacity, scale, X/Y, visibility, and pin. Drag-resize handles in preview mode. Pin a position and it survives every restart.</p>
+            <p>Drop logos, animated GIFs, anything. Each image gets its own opacity, scale, X/Y, visibility and pin. Drag-resize handles in preview mode. Pin a position and it survives every restart.</p>
           </div>
-
-          <div class="spice-feat reveal d4">
-            <div class="spice-feat-num">03</div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">03</div>
             <h3>Multi-monitor display picker</h3>
-            <p>Settings → LIVE OVERLAY lists every connected display with resolution + scale factor + a primary marker. Switch the overlay to the monitor you actually game on with one click.</p>
+            <p>Settings &rarr; LIVE OVERLAY lists every connected display with resolution, scale factor and a primary marker. Move the overlay to the monitor you game on with one click.</p>
           </div>
-
-          <div class="spice-feat reveal d5">
-            <div class="spice-feat-num">04</div>
+          <div class="feat glow reveal">
+            <div class="feat-num">04</div>
             <h3>Profiles + persistence</h3>
-            <p>Save multiple loadouts (avatar, bio, full widget setup) and swap between them. Everything — accent color, display choice, widget positions — survives restart, stored locally in <code>%APPDATA%\spice\</code>.</p>
+            <p>Save multiple loadouts (avatar, bio, full widget setup) and swap between them. Everything (accent color, display choice, widget positions) survives restart, stored locally in <code>%APPDATA%\spice\</code>.</p>
           </div>
-
-          <div class="spice-feat reveal d6">
-            <div class="spice-feat-num">05</div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">05</div>
             <h3>Tray-resident, hotkeys</h3>
-            <p>Closing the manager hides it to the system tray — the overlay keeps running. Right-click tray for show / toggle / quit. Global hotkey <code>Ctrl + Alt + Shift + Q</code> kills the overlay from anywhere if it ever misbehaves.</p>
+            <p>Closing the manager hides it to the system tray and the overlay keeps running. Right-click the tray for show / toggle / quit. Global hotkey <code>Ctrl + Alt + Shift + Q</code> kills the overlay from anywhere if it ever misbehaves.</p>
           </div>
-
-          <div class="spice-feat reveal d7">
-            <div class="spice-feat-num">06</div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">06</div>
             <h3>Auto-update on launch</h3>
-            <p>Pings <code>evzero.org/spice</code> 1.5 s after launch. New build available? Settings → ABOUT → UPDATES shows a card with release notes and a one-click download link. Settings persist across upgrades.</p>
+            <p>Pings <code>evzero.org/spice</code> 1.5 s after launch. New build available? Settings &rarr; ABOUT &rarr; UPDATES shows a card with release notes and a one-click download link. Settings persist across upgrades.</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ANTI-CHEAT -->
-    <section class="section spice-ac panel" data-event="spice-ac">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Safety)</span><span>Off by default</span></div>
-        <h2 class="sec-title" data-split>Anti-cheat<br/><span class="accent">conscious.</span></h2>
-        <p class="reveal d2 spice-ac-lead">By default, Spice does <em>nothing</em> a strict anti-cheat would object to. The overlay is a transparent always-on-top window — same OS surface as the Steam, Discord, and OBS overlays.</p>
+    <section class="section panel" data-chapter="Anti-cheat">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Safety</span><span class="k-line"></span><span class="k-meta">Off by default</span></div>
 
-        <div class="spice-ac-grid">
-          <div class="spice-ac-card neg reveal d3">
-            <div class="spice-ac-head">Spice does <span class="spice-ac-not">NOT</span></div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Anti-cheat <span class="accent">conscious.</span></h2>
+          <div class="sec-aside reveal">
+            <p>By default, Spice does <b>nothing</b> a strict anti-cheat would object to. The overlay is a transparent always-on-top window, the same OS surface as the Steam, Discord and OBS overlays.</p>
+          </div>
+        </div>
+
+        <div class="split-grid">
+          <div class="split-card glow reveal">
+            <span class="tag good">Spice does not</span>
             <ul>
               <li>Inject any code into game processes</li>
               <li>Read or scan game memory</li>
@@ -208,64 +185,58 @@
               <li>Make network calls (except the version-check ping to evzero.org)</li>
             </ul>
           </div>
-
-          <div class="spice-ac-card opt reveal d4">
-            <div class="spice-ac-head">Optional: <span class="spice-ac-mirror">GAME INPUT MIRROR</span></div>
-            <p>For the WASD + mouse-button visualizers to react to in-game input, Spice needs a passive low-level OS hook (<code>SetWindowsHookEx WH_KEYBOARD_LL</code>) — same kind Discord and OBS use. <strong>Off by default.</strong></p>
-            <ul class="spice-ac-compat">
-              <li><span class="ok">✓</span> EAC, BattlEye, FACEIT, ESEA, Vac</li>
-              <li><span class="warn">⚠</span> Vanguard (Valorant) — leave OFF before launching</li>
+          <div class="split-card glow reveal d1">
+            <span class="tag opt">Optional: game input mirror</span>
+            <p>For the WASD + mouse-button visualizers to react to in-game input, Spice needs a passive low-level OS hook (<code>SetWindowsHookEx WH_KEYBOARD_LL</code>), the same kind Discord and OBS use. <strong>Off by default.</strong></p>
+            <ul>
+              <li class="ok"><span class="mark">&check;</span>EAC, BattlEye, FACEIT, ESEA, VAC</li>
+              <li class="warn"><span class="mark">&#9888;</span>Vanguard (Valorant): leave it OFF before launching</li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- INSTALL / SYSTEM REQUIREMENTS -->
-    <section class="section spice-install panel" data-event="spice-install">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(03)</span><span>(Install)</span><span>Windows x64</span></div>
-        <h2 class="sec-title" data-split>Three steps,<br/><span class="accent">no installer.</span></h2>
+    <!-- INSTALL -->
+    <section class="section panel" data-chapter="Install">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(03)</span><span class="k-name">Install</span><span class="k-line"></span><span class="k-meta">Windows x64</span></div>
 
-        <div class="spice-step-grid">
-          <div class="spice-step reveal d2">
-            <div class="spice-step-num">01</div>
-            <div class="spice-step-body">
-              <div class="spice-step-title">Download the ZIP</div>
-              <p>~115 MB, Windows x64. Auto-update from inside the app once installed.</p>
-            </div>
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Three steps, <span class="accent">no installer.</span></h2>
+          <div class="sec-aside reveal"><p>It&rsquo;s a portable ZIP. Nothing gets written to the registry and nothing needs admin.</p></div>
+        </div>
+
+        <div class="steps three">
+          <div class="step glow reveal">
+            <div class="step-num">01</div>
+            <h3>Download the ZIP</h3>
+            <p>~115 MB, Windows x64. Updates come from inside the app once it&rsquo;s running.</p>
           </div>
-          <div class="spice-step reveal d3">
-            <div class="spice-step-num">02</div>
-            <div class="spice-step-body">
-              <div class="spice-step-title">Extract anywhere</div>
-              <p>Desktop, Program Files, Documents — wherever. No admin required, no install wizard, no registry writes.</p>
-            </div>
+          <div class="step glow reveal d1">
+            <div class="step-num">02</div>
+            <h3>Extract anywhere</h3>
+            <p>Desktop, Program Files, Documents, wherever. No admin required, no install wizard, no registry writes.</p>
           </div>
-          <div class="spice-step reveal d4">
-            <div class="spice-step-num">03</div>
-            <div class="spice-step-body">
-              <div class="spice-step-title">Run <code>Spice.exe</code></div>
-              <p>Login with <code>alphatest1</code>, pick your monitor in Settings, hit GO LIVE.</p>
-            </div>
+          <div class="step glow reveal d2">
+            <div class="step-num">03</div>
+            <h3>Run <code>Spice.exe</code></h3>
+            <p>Log in with <code>alphatest1</code>, pick your monitor in Settings, hit GO LIVE.</p>
           </div>
         </div>
 
-        <div class="spice-sysreq reveal d5">
-          <div class="spice-sysreq-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64)</span></div>
-          <div class="spice-sysreq-row"><span class="k">RAM</span><span class="v">~300 MB at idle (Electron baseline)</span></div>
-          <div class="spice-sysreq-row"><span class="k">DISK</span><span class="v">~310 MB extracted</span></div>
-          <div class="spice-sysreq-row"><span class="k">GPU</span><span class="v">Anything that can composite a transparent layer (any modern card)</span></div>
-          <div class="spice-sysreq-row"><span class="k">PERMS</span><span class="v">No admin. No code-signing yet → SmartScreen may warn on first run · click "More info → Run anyway".</span></div>
+        <div class="spec pd-spec reveal">
+          <div class="spec-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64)</span></div>
+          <div class="spec-row"><span class="k">RAM</span><span class="v">~300 MB at idle (Electron baseline)</span></div>
+          <div class="spec-row"><span class="k">Disk</span><span class="v">~310 MB extracted</span></div>
+          <div class="spec-row"><span class="k">GPU</span><span class="v">Anything that can composite a transparent layer (any modern card)</span></div>
+          <div class="spec-row"><span class="k">Perms</span><span class="v">No admin. No code-signing yet &rarr; SmartScreen may warn on first run &middot; click &ldquo;More info &rarr; Run anyway&rdquo;.</span></div>
         </div>
 
-        <div class="spice-bottom-cta reveal d6">
-          <a href="https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip" class="spice-btn primary big">
-            <span class="spice-btn-arrow">↓</span>
-            <span>
-              <span class="spice-btn-line">DOWNLOAD SPICE v0.1.3-alpha</span>
-              <span class="spice-btn-sub">Windows x64 · 115 MB · Portable ZIP</span>
-            </span>
+        <div class="pd-bottom-cta reveal">
+          <a href="https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip" class="btn shine big" data-magnetic="0.15">
+            <span aria-hidden="true">&darr;</span>
+            <span class="btn-col">Download Spice v0.1.3-alpha<small>Windows x64 &middot; 115 MB &middot; Portable ZIP</small></span>
           </a>
         </div>
       </div>
@@ -274,41 +245,57 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / spice</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
             <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / spice</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
 </body>
 </html>

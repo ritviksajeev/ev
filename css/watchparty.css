@@ -1,210 +1,174 @@
 /* ============================================
-   Watchparty page (v2)
+   Watchparty page (v3)
+   Left: three steps. Right: the room, the player
+   (appears once you're in a room) and the
+   extension. watchparty.js / player-web.js find
+   everything by id - keep the ids.
    ============================================ */
 
-.watch-room-sec { padding-top: clamp(96px, 13vh, 150px); }
+.watch-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 6vw, 96px);
+  align-items: start;
+}
+.watch-how { position: sticky; top: calc(var(--nav-height) + 40px); }
+.watch-steps {
+  margin-top: clamp(28px, 4vw, 52px);
+  border-top: 1px solid var(--white-rule);
+}
+.watch-steps li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 12px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--white-rule);
+}
+.watch-steps .step-num {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 34px;
+  line-height: 0.9;
+  color: var(--purple-bright);
+}
+.watch-steps h3 { margin-bottom: 6px; font-size: 18px; letter-spacing: -0.03em; line-height: 1.2; }
+.watch-steps p { font-size: 14px; line-height: 1.7; color: var(--white-dim); }
 
-/* Stacked single-column layout */
 .watch-stack {
-  max-width: 680px;
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-
 .watch-panel {
-  position: relative;
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
-  border: 1px solid var(--white-rule);
-  border-radius: var(--radius-lg);
-  padding: 22px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: clamp(20px, 2.4vw, 30px);
 }
+.name-input { font-family: var(--font); font-size: 15px; }
 
-/* ---- inputs + buttons ---- */
-.input {
-  background: var(--bg-2);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  color: var(--white);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  padding: 10px 14px;
-  outline: none;
-  width: 100%;
-  transition: border-color 160ms var(--ease-out);
-  cursor: none;
-}
-.input:focus { border-color: var(--purple); }
-.name-input { font-family: var(--font); font-size: 14px; }
-
-.btn-primary, .btn-ghost {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
-  transition: all 160ms var(--ease-out);
-  letter-spacing: 0.04em;
-  cursor: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid transparent;
-  text-align: center;
-}
-.btn-primary {
-  background: var(--purple);
-  color: var(--white);
-  border-color: var(--purple);
-}
-.btn-primary:hover { background: var(--purple-bright); border-color: var(--purple-bright); }
-.btn-primary:disabled,
-.btn-ghost:disabled {
-  opacity: 0.35;
-  pointer-events: none;
-}
-.btn-ghost {
-  background: transparent;
-  color: var(--white);
-  border-color: var(--glass-border);
-}
-.btn-ghost:hover { border-color: var(--purple); color: var(--purple-bright); }
-.btn-ghost.small { padding: 6px 10px; font-size: 11px; }
+.watch-panel .btn { min-height: 44px; }
+.watch-panel .btn.small { min-height: 32px; padding: 0 14px; font-size: 10px; }
 .block { width: 100%; }
 
 .or {
+  margin: 2px 0;
   text-align: center;
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--white-faint);
+  letter-spacing: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.24em;
-  margin: -2px 0;
+  color: var(--white-faint);
 }
-.join-row { display: flex; gap: 8px; }
-.join-row .btn-ghost { padding-left: 18px; padding-right: 18px; }
+.join-row, .url-row { display: flex; gap: 8px; }
 
 /* ---- status ---- */
 .room-status {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   background: var(--bg-2);
   border: 1px solid var(--glass-border);
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--white-dim);
-  flex-wrap: wrap;
 }
 .status-dot {
+  flex: none;
   width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--white-faint);
-  flex-shrink: 0;
 }
 .status-dot.idle { background: var(--white-faint); }
-.status-dot.connecting { background: #fbbf24; animation: pulse 1s ease-in-out infinite; }
-.status-dot.connected { background: #22c55e; }
-.status-dot.error { background: #ef4444; }
+.status-dot.connecting { background: var(--warn); animation: pulse 1s ease-in-out infinite; }
+.status-dot.connected { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+.status-dot.error { background: var(--bad); }
 @keyframes pulse { 50% { opacity: 0.4; } }
 
 .peer-chips {
   display: inline-flex;
-  gap: 5px;
   flex-wrap: wrap;
+  gap: 5px;
   margin-left: auto;
 }
 .peer-chip {
   display: inline-flex;
   align-items: center;
-  padding: 2px 8px;
-  background: rgba(139, 92, 246, 0.12);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 3px 9px;
   border-radius: 999px;
+  background: rgba(138, 120, 240, 0.12);
+  border: 1px solid rgba(138, 120, 240, 0.3);
   font-size: 10px;
-  color: var(--purple-bright);
   letter-spacing: 0.04em;
+  color: var(--purple-bright);
 }
 .peer-chip::before {
-  content: '';
+  content: "";
   width: 4px; height: 4px;
+  margin-right: 6px;
   border-radius: 50%;
-  background: #22c55e;
-  margin-right: 5px;
+  background: var(--ok);
 }
 
 /* ---- share link ---- */
-.room-link.hidden { display: none; }
 .room-link {
   display: flex;
-  gap: 6px;
   align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 14px;
+  border-radius: var(--radius-md);
   background: var(--bg-2);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  padding: 5px 5px 5px 12px;
 }
 .room-link code {
   flex: 1;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--purple-bright);
+  padding: 0;
+  border: 0;
+  background: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 11px;
+  color: var(--purple-bright);
 }
 
-/* ---- panel head (shared by player + install) ---- */
+/* ---- panel head (shared by all three cards) ---- */
 .panel-head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding-bottom: 6px;
+  gap: 12px;
+  margin-bottom: 4px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--white-line);
-  margin-bottom: 2px;
 }
 .panel-title {
-  font-family: var(--font);
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 500;
+  letter-spacing: -0.03em;
   color: var(--white);
 }
 .panel-hint {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: var(--white-faint);
-  letter-spacing: 0.14em;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: var(--white-faint);
 }
 
-/* ---- web player panel ---- */
-.player-panel.hidden { display: none; }
-.player-panel { gap: 10px; }
-.url-row {
-  display: flex;
-  gap: 8px;
-}
-.url-row .btn-ghost {
-  padding-left: 18px;
-  padding-right: 18px;
-}
+/* ---- web player ---- */
 .player-host {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: var(--bg-0);
-  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
+  border: 1px solid var(--glass-border);
+  background: var(--bg-0);
   overflow: hidden;
 }
-.player-host.hidden { display: none; }
 .player-host > div,
 .player-host iframe {
   position: absolute;
@@ -214,70 +178,60 @@
   border: 0;
 }
 .player-err {
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.25);
   font-family: var(--font-mono);
   font-size: 11px;
   color: #fca5a5;
-  padding: 8px 12px;
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: var(--radius-md);
 }
-.player-err.hidden { display: none; }
 
-/* ---- install panel ---- */
-.install-panel { gap: 8px; }
+/* ---- extension ---- */
+.install-lead { font-size: 14px; line-height: 1.7; color: var(--white-dim); }
 .install-sub {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--white-faint);
   letter-spacing: 0.04em;
   line-height: 1.7;
+  color: var(--white-faint);
 }
 .link-btn {
-  background: none;
-  border: none;
-  color: var(--purple-bright);
+  margin-left: 4px;
+  padding: 0;
   font-family: var(--font-mono);
   font-size: 11px;
-  padding: 0;
-  cursor: none;
+  color: var(--purple-bright);
   text-decoration: underline;
   text-underline-offset: 3px;
-  margin-left: 4px;
 }
 .link-btn:hover { color: var(--white); }
 .install-soon {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--white-faint);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 8px 0 0;
+  padding-top: 10px;
   border-top: 1px solid var(--white-line);
   text-align: center;
-}
-
-/* ---- install steps (collapsed by default) ---- */
-.install-how.hidden { display: none; }
-.install-steps {
-  list-style: decimal inside;
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--white-dim);
-  line-height: 1.8;
-  padding: 12px 14px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.install-steps {
+  margin-top: 4px;
+  padding: 14px 16px 14px 34px;
+  border-radius: var(--radius-md);
   background: var(--bg-2);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-md);
-  margin-top: 8px;
+  list-style: decimal;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--white-dim);
 }
 .install-steps li { padding: 2px 0; }
-.install-steps li::marker { color: var(--purple-bright); }
-.install-steps code {
-  background: var(--bg-0);
-  border: 1px solid var(--white-line);
-  padding: 1px 6px;
-  border-radius: 3px;
-  font-size: 11px;
-  color: var(--purple-bright);
+.install-steps li::marker { color: var(--purple-bright); font-family: var(--font-mono); font-size: 11px; }
+.install-steps b { color: var(--white); font-weight: 500; }
+
+@media (max-width: 900px) {
+  .watch-grid { grid-template-columns: 1fr; }
+  .watch-how { position: static; }
 }

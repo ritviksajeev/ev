@@ -1,7 +1,6 @@
 # Netlify redirects - clean URLs
 # Allows /projects to map to /projects/ (which serves /projects/index.html)
 /projects      /projects/      301
-/solren        /solren/        301
 /contact       /contact/       301
 /watchparty    /watchparty/    301
 /ais           /ais/           301

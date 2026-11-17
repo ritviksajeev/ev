@@ -22,13 +22,33 @@
    Hero + search
    ============================================ */
 .val-hero {
-  scroll-snap-align: none;
+  position: relative;
   min-height: auto;
+  overflow: hidden;
+  overflow: clip;
   padding: calc(var(--nav-height) + 80px) 40px 60px;
 }
 .val-hero-inner {
+  position: relative;
+  z-index: 1;
   text-align: center;
   max-width: 920px;
+}
+.val-hero .eyebrow a { transition: color 0.3s var(--ease-out); }
+.val-hero .eyebrow a:hover { color: var(--white); }
+.val-outdated {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 8px 14px 8px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--white-rule);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 13px;
+  color: var(--white-dim);
 }
 
 .val-hero h1 {
@@ -95,8 +115,8 @@
   transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 .val-fav-chip:hover {
-  background: rgba(167, 139, 250, 0.14);
-  border-color: rgba(167, 139, 250, 0.42);
+  background: rgba(180, 165, 255, 0.14);
+  border-color: rgba(180, 165, 255, 0.42);
 }
 .val-fav-chip-region {
   font-size: 9px;
@@ -282,7 +302,7 @@
   flex: none;
   align-self: start;
   box-shadow:
-    0 0 0 1px rgba(167, 139, 250, 0.28),
+    0 0 0 1px rgba(180, 165, 255, 0.28),
     0 12px 32px -8px rgba(0, 0, 0, 0.6);
   transition: transform 0.4s var(--ease-out);
 }
@@ -310,8 +330,8 @@
   align-items: center;
   gap: 8px;
   padding: 4px 6px 4px 12px;
-  background: rgba(167, 139, 250, 0.10);
-  border-color: rgba(167, 139, 250, 0.32);
+  background: rgba(180, 165, 255, 0.10);
+  border-color: rgba(180, 165, 255, 0.32);
 }
 .val-recent-agent[hidden] { display: none; }
 .val-recent-agent-img {
@@ -321,7 +341,7 @@
   object-fit: cover;
   background: var(--bg-0);
   flex: none;
-  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.4);
+  box-shadow: 0 0 0 1px rgba(180, 165, 255, 0.4);
 }
 .val-recent-agent-label-inline {
   color: var(--white-faint);
@@ -419,8 +439,8 @@
   transition: background 0.2s var(--ease-out), border-color 0.2s var(--ease-out), transform 0.1s var(--ease-out);
 }
 .val-chip-btn:hover {
-  background: rgba(167, 139, 250, 0.12);
-  border-color: rgba(167, 139, 250, 0.38);
+  background: rgba(180, 165, 255, 0.12);
+  border-color: rgba(180, 165, 255, 0.38);
 }
 .val-chip-btn:active { transform: translateY(1px); }
 .val-chip-btn-icon {
@@ -537,8 +557,8 @@
 .val-mode-pill:hover { color: var(--white); background: rgba(255, 255, 255, 0.04); }
 .val-mode-pill.active {
   color: var(--white);
-  background: rgba(167, 139, 250, 0.18);
-  box-shadow: inset 0 0 0 1px rgba(167, 139, 250, 0.42);
+  background: rgba(180, 165, 255, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(180, 165, 255, 0.42);
 }
 
 /* ============================================
@@ -866,7 +886,7 @@
   width: auto;
   opacity: 0.18;
   pointer-events: none;
-  filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3));
+  filter: drop-shadow(0 0 10px rgba(180, 165, 255, 0.3));
 }
 
 /* ============================================
@@ -918,7 +938,7 @@
   z-index: 40;
   padding: 10px 18px;
   background: rgba(20, 14, 36, 0.95);
-  border: 1px solid rgba(167, 139, 250, 0.38);
+  border: 1px solid rgba(180, 165, 255, 0.38);
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
   font-size: 11px;
@@ -939,7 +959,7 @@
   animation: val-match-fresh 2s var(--ease-out) 1;
 }
 @keyframes val-match-fresh {
-  0%   { background: rgba(167, 139, 250, 0.22); }
+  0%   { background: rgba(180, 165, 255, 0.22); }
   100% { background: transparent; }
 }
 
@@ -1167,7 +1187,7 @@
 .val-round-cell:hover { transform: translateY(-1px); }
 .val-round-cell.win  { background: linear-gradient(180deg, rgba(126, 217, 157, 0.95), rgba(126, 217, 157, 0.55)); }
 .val-round-cell.loss { background: linear-gradient(180deg, rgba(227, 134, 134, 0.95), rgba(227, 134, 134, 0.55)); }
-.val-round-cell.draw { background: rgba(167, 139, 250, 0.45); }
+.val-round-cell.draw { background: rgba(180, 165, 255, 0.45); }
 .val-team-head {
   display: flex;
   align-items: baseline;

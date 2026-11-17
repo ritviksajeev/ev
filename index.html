@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="EvZero — developer, creator, founder of Solren."/>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="EvZero is Ritvik, a cyber security student building security tools, desktop apps and browser toys from absolute zero. AiS, Spice, Qres and more."/>
   <title>EvZero</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="css/home.css?v=2.3"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="css/home.css?v=3.0"/>
 </head>
-<body>
+<body data-page="home">
 
   <!-- Page curtain - the first homepage view of a session plays "evzero" -> "welcome" -->
   <div class="loader" aria-hidden="true">
@@ -25,43 +25,32 @@
     </div>
   </div>
 
-  <!-- Background -->
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <!-- Nav -->
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="./" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="projects/" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="./" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <!-- Side section indicator -->
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
-    <!-- SECTION 1: HERO -->
-    <section class="section hero home-hero panel" data-event="hero" data-hero-fx>
+    <!-- 01 / INTRO - the name in a pill, a glass cube tumbling through it -->
+    <section class="section hero home-hero panel" data-chapter="Intro" data-hero-fx data-tilt-zone>
+      <div class="warp" data-warp></div>
 
       <div class="hero-object" data-hero-object aria-hidden="true">
         <div class="hero-glow"></div>
         <div class="cube-intro">
-          <div class="cube-tilt" data-tilt>
+          <div class="cube-tilt" data-tilt="15">
             <div class="cube-x">
               <div class="cube">
                 <span class="face f-front"></span>
@@ -76,82 +65,254 @@
         </div>
       </div>
 
-      <div class="hero-marks intro-fade" style="--id: 1.1s" aria-hidden="true">
-        <span class="xmark"></span>
-        <span class="xmark"></span>
-        <span class="xmark"></span>
-        <span class="xmark"></span>
+      <div class="hero-meta intro-fade" style="--id: 1.1s">
+        <span><i class="dot"></i>evzero.org / v3.0</span>
+        <span>Est. 2025</span>
       </div>
 
-      <div class="hero-content" data-hero-content>
-        <div class="intro-zoom">
-          <h1 class="hero-title">
-            <span class="sr-only">EvZero — creator, developer, competitor</span>
-            <span class="hero-word line-mask" aria-hidden="true"><span class="lt" style="--ld: 0.10s">E</span><span class="lt" style="--ld: 0.16s">V</span><span class="lt z" style="--ld: 0.22s">Z</span><span class="lt z" style="--ld: 0.28s">E</span><span class="lt z" style="--ld: 0.34s">R</span><span class="lt z" style="--ld: 0.40s">O</span></span>
-            <span class="hero-line hl-mq marquee" data-marquee data-speed="80" aria-hidden="true">
-              <span class="marquee-track"><span class="mq-group"><span>Creator</span><i class="mq-dia"></i><span>Developer</span><i class="mq-dia"></i><span>Competitor</span><i class="mq-dia"></i><span>Founder</span><i class="mq-dia"></i></span></span>
-            </span>
-          </h1>
-        </div>
+      <div class="wrap hero-stage" data-hero-content>
+        <h1 class="hero-title">
+          <span class="sr-only">EvZero</span>
+          <span class="wordpill hero-pill intro-zoom" aria-hidden="true">
+            <span class="wordpill-clip line-mask"><span class="wordpill-text" data-fit><span class="lt" style="--ld: 0.10s">E</span><span class="lt" style="--ld: 0.16s">V</span><span class="lt z" style="--ld: 0.22s">Z</span><span class="lt z" style="--ld: 0.28s">E</span><span class="lt z" style="--ld: 0.34s">R</span><span class="lt z" style="--ld: 0.40s">O</span></span></span>
+          </span>
+        </h1>
       </div>
-
-      <div class="hero-scroll intro-fade" style="--id: 1.15s">( Scroll to explore )</div>
-
-      <a class="hero-card intro-fade" href="spice/" data-transition data-cursor-label="Open" style="--id: 1.3s">
-        <span class="hc-thumb" aria-hidden="true">
-          <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 8L2 2L8 2"/><path d="M14 2L20 2L20 8"/><path d="M2 14L2 20L8 20"/><path d="M14 20L20 20L20 14"/>
-            <path d="M11 7v2.5M11 12.5V15M7 11h2.5M12.5 11H15" stroke-width="1.5"/>
-          </svg>
-        </span>
-        <span class="hc-body">
-          <span class="hc-kicker"><i></i>Now shipping</span>
-          <span class="hc-title">Spice v0.1.3-alpha</span>
-          <span class="hc-sub">Desktop overlay for gamers</span>
-        </span>
-        <span class="hc-arrow" aria-hidden="true">&#8599;</span>
-      </a>
 
       <div class="hero-bottom">
-        <div class="intro-fade" style="--id: 1.25s"><a class="ulink" href="contact/" data-transition>Get in touch</a></div>
-        <div class="hero-tag intro-fade" style="--id: 1.35s"><span class="bracket">[</span> Est. 2025 <span class="bracket">]</span> Built from absolute zero</div>
-        <div class="hero-loc intro-fade" style="--id: 1.45s"><span>Solren</span><i></i><span>zzz</span><i></i><span>Ping / USA</span></div>
+        <p class="hero-line intro-fade" style="--id: 1.2s">I build <span class="serif" data-flip="security tools|desktop apps|browser toys|things from zero">security tools</span></p>
+        <div class="hero-tag intro-fade" style="--id: 1.3s"><span class="accent">[</span> Built from absolute zero <span class="accent">]</span></div>
+        <a class="hero-card intro-fade" href="ais/" data-transition data-cursor-label="Open" style="--id: 1.4s">
+          <span class="hc-thumb" data-sticker="ais" aria-hidden="true"></span>
+          <span class="hc-body">
+            <span class="hc-kicker"><i></i>Now shipping</span>
+            <span class="hc-title">AiS v0.1.6-alpha</span>
+            <span class="hc-sub">Anti-cheat for AI agents</span>
+          </span>
+          <span class="hc-arrow" aria-hidden="true">&#8599;</span>
+        </a>
       </div>
     </section>
 
-    <!-- SECTION 2: PROFILE -->
-    <section class="section about panel" data-event="about">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Profile)</span><span>&copy;<span data-year>2026</span></span></div>
+    <!-- 02 / PROFILE -->
+    <section class="section about panel" data-chapter="Profile">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Profile</span><span class="k-line"></span><span class="k-meta">&copy;<span data-year>2026</span></span></div>
 
-        <h2 class="sec-title about-title" data-split>Not just <span class="accent">a name.</span></h2>
+        <h2 class="sec-title about-title" data-split>Started <span class="accent">at zero.</span></h2>
 
-        <p class="statement" data-lit>Developer, creator, and founder of Solren — an esports org built from absolute zero. I live at the intersection of code, community, and the games I love.</p>
+        <p class="statement" data-lit>I&rsquo;m Ritvik, a cyber security student who builds the tools I wish existed. A sandbox that catches AI agents lying. A game overlay built to stay on anti-cheat&rsquo;s good side. A way to watch the same frame from two different couches. <span class="serif">None of it from a template.</span></p>
 
         <div class="about-grid">
-          <div class="about-label reveal">(Now)</div>
+          <div class="about-label reveal">( Right now )</div>
           <div class="about-copy">
-            <p class="reveal">I ship side projects, stream some of the chaos, and treat the internet as a workshop all whilst juggling the academic chaindown. If it looks fun, I'm probably trying to build a version of it.</p>
-            <div class="reveal d1"><a class="ulink" href="projects/" data-transition>See projects</a></div>
+            <p class="reveal">I ship side projects in public, stream some of the chaos, and treat the internet as a workshop, all while surviving coursework. If something looks fun, I&rsquo;m probably already building my own version of it.</p>
+            <div class="reveal d1"><a class="ulink" href="projects/" data-transition>Open the workshop</a></div>
           </div>
           <dl class="about-stats">
-            <div class="stat-row reveal"><dt>Years developing</dt><dd>10+</dd></div>
-            <div class="stat-row reveal d1"><dt>Projects in flight</dt><dd>&infin;</dd></div>
-            <div class="stat-row reveal d2"><dt>Esports org</dt><dd>01</dd></div>
+            <div class="stat-row reveal"><dt>Years building</dt><dd><span data-count="10">10</span>+</dd></div>
+            <div class="stat-row reveal d1"><dt>Projects on the shelf</dt><dd>0<span data-count="9">9</span></dd></div>
+            <div class="stat-row reveal d2"><dt>Tests guarding AiS</dt><dd><span data-count="437">437</span></dd></div>
             <div class="stat-row reveal d3"><dt>Plans to stop</dt><dd>00</dd></div>
           </dl>
         </div>
       </div>
     </section>
 
-    <!-- SECTION 3: SOCIALS -->
-    <section class="section connect panel" data-event="connect">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(02)</span><span>(Socials)</span><span>04 channels</span></div>
+    <!-- 03 / NOW BUILDING - the two headliners -->
+    <section class="section building panel" data-chapter="Now building">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Now building</span><span class="k-line"></span><span class="k-meta">02 in alpha</span></div>
 
         <div class="sec-head">
-          <h2 class="sec-title" data-split>Find me <span class="accent">in the signal</span></h2>
-          <p class="sec-sub reveal">Scattered across the internet, never hard to reach.</p>
+          <h2 class="sec-title" data-split>The two <span class="accent">headliners.</span></h2>
+          <div class="sec-aside reveal">
+            <p>Both are public alphas. Both list what they can&rsquo;t do yet, right on the page, because a tool that hides its limits isn&rsquo;t one you should trust.</p>
+          </div>
+        </div>
+
+        <div class="feature-grid">
+
+          <a class="feature glow reveal" href="ais/" data-transition data-cursor-label="Open">
+            <div class="feature-visual fv-ais" aria-hidden="true">
+              <div class="fv-term">
+                <div class="fv-term-bar"><i></i><i></i><i></i><span>ais / execution report</span></div>
+                <div class="fv-term-body">
+                  <div class="fv-line l1"><span class="k">agent says</span><span>&ldquo;Send basic usage data on import.&rdquo;</span></div>
+                  <div class="fv-line l2"><span class="k">sandbox</span><span>docker &middot; no network</span></div>
+                  <div class="fv-line l3"><span class="k">tests</span><span class="ok">52 / 52 passed</span></div>
+                  <div class="fv-find l4"><b>CRITICAL</b> net.egress: socket.connect(&hellip;) <em>&larr; inventory.py:18</em></div>
+                  <div class="fv-find l5"><b class="hi">HIGH</b> fs.escape_read: open(/etc/passwd) <em>&larr; inventory.py:13</em></div>
+                </div>
+                <div class="fv-stamp">Block</div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-top">
+                <span class="feature-idx">01</span>
+                <span class="chip live">Alpha released</span>
+                <span class="chip">v0.1.6-alpha</span>
+              </div>
+              <h3 class="feature-title keep-case">AiS</h3>
+              <p class="feature-desc">Agent-in-Sandbox. AI editing agents never touch your real files. Every proposed edit runs in a throwaway container first, and a person approves it on a plain security-check screen. Anti-cheat for AI.</p>
+              <div class="chips"><span class="chip">python</span><span class="chip">docker</span><span class="chip">security</span><span class="chip">ai agents</span></div>
+              <span class="ulink">Open the case</span>
+            </div>
+          </a>
+
+          <a class="feature glow reveal d1" href="spice/" data-transition data-cursor-label="Open">
+            <div class="feature-visual fv-spice" aria-hidden="true">
+              <div class="fv-game">
+                <span class="fv-corner tl"></span><span class="fv-corner tr"></span><span class="fv-corner bl"></span><span class="fv-corner br"></span>
+                <svg class="fv-cross" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                  <path d="M50 22V40M50 60V78M22 50H40M60 50H78"/><circle cx="50" cy="50" r="1.6" fill="currentColor" stroke="none"/>
+                </svg>
+                <div class="fv-keys"><span class="w">W</span><span class="a">A</span><span class="s">S</span><span class="d">D</span></div>
+                <div class="fv-hud"><span>Overlay live</span><span>Display 2 &middot; 240 Hz</span></div>
+              </div>
+            </div>
+            <div class="feature-body">
+              <div class="feature-top">
+                <span class="feature-idx">02</span>
+                <span class="chip live">Alpha released</span>
+                <span class="chip">v0.1.3-alpha</span>
+              </div>
+              <h3 class="feature-title">Spice</h3>
+              <p class="feature-desc">A desktop overlay for people who take their crosshair personally. Crosshairs, your own images and opt-in input visualizers, floating over any game on any monitor. Anti-cheat-conscious by default.</p>
+              <div class="chips"><span class="chip">electron</span><span class="chip">react</span><span class="chip">typescript</span><span class="chip">win32</span></div>
+              <span class="ulink">Open the case</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 / THE SHELF - everything else, as slabs you can pull out -->
+    <section class="section shelf-sec panel" data-chapter="The shelf">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(03)</span><span class="k-name">The shelf</span><span class="k-line"></span><span class="k-meta">06 of 09</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Pull one <span class="accent">off the shelf.</span></h2>
+          <div class="sec-aside reveal">
+            <p>Some shipped, some still cooking, all hand-built. Hover a slab to slide it out; click to open it.</p>
+            <a class="ulink" href="projects/" data-transition>See all nine</a>
+          </div>
+        </div>
+
+        <div class="shelf reveal" data-tilt-zone>
+          <div class="shelf-inner" data-tilt="5">
+
+            <a class="slab t-violet" href="ais/" data-transition data-cursor-label="Open">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">01</span>
+                <span class="slab-title keep-case">AiS</span>
+                <span class="slab-blurb">Anti-cheat for AI agents</span>
+                <span class="slab-meta">Alpha &middot; v0.1.6</span>
+              </span>
+            </a>
+
+            <a class="slab t-lav" href="spice/" data-transition data-cursor-label="Open">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">02</span>
+                <span class="slab-title">Spice</span>
+                <span class="slab-blurb">Overlay for gamers</span>
+                <span class="slab-meta">Alpha &middot; v0.1.3</span>
+              </span>
+            </a>
+
+            <a class="slab t-ink" href="qres/" data-transition data-cursor-label="Open">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">03</span>
+                <span class="slab-title">Qres</span>
+                <span class="slab-blurb">One key, new resolution</span>
+                <span class="slab-meta">Shipped &middot; v1.0.3</span>
+              </span>
+            </a>
+
+            <a class="slab t-deep" href="watchparty/" data-transition data-cursor-label="Open">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">04</span>
+                <span class="slab-title">Watchparty</span>
+                <span class="slab-blurb">Same frame, two couches</span>
+                <span class="slab-meta">Shipped &middot; Live</span>
+              </span>
+            </a>
+
+            <a class="slab t-paper" href="sketch/" data-cursor-label="Play">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">05</span>
+                <span class="slab-title">Sketch Fighter</span>
+                <span class="slab-blurb">Draw a stage, fight on it</span>
+                <span class="slab-meta">In dev &middot; Playable</span>
+              </span>
+            </a>
+
+            <a class="slab t-pixel" href="projects/#pixel-cat" data-transition data-cursor-label="Open">
+              <span class="slab-top"></span><span class="slab-side l"></span><span class="slab-side r"></span>
+              <span class="slab-front">
+                <span class="slab-idx">06</span>
+                <span class="slab-title">Pixel cat</span>
+                <span class="slab-blurb">The one stalking your cursor</span>
+                <span class="slab-meta">Shipped &middot; Live</span>
+              </span>
+            </a>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 / METHOD -->
+    <section class="section method panel" data-chapter="Method">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(04)</span><span class="k-name">Method</span><span class="k-line"></span><span class="k-meta">03 rules</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>How things <span class="accent">get made.</span></h2>
+          <div class="sec-aside reveal">
+            <p>Three habits that show up in everything on the shelf, whether it&rsquo;s a security tool or a cat.</p>
+          </div>
+        </div>
+
+        <div class="feat-grid method-grid">
+          <div class="feat glow reveal">
+            <div class="feat-num">01</div>
+            <h3>From zero</h3>
+            <p>No templates, no page builders. This site is hand-written HTML, CSS and JavaScript. No framework, no build step. If I can&rsquo;t explain how a thing works, I haven&rsquo;t finished building it.</p>
+          </div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">02</div>
+            <h3>Assume it&rsquo;s hostile</h3>
+            <p>AiS treats the AI as the victim, never the safeguard. Spice and Qres inject nothing and read no game memory. The paranoid design is usually the one that survives.</p>
+          </div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">03</div>
+            <h3>Ship the alpha</h3>
+            <p>Get it in front of people early, then say plainly what&rsquo;s broken. The AiS page lists the three attacks that still get past it. That list is the point.</p>
+          </div>
+        </div>
+
+        <div class="stack-mq marquee reveal d2" data-marquee data-speed="46" aria-label="Tools I build with: Python, Docker, TypeScript, React, Electron, C#, Node.js, WebSockets, Flask, Phaser, HTML, CSS, JavaScript, SVG">
+          <div class="marquee-track" aria-hidden="true"><div class="mq-group"><span>Python</span><i class="mq-dia"></i><span>Docker</span><i class="mq-dia"></i><span>TypeScript</span><i class="mq-dia"></i><span>React</span><i class="mq-dia"></i><span>Electron</span><i class="mq-dia"></i><span>C#</span><i class="mq-dia"></i><span>Node.js</span><i class="mq-dia"></i><span>WebSockets</span><i class="mq-dia"></i><span>Flask</span><i class="mq-dia"></i><span>Phaser</span><i class="mq-dia"></i><span>HTML</span><i class="mq-dia"></i><span>CSS</span><i class="mq-dia"></i><span>JavaScript</span><i class="mq-dia"></i><span>SVG</span><i class="mq-dia"></i></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 / CHANNELS -->
+    <section class="section connect panel" data-chapter="Channels">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(05)</span><span class="k-name">Channels</span><span class="k-line"></span><span class="k-meta">04 frequencies</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Tune in <span class="accent">anywhere.</span></h2>
+          <div class="sec-aside reveal"><p>Four frequencies. I&rsquo;m probably live on at least one of them right now.</p></div>
         </div>
 
         <div class="rows">
@@ -160,7 +321,7 @@
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
             </span>
             <span class="row-title" data-split>YouTube</span>
-            <span class="row-meta">@evzero</span>
+            <span class="row-meta"><small>Watch</small>@evzero</span>
             <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
 
@@ -169,7 +330,7 @@
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.317 4.369A19.791 19.791 0 0 0 16.885 3.1a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.273 18.273 0 0 0-5.487 0 12.51 12.51 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 6.683 4.37a.07.07 0 0 0-.032.027C2.533 10.46 1.492 16.373 2.001 22.21a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.873-1.295 1.226-1.994a.076.076 0 0 0-.042-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.128 12.3 12.3 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-6.747-.838-12.612-3.548-17.814a.061.061 0 0 0-.031-.028zM8.02 18.263c-1.182 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
             </span>
             <span class="row-title" data-split>Discord</span>
-            <span class="row-meta">evzero</span>
+            <span class="row-meta"><small>Hang out</small>evzero</span>
             <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
 
@@ -178,7 +339,7 @@
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/></svg>
             </span>
             <span class="row-title" data-split>Twitch</span>
-            <span class="row-meta">evzero</span>
+            <span class="row-meta"><small>Live</small>evzero</span>
             <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
 
@@ -187,84 +348,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="1"/><path d="M22 7l-10 6L2 7"/></svg>
             </span>
             <span class="row-title" data-split>Email</span>
-            <span class="row-meta">evzeroholder@gmail.com</span>
+            <span class="row-meta"><small>Write</small>evzeroholder@gmail.com</span>
             <span class="row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
           </a>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 4: CURRENTLY WORKING ON -->
-    <section class="section working panel" data-event="working">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(03)</span><span>(Workshop)</span><span>02 in flight</span></div>
-
-        <h2 class="sec-title" data-split>Currently <span class="accent">in progress</span></h2>
-
-        <div class="stack" data-stack>
-
-          <a href="ais/" class="stack-card work-card" data-transition data-cursor-label="Open" style="--i: 0">
-            <div class="work-info">
-              <div class="work-top">
-                <span class="work-index">01</span>
-                <span class="work-tag active"><span class="dot"></span>Alpha released</span>
-              </div>
-              <h3 class="work-title keep-case">AiS</h3>
-              <p class="work-desc">Agent-in-Sandbox. AI editing agents never touch your real files &mdash; every proposed edit runs in a throwaway container first, and a person approves it on a plain security-check screen. Anti-cheat for AI.</p>
-              <div class="work-meta">
-                <span>python</span>
-                <span>docker</span>
-                <span>security</span>
-                <span>ai agents</span>
-              </div>
-              <div class="work-progress">
-                <div class="work-progress-bar"><span style="--pct: 40%"></span></div>
-                <div class="work-progress-label">
-                  <span>v0.1.6-alpha</span>
-                  <span>open page &rarr;</span>
-                </div>
-              </div>
-            </div>
-            <div class="work-visual wv-ais" aria-hidden="true">
-              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 2.4 L19 5.3 V11.2 C19 15.5 15.6 18.5 11 19.8 C6.4 18.5 3 15.5 3 11.2 V5.3 Z" stroke-width="1.2"/>
-                <rect x="7.4" y="7.2" width="7.2" height="7.2" rx="1.3" stroke-width="0.9" opacity="0.55"/>
-                <circle cx="11" cy="10.8" r="1.5" fill="currentColor" stroke="none"/>
-              </svg>
-            </div>
-          </a>
-
-          <a href="spice/" class="stack-card work-card" data-transition data-cursor-label="Open" style="--i: 1">
-            <div class="work-info">
-              <div class="work-top">
-                <span class="work-index">02</span>
-                <span class="work-tag active"><span class="dot"></span>Alpha released</span>
-              </div>
-              <h3 class="work-title">spice</h3>
-              <p class="work-desc">Hardware-level desktop overlay for gamers. Crosshair, custom images, opt-in input visualizers — on any monitor, over any game. Anti-cheat-conscious by default.</p>
-              <div class="work-meta">
-                <span>electron</span>
-                <span>react</span>
-                <span>win32</span>
-                <span>typescript</span>
-              </div>
-              <div class="work-progress">
-                <div class="work-progress-bar"><span style="--pct: 35%"></span></div>
-                <div class="work-progress-label">
-                  <span>v0.1.3-alpha</span>
-                  <span>open page &rarr;</span>
-                </div>
-              </div>
-            </div>
-            <div class="work-visual wv-spice" aria-hidden="true">
-              <svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 8L2 2L8 2" stroke-width="1.2"/><path d="M14 2L20 2L20 8" stroke-width="1.2"/>
-                <path d="M2 14L2 20L8 20" stroke-width="1.2"/><path d="M14 20L20 20L20 14" stroke-width="1.2"/>
-                <path d="M11 7v2.5M11 12.5V15M7 11h2.5M12.5 11H15" stroke-width="1.1"/>
-              </svg>
-            </div>
-          </a>
-
         </div>
       </div>
     </section>
@@ -272,49 +358,57 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
-    <div class="footer-strip" aria-hidden="true">
-      <div class="marquee strip-big" data-marquee data-speed="55">
-        <div class="marquee-track"><div class="mq-group"><span>Built from zero</span><i class="mq-dia"></i><span>Creator</span><i class="mq-dia"></i><span>Developer</span><i class="mq-dia"></i><span>Competitor</span><i class="mq-dia"></i></div></div>
-      </div>
-      <div class="marquee reverse strip-small" data-marquee data-speed="38">
-        <div class="marquee-track"><div class="mq-group"><span>evzero.org</span><i>/</i><span>solren</span><i>/</i><span>spice</span><i>/</i><span>ais</span><i>/</i><span>qres</span><i>/</i><span>watchparty</span><i>/</i><span>valorant tracker</span><i>/</i><span>pixel cat</span><i>/</i></div></div>
-      </div>
-    </div>
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(04)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / home</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
-            <a href="projects/" class="btn ghost" data-transition data-magnetic>See projects <span class="arrow">&rarr;</span></a>
+            <a href="contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
+            <a href="projects/" class="btn ghost" data-transition data-magnetic>See the work <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="./" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="./" data-transition>Home</a>
+            <a href="projects/" data-transition>Work</a>
+            <a href="contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="ais/" data-transition>AiS</a>
+            <a href="spice/" data-transition>Spice</a>
+            <a href="qres/" data-transition>Qres</a>
+            <a href="watchparty/" data-transition>Watchparty</a>
+            <a href="sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / v2.1</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <script src="js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="js/common.js?v=2.2"></script>
-  <script src="js/cat.js?v=2.2"></script>
+  <script src="js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="js/site.js?v=3.0"></script>
+  <script src="js/cat.js?v=3.0"></script>
 </body>
 </html>

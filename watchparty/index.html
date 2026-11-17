@@ -1,135 +1,146 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="EvZero Watchparty — sync video across browsers."/>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="Watchparty: sync YouTube, Twitch and (with the extension) Netflix across browsers. No screenshare."/>
   <title>EvZero / Watchparty</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/watchparty.css?v=2.2"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/watchparty.css?v=3.0"/>
 </head>
-<body>
+<body data-page="watchparty">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="../projects/" class="active" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
-    <section class="section hero page-hero watch-hero-sec panel" data-event="watch-hero">
+    <!-- HERO -->
+    <section class="section hero panel" data-chapter="Watchparty">
+      <div class="warp" data-warp></div>
       <div class="ph">
-        <div class="ph-top intro-fade" style="--id: 0.45s"><span><i class="dot"></i>( Projects / Watchparty )</span><span>YouTube &middot; Twitch &middot; Extension</span></div>
-        <h1 class="ph-title">
+        <div class="ph-top intro-fade" style="--id: 0.4s"><span><i class="dot"></i><a href="../projects/" data-transition>Work</a> / Watchparty</span><span>YouTube &middot; Twitch &middot; Extension</span></div>
+        <h1 class="ph-title watch-title">
           <span class="sr-only">Watch together.</span>
           <span class="line-mask" aria-hidden="true"><span class="line">Watch</span></span>
-          <span class="line-mask" aria-hidden="true"><span class="line accent">together.</span></span>
+          <span class="line-mask" aria-hidden="true"><span class="line"><span class="accent">together.</span></span></span>
         </h1>
         <div class="ph-bottom intro-fade" style="--id: 0.8s">
-          <p class="ph-lead">Sync play, pause, and seek across two browsers. No screenshare. Just the video, in lockstep.</p>
-          <span>Create a room &darr;</span>
+          <p class="ph-lead">Play, pause and seek stay in lockstep across everyone&rsquo;s browser. <span class="serif">No screenshare, no quality loss.</span></p>
+          <span>Start a room &darr;</span>
         </div>
       </div>
     </section>
 
-    <section class="section watch-room-sec panel" data-event="watch-room">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Room)</span><span>Share the link, press play</span></div>
+    <!-- ROOM -->
+    <section class="section watch-room-sec panel" data-chapter="Room">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Room</span><span class="k-line"></span><span class="k-meta">Share the link, press play</span></div>
 
-        <div class="watch-stack">
+        <div class="watch-grid">
 
-          <div class="watch-panel reveal">
-            <input id="input-name" class="input name-input" placeholder="your name" maxlength="24" spellcheck="false" aria-label="Your name"/>
-
-            <button id="btn-create" class="btn-primary block">Create room</button>
-            <div class="or">or</div>
-            <div class="join-row">
-              <input id="input-room" class="input" placeholder="room code" maxlength="12" spellcheck="false" aria-label="Room code"/>
-              <button id="btn-join" class="btn-ghost">Join</button>
-            </div>
-
-            <div class="room-status" id="room-status" role="status" aria-live="polite">
-              <span class="status-dot idle"></span>
-              <span class="status-text">Not connected</span>
-              <span class="peer-chips" id="peer-chips"></span>
-            </div>
-
-            <div class="room-link hidden" id="room-link">
-              <code id="share-url"></code>
-              <button id="btn-copy" class="btn-ghost small">Copy</button>
-              <button id="btn-leave" class="btn-ghost small">Leave</button>
-            </div>
+          <div class="watch-how">
+            <h2 class="sec-title sm" data-split>Three steps <span class="accent">to the same frame.</span></h2>
+            <ol class="watch-steps">
+              <li class="reveal"><span class="step-num">01</span><div><h3>Name yourself</h3><p>Two characters or more. It&rsquo;s only so your friends know who just paused it.</p></div></li>
+              <li class="reveal d1"><span class="step-num">02</span><div><h3>Create a room</h3><p>You get a link. Anyone who opens it lands in the same room.</p></div></li>
+              <li class="reveal d2"><span class="step-num">03</span><div><h3>Paste a video</h3><p>YouTube or Twitch plays right here. For Netflix and friends, grab the extension below.</p></div></li>
+            </ol>
           </div>
 
-          <div class="watch-panel reveal d1 player-panel hidden" id="player-panel">
-            <div class="panel-head">
-              <div class="panel-title">Watch here</div>
-              <div class="panel-hint">YouTube · Twitch</div>
+          <div class="watch-stack">
+
+            <div class="watch-panel glow reveal">
+              <div class="panel-head">
+                <div class="panel-title">Your room</div>
+                <div class="panel-hint">Step 01 + 02</div>
+              </div>
+              <input id="input-name" class="input name-input" placeholder="your name" maxlength="24" spellcheck="false" aria-label="Your name"/>
+
+              <button id="btn-create" class="btn block">Create room</button>
+              <div class="or">or join one</div>
+              <div class="join-row">
+                <input id="input-room" class="input" placeholder="room code" maxlength="12" spellcheck="false" aria-label="Room code"/>
+                <button id="btn-join" class="btn ghost">Join</button>
+              </div>
+
+              <div class="room-status" id="room-status" role="status" aria-live="polite">
+                <span class="status-dot idle"></span>
+                <span class="status-text">Not connected</span>
+                <span class="peer-chips" id="peer-chips"></span>
+              </div>
+
+              <div class="room-link hidden" id="room-link">
+                <code id="share-url"></code>
+                <button id="btn-copy" class="btn ghost small">Copy</button>
+                <button id="btn-leave" class="btn ghost small">Leave</button>
+              </div>
             </div>
-            <div class="url-row">
-              <input id="input-url" class="input" placeholder="Paste YouTube or Twitch URL" spellcheck="false" aria-label="Video URL"/>
-              <button id="btn-load" class="btn-ghost">Load</button>
+
+            <div class="watch-panel glow reveal d1 player-panel hidden" id="player-panel">
+              <div class="panel-head">
+                <div class="panel-title">Watch here</div>
+                <div class="panel-hint">YouTube &middot; Twitch</div>
+              </div>
+              <div class="url-row">
+                <input id="input-url" class="input" placeholder="Paste a YouTube or Twitch URL" spellcheck="false" aria-label="Video URL"/>
+                <button id="btn-load" class="btn ghost">Load</button>
+              </div>
+              <div class="player-host hidden" id="player-host">
+                <div id="player-mount"></div>
+              </div>
+              <div class="player-err hidden" id="player-err"></div>
             </div>
-            <div class="player-host hidden" id="player-host">
-              <div id="player-mount"></div>
+
+            <div class="watch-panel glow reveal d2 install-panel">
+              <div class="panel-head">
+                <div class="panel-title">Netflix, Disney+, HBO?</div>
+                <div class="panel-hint">Use the extension</div>
+              </div>
+              <p class="install-lead">Those sites block embedding, so the extension syncs the player on their own page instead. It speaks the same protocol, so it stays in step with people watching here.</p>
+              <a class="btn shine block" href="https://github.com/ritviksajeev/ev/releases/latest/download/evzero-watchparty.zip">Download for Chrome <span class="arrow">&rarr;</span></a>
+              <div class="install-sub">
+                Works on Chrome, Brave, Edge, Opera, Arc.
+                <button class="link-btn" id="btn-how">Install steps</button>
+              </div>
+              <div class="install-soon">Chrome Web Store + Firefox: coming soon</div>
+
+              <div class="install-how hidden" id="install-how">
+                <ol class="install-steps">
+                  <li>Unzip the downloaded file.</li>
+                  <li>Open <code>chrome://extensions</code>.</li>
+                  <li>Toggle <b>Developer mode</b> (top right).</li>
+                  <li><b>Load unpacked</b> &rarr; pick the unzipped folder.</li>
+                  <li>Pin the extension, open Netflix / YouTube / Twitch, click the icon.</li>
+                </ol>
+              </div>
             </div>
-            <div class="player-err hidden" id="player-err"></div>
+
           </div>
-
-          <div class="watch-panel reveal d2 install-panel">
-            <div class="panel-head">
-              <div class="panel-title">Netflix, Disney+, HBO?</div>
-              <div class="panel-hint">Use the extension</div>
-            </div>
-            <a class="btn-primary block" href="https://github.com/ritviksajeev/ev/releases/latest/download/evzero-watchparty.zip">Download for Chrome →</a>
-            <div class="install-sub">
-              Works on Chrome, Brave, Edge, Opera, Arc.
-              <button class="link-btn" id="btn-how">Install steps</button>
-            </div>
-            <div class="install-soon">Chrome Web Store + Firefox — coming soon</div>
-
-            <div class="install-how hidden" id="install-how">
-              <ol class="install-steps">
-                <li>Unzip the downloaded file.</li>
-                <li>Open <code>chrome://extensions</code>.</li>
-                <li>Toggle <b>Developer mode</b> (top right).</li>
-                <li><b>Load unpacked</b> → pick the unzipped folder.</li>
-                <li>Pin the extension, open Netflix / YouTube / Twitch, click the icon.</li>
-              </ol>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>
@@ -137,43 +148,59 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / watchparty</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
             <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="../projects/" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / watchparty</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
-  <script src="../js/watchparty.js?v=2.2"></script>
-  <script src="../js/player-web.js?v=2.2"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
+  <script src="../js/watchparty.js?v=3.0"></script>
+  <script src="../js/player-web.js?v=3.0"></script>
 </body>
 </html>

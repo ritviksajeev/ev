@@ -1,6 +1,6 @@
 # evzero.org
 
-Personal site + Solren esports hub.
+Personal site and project hub (v3).
 
 Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 
@@ -10,7 +10,6 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 |----------------------|-------------------------|
 | `evzero.org`         | `index.html`            |
 | `/projects`          | `projects/index.html`   |
-| `/solren`            | `solren/index.html`     |
 | `/contact`           | `contact/index.html`    |
 | `/watchparty`        | `watchparty/index.html` |
 | `/valorant`          | `valorant/index.html`   |
@@ -18,39 +17,38 @@ Pure HTML / CSS / vanilla JS — drop anywhere that serves static files.
 | `/ais`               | `ais/index.html`        |
 | `/qres`              | `qres/index.html`       |
 | `/sketch`            | `sketch/` (built, see below) |
+| anything else        | `404.html`              |
 
 ## File layout
 
 ```
 website-evzero/
-├── index.html              ← home page
-├── projects/index.html     ← shop-style project grid + modal
-├── solren/index.html       ← esports team, tabbed by game
+├── index.html              ← home: wordmark pill + cube, profile, headliners, slab shelf
+├── projects/index.html     ← sticker picker + index rows + case file
 ├── contact/index.html      ← discord + email
-├── qres/index.html     ← Qres landing page
+├── watchparty/index.html   ← room, player, extension
+├── valorant/index.html     ← tracker (marked outdated)
+├── ais/ spice/ qres/       ← product pages (share css/product.css)
+├── 404.html
 ├── css/
-│   ├── common.css          ← theme, nav + menu, curtain + welcome, reveals, footer, cat, cursor
-│   ├── home.css
-│   ├── projects.css
-│   ├── solren.css
-│   ├── qres.css
-│   └── contact.css
+│   ├── site.css            ← tokens, curtain + welcome, top bar, sticker menu, chapter dock,
+│   │                         panels, reveals, buttons, glow cards, footer, cat, cursor
+│   ├── home.css  projects.css  contact.css  watchparty.css  valorant.css
+│   ├── product.css         ← /ais, /spice, /qres + their app mock-ups
+│   └── common.css          ← frozen v2 sheet, only the sealed page still links it
 ├── js/
-│   ├── common.js           ← page curtain + homepage welcome, smooth scroll, cursor, menu, reveals
+│   ├── site.js             ← curtain, smooth scroll, cursor, menu, dock, stickers, warp field,
+│   │                         panels, reveals
 │   ├── cat.js              ← pixel cat state machine
-│   ├── projects.js         ← project modal + SVG covers
-│   ├── solren.js           ← game tab switcher
+│   ├── projects.js         ← project copy + the case-file viewer
+│   ├── watchparty.js  player-web.js  valorant.js
+│   ├── common.js           ← frozen v2 script, only the sealed page still links it
 │   └── vendor/lenis.min.js ← smooth scrolling (Lenis 1.3.26, MIT)
 ├── tools/
 │   └── seal.mjs            ← encrypts a sealed page's contents (see Notes)
 ├── assets/
-│   ├── logo.svg            ← EvZero logo (purple/black waves)
-│   ├── solren-logo.svg
-│   ├── favicon.svg
-│   ├── favicon.png         ← the tab icon pages link to (favicon.svg holds JPEG bytes)
-│   ├── game-valorant.svg
-│   ├── game-bgmi.svg
-│   └── game-marvelrivals.svg
+│   ├── favicon.png         ← the tab icon every page links to
+│   └── ais-review.webp     ← screenshot on the AiS page
 ├── CNAME                   ← GitHub Pages custom domain
 ├── _redirects              ← Netlify clean-URL redirects
 ├── vercel.json             ← Vercel clean-URL config
@@ -79,21 +77,28 @@ See `sketch-fighter/README.md`.
 
 ## Notes & TODOs
 
-- Social handles in the home page (`@evzero`, `discord.gg/evzero`, etc.) are
-  placeholders — swap them in each page's HTML.
-- Project entries are defined in `js/projects.js` under the `PROJECTS` object;
-  add/remove/edit there.
-- Solren rosters are literal HTML in `solren/index.html` — update player names
-  and avatars directly.
-- Game banners are inline SVG (`assets/game-*.svg`). Replace with real images
-  if you'd rather use official game art (keep aspect ~16:10).
+- Look: ink black, warm off-white type, one iris accent (tokens at the top of
+  `css/site.css`). Fonts are Geist, Geist Mono and Instrument Serif (the
+  italic accent phrase in big titles is `.accent`).
+- Every public page shares the same head, top bar and footer markup. Change
+  one, change them all.
+- Projects: each one is a row in `projects/index.html` (status and version
+  live there as `data-status` / `data-kind` / `data-version`) plus an entry in
+  `PROJECTS` in `js/projects.js` (the prose, files and buttons). The stickers
+  are drawn by `STICKERS` in `js/site.js`; put one anywhere with
+  `<span data-sticker="ais"></span>`.
+- The menu and the chapter dock are built by `site.js`: the menu from
+  `MENU_PAGES` / `MENU_PROJECTS`, the dock from every `data-chapter="Name"`
+  section on the page.
 - CSS/JS links carry a `?v=` cache-buster. After editing a stylesheet or
   script, bump the number on every link to that file so visitors don't get a
   stale cached copy next to new HTML.
-- Motion hooks (in `common.js` / `common.css`): `data-split` (letter blur-in),
+- Motion hooks (in `site.js` / `site.css`): `data-split` (letter blur-in),
   `data-lit` (words light up on scroll), `.reveal` + `d1`–`d7` (fade/rise),
   `.line-mask > .line` + `.intro-fade` (play when the curtain lifts),
-  `data-marquee`, `data-magnetic`, `data-cursor-label="View"`.
+  `data-warp` (star field), `.glow` (border lights up near the cursor),
+  `data-count`, `data-flip`, `data-scramble`, `data-marquee`,
+  `data-magnetic`, `data-cursor-label="View"`.
 - Page curtain: every page has a `.loader` that shows the `evzero` mark while
   it loads and sweeps in on page changes. The first homepage view of a
   session (sessionStorage `evz-welcomed`) plays `evzero` -> `WELCOME` on it
@@ -110,7 +115,7 @@ See `sketch-fighter/README.md`.
   `<footer class="site-footer panel">` sit inside `<div class="panels">`, and
   every top-level `<section>` in main has the `panel` class. Panels pin once
   their bottom reaches the screen bottom and the next one slides over them.
-  Keep `position: fixed` things (modals, toasts) *outside* `.panels`.
+  Keep `position: fixed` things (the case file, toasts) *outside* `.panels`.
 
 ---
 

@@ -1,31 +1,122 @@
 /* ============================================
-   Contact page (v2)
+   Contact page (v3)
    ============================================ */
 
-.contact-hero {
-  position: relative;
-  text-align: center;
+.channel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
-.contact-hero .hero-eyebrow { margin-bottom: 32px; }
-.contact-title { margin: 0; }
-.contact-title .ev   { color: var(--white); }
-.contact-title .zero { color: var(--purple-bright); }
-.contact-hero .tagline-mono { margin-top: 26px; }
-
-/* ---- sign-off section ---- */
-.signoff-title { margin-bottom: 28px; }
-.signoff p {
-  max-width: 520px;
-  margin: 0 0 36px;
+.channel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: clamp(300px, 36vh, 400px);
+  padding: clamp(24px, 3vw, 44px);
+  color: var(--white);
+  transition: transform 0.8s var(--ease-expo);
+}
+.channel:hover { transform: translateY(-6px); }
+.channel-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.channel-icon {
+  display: grid;
+  place-items: center;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--white-rule);
+  color: var(--purple-bright);
+  transition: background 0.4s var(--ease-out), color 0.4s var(--ease-out), rotate 0.8s var(--ease-expo);
+}
+.channel-icon svg { width: 22px; height: 22px; }
+.channel:hover .channel-icon { background: var(--white); color: var(--bg-0); rotate: -10deg; }
+.channel-name {
+  margin-top: auto;
+  font-size: clamp(44px, 6vw, 96px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.065em;
+}
+.channel-desc {
+  max-width: 460px;
   font-size: 15px;
-  line-height: 1.65;
+  line-height: 1.7;
   color: var(--white-dim);
 }
-.signoff .sig {
+.channel-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--white-line);
+}
+.channel-handle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: var(--white-dim);
+  transition: color 0.3s var(--ease-out);
+}
+a.channel-handle:hover { color: var(--purple-bright); }
+.channel-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.channel-actions .btn { min-height: 40px; padding: 0 18px; }
+a.channel:hover .ulink { color: var(--purple-bright); background-size: 0% 1px; background-position: 100% 100%; }
+
+.elsewhere {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(22px, 3vw, 36px);
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 2.5px;
+  letter-spacing: 1.6px;
   text-transform: uppercase;
   color: var(--white-faint);
 }
-.signoff .sig span { color: var(--purple-bright); }
+.elsewhere .chip { transition: color 0.3s var(--ease-out), border-color 0.3s var(--ease-out); }
+.elsewhere .chip:hover { color: var(--white); border-color: rgba(180, 165, 255, 0.6); }
+
+/* sign-off */
+.signoff-title { margin-bottom: clamp(32px, 5vw, 72px); }
+.signoff-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(28px, 6vw, 96px);
+  align-items: start;
+}
+.send-list { border-top: 1px solid var(--white-rule); }
+.send-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--white-rule);
+  font-size: clamp(17px, 1.7vw, 24px);
+  letter-spacing: -0.03em;
+}
+.send-list span {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  color: var(--purple-bright);
+}
+.sig {
+  margin-top: clamp(36px, 5vw, 72px);
+  font-size: 18px;
+  color: var(--white-faint);
+}
+.sig { display: flex; align-items: baseline; gap: 14px; }
+.sig .serif { font-size: clamp(44px, 5vw, 76px); line-height: 0.8; color: var(--white); }
+.sig-sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase; }
+
+@media (max-width: 860px) {
+  .channel-grid, .signoff-grid { grid-template-columns: 1fr; }
+  .channel { min-height: 0; }
+}

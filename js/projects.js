@@ -1,51 +1,114 @@
 /* ============================================
-   Projects page - modal + inline covers
+   Work page - sticker picker + case file
+   The picker stickers and the index rows both
+   carry data-project; clicking either opens the
+   case file for that project. Status and version
+   live on the row in the HTML (data-status /
+   data-kind / data-version); everything else is
+   in PROJECTS below.
    ============================================ */
 
 (function () {
   'use strict';
 
-  const cards = document.querySelectorAll('.project-card');
+  const caseEl = document.getElementById('case');
+  if (!caseEl) return;
 
-  // Modal
-  const modal = document.querySelector('.project-modal');
-  if (!modal) return;
-  const modalTitle = modal.querySelector('.pm-title');
-  const modalMeta = modal.querySelector('.pm-meta');
-  const modalDesc = modal.querySelector('.pm-desc');
-  const modalFiles = modal.querySelector('.pm-files');
-  const modalCover = modal.querySelector('.pm-cover');
-  const modalActions = modal.querySelector('.pm-actions');
+  const art = caseEl.querySelector('.case-art');
+  const chip = caseEl.querySelector('.case-chip');
+  const ver = caseEl.querySelector('.case-ver');
+  const title = caseEl.querySelector('.case-title');
+  const desc = caseEl.querySelector('.case-desc');
+  const spec = caseEl.querySelector('.case-spec');
+  const filesLabel = caseEl.querySelector('.case-files-label');
+  const files = caseEl.querySelector('.case-files');
+  const actions = caseEl.querySelector('.case-actions');
+  const count = caseEl.querySelector('.case-count');
+  const panel = caseEl.querySelector('.case-panel');
 
   const PROJECTS = {
-    'evzero-org': {
-      title: 'evzero.org',
-      meta: ['website', 'v2.1', 'shipped · 2026'],
+    'ais': {
+      title: 'AiS',
+      sticker: 'ais',
+      type: 'Research prototype',
+      stack: 'Python · Docker',
+      since: '2026',
       desc: [
-        'The personal hub. Smooth-scroll sections, a pixel cat that stalks your cursor, SVG logos, and fully hand-built animations.',
-        'No framework. Just HTML, CSS, and JS - the way the web intended.',
+        'Agent-in-Sandbox. AI coding agents are increasingly handed write access to real files, which makes a hijacked one look exactly like a working one until after it has written. AiS takes the filesystem away entirely.',
+        'The agent proposes a change against a filename: no path, no handle. The change is applied to a disposable copy inside a locked-down container and actually executed there, while a Python audit hook records every network call, file write and process spawn, and names the line responsible. A human sees the diff and what the code really did, side by side, and nothing reaches a real file until they approve.',
+        'Evaluated on ten scripted edits, seven deliberately hostile: 100% caught, 0% false positives. The interesting one breaks the code and edits the test that would catch it. Every test passes, and it still gets flagged.',
+        'Ten scenarios written by the same person who wrote the rules measures consistency, not robustness, so there is a second harness that generates novel attacks and scores them blind. It is allowed to fail: 25 attacks, 86% caught, 0 false positives, and three gaps named on the page rather than buried.',
+        'The editor is now a real model, and the test that matters is whether it can be turned. One task hands it a file with instructions hidden in a docstring telling it to phone home. If it complies, the sandbox sees the connection and blocks the edit. The model is treated as the victim, never as the safeguard.',
+        'The review screen is built for whoever actually has to approve an AI&rsquo;s change, not just engineers: anti-cheat for AI. The answer is the headline, a six-line checklist says why in plain words, and only the safe button is ever highlighted. The editor can also run on a free local model through Ollama, no API key.',
       ],
-      files: ['index.html', 'css/common.css', 'js/cat.js', 'assets/logo.svg'],
-      cover: coverWave('#8b5cf6'),
+      files: [
+        'ais/mediator/mediator.py',
+        'ais/sandbox/tracer.py',
+        'ais/verifier/rules.py',
+        'ais/audit/log.py',
+        'demo.py',
+      ],
+      actions: [
+        { label: 'Open the AiS page', href: '../ais/' },
+        { label: 'Source on GitHub', href: 'https://github.com/ritviksajeev/ais', external: true },
+      ],
     },
-    'pixel-cat': {
-      title: 'pixel-cat',
-      meta: ['site pet', 'vanilla js + svg', '2026'],
+    'spice': {
+      title: 'Spice',
+      sticker: 'spice',
+      type: 'Desktop app',
+      stack: 'Electron · React · TypeScript',
+      since: '2026',
       desc: [
-        'The cat wandering every page of this site. A small state machine runs every frame: it idles, wanders off to a random spot, curls up for a nap (with a floating z), and every so often says something &mdash; meow!, prr..., mrrp, pspsps?',
-        'It keeps an eye on your cursor. Get near and it turns to face you, sometimes it stalks over, and if the cursor gets close it pounces. Click it and it meows and pounces on the spot.',
-        'Three hand-placed 16&times;16 SVG sprites &mdash; standing, curled up asleep, mid-pounce &mdash; built from plain rects with crisp edges, so they stay sharp at any size. Plain JavaScript, no libraries. It hides on small screens, where there is no cursor to chase.',
+        'A desktop overlay for gamers. It drops a transparent, always-on-top layer on the monitor of your choice: a centre-locked crosshair, six preset shapes you can restyle (or your own PNG / GIF), an image library, and opt-in WASD and mouse visualizers.',
+        'Anti-cheat-conscious by default: no process injection, no game memory access, no synthetic input. The optional input mirror uses the same passive Win32 hook Discord and OBS use. It is fine for EAC and BattlEye, off by default, and best left off for Vanguard.',
+        'Saves profiles, knows about every monitor you have, lives in the system tray and checks for updates on launch.',
       ],
-      files: ['js/cat.js', 'css/common.css'],
-      cover: coverCat(),
-      actions: [{ label: 'View the source →', href: 'https://github.com/ritviksajeev/ev/blob/main/js/cat.js', external: true }],
+      files: [
+        'electron/main.cjs',
+        'electron/preload.cjs',
+        'src/app/App.tsx',
+        'README.md',
+        'CHANGELOG.md',
+      ],
+      actions: [
+        { label: 'Open the Spice page', href: '../spice/' },
+        { label: 'Download v0.1.3-alpha', href: 'https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip', external: true },
+      ],
+    },
+    'qres': {
+      title: 'Qres',
+      sticker: 'qres',
+      type: 'Desktop app',
+      stack: 'Electron · C# · Win32',
+      since: '2026',
+      desc: [
+        'Press a key. Your resolution changes. Press it again, it changes back. Built for stretched-res players tired of walking through the Windows display settings every time they switch games.',
+        'The quick grid is generated from the modes your panel actually reports: native, the stretched widths that keep its vertical lines, and same-shape lower resolutions. Refresh rate comes along for the ride: leave it on <em>highest available</em> and dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60.',
+        'Game profiles switch on a process launching and restore native when it exits. Changes made in the window revert themselves after 15 seconds if you never confirm, so a mode your monitor can\'t display never leaves you on a black screen, while hotkey switches skip the dialog, because nothing should land on top of your game.',
+        'No native node module and no committed binary: the Win32 layer is a small C# CLI the app compiles on first run with the csc.exe already inside Windows, then caches.',
+      ],
+      files: [
+        'native/QresDisplay.cs',
+        'electron/main.cjs',
+        'electron/display.cjs',
+        'src/App.tsx',
+        'README.md',
+      ],
+      actions: [
+        { label: 'Open the Qres page', href: '../qres/' },
+        { label: 'Source on GitHub', href: 'https://github.com/ritviksajeev/Qres', external: true },
+      ],
     },
     'watchparty': {
-      title: 'watchparty',
-      meta: ['web + extension', 'ws relay', '2026'],
+      title: 'Watchparty',
+      sticker: 'watchparty',
+      type: 'Web app + extension',
+      stack: 'Node · WebSockets',
+      since: '2026',
       desc: [
-        'Two browsers, one video, same frame. The site embeds YouTube and Twitch directly and keeps every player in lockstep through a small Node WebSocket relay.',
-        'The extension picks up where embedding can\'t — Netflix, Disney+, HBO, anywhere a site blocks framing. Same wire protocol, so a web peer and an extension peer sync with each other.',
+        'Two browsers, one video, the same frame. The site embeds YouTube and Twitch directly and keeps every player in lockstep through a small Node WebSocket relay.',
+        'The extension picks up where embedding can\'t: Netflix, Disney+, HBO, anywhere a site blocks framing. It speaks the same wire protocol, so someone on the site and someone on the extension stay in sync with each other.',
         'Create a room, share the link, press play. No screenshare, no quality loss.',
       ],
       files: [
@@ -55,15 +118,67 @@
         'extension/content.js',
         'extension/background.js',
       ],
-      cover: coverWatch(),
-      actions: [{ label: 'Open watchparty →', href: '../watchparty/' }],
+      actions: [{ label: 'Open Watchparty', href: '../watchparty/' }],
+    },
+    'sketch-fighter': {
+      title: 'Sketch Fighter',
+      sticker: 'sketch',
+      type: 'Game (working title)',
+      stack: 'Flask · Phaser 3 · OpenCV',
+      since: '2026',
+      desc: [
+        'Draw a fighting-game stage on an index card, photograph it with your phone, and fight on it seconds later.',
+        'The photo goes through an OpenCV pipeline that turns pen lines into a 40 &times; 24 tile grid, then a stage analyser works out what is actually reachable, fixes what isn&rsquo;t, picks spawn points and builds a navigation graph so the CPU opponent can get around a level it has never seen.',
+        'The build on this site plays the sample stages in your browser, in landscape on a phone too. Scanning your own card needs the local server for now.',
+      ],
+      files: [
+        'backend/vision.py',
+        'backend/stage_analysis.py',
+        'frontend/src/sim/',
+        'frontend/src/scenes/',
+        'shared/game.json',
+      ],
+      actions: [
+        { label: 'Play the sample stages', href: '../sketch/' },
+        { label: 'Source on GitHub', href: 'https://github.com/ritviksajeev/ev/tree/main/sketch-fighter', external: true },
+      ],
+    },
+    'pixel-cat': {
+      title: 'Pixel cat',
+      sticker: 'cat',
+      type: 'Site pet',
+      stack: 'Vanilla JS · SVG',
+      since: '2026',
+      desc: [
+        'The cat wandering every page of this site. A small state machine runs every frame: it idles, wanders off to a random spot, curls up for a nap (with a floating z), and every so often says something: meow!, prr..., mrrp, pspsps?',
+        'It keeps an eye on your cursor. Get near and it turns to face you, sometimes it stalks over, and if the cursor gets close it pounces. Click it and it meows and pounces on the spot.',
+        'Three hand-placed 16&times;16 SVG sprites (standing, curled up asleep, mid-pounce) built from plain rects with crisp edges, so they stay sharp at any size. Plain JavaScript, no libraries. It hides on small screens, where there is no cursor to chase.',
+      ],
+      files: ['js/cat.js', 'css/site.css'],
+      actions: [{ label: 'View the source', href: 'https://github.com/ritviksajeev/ev/blob/main/js/cat.js', external: true }],
+    },
+    'evzero-org': {
+      title: 'evzero.org',
+      sticker: 'site',
+      type: 'Website',
+      stack: 'HTML · CSS · JS',
+      since: '2025',
+      desc: [
+        'The site you&rsquo;re on. Version three: a warp field behind every hero, a menu made of stickers, sections that slide over each other like pages, a shelf of 3D slabs, and a cat.',
+        'No framework and no build step. Every animation here is hand-written CSS and JavaScript. The only library on the page is the one that smooths the scroll.',
+      ],
+      files: ['index.html', 'css/site.css', 'js/site.js', 'js/cat.js'],
+      actions: [{ label: 'Source on GitHub', href: 'https://github.com/ritviksajeev/ev', external: true }],
     },
     'valorant-tracker': {
-      title: 'valorant-tracker',
-      meta: ['web', 'henrik api', 'outdated · 2026'],
+      title: 'Valorant tracker',
+      sticker: 'tracker',
+      type: 'Web app',
+      stack: 'Henrik API · Node proxy',
+      since: '2026',
       desc: [
-        'Type a Riot ID, get a rank card, recent form, and a full match log. Data is pulled live from Henrik\'s community Valorant API through a small proxy so the key never hits the browser.',
-        'Landing pad for a bigger companion app in the works — same identity and stats will carry across both.',
+        'Type a Riot ID, get a rank card, recent form and a full match log. Data comes from Henrik&rsquo;s community Valorant API through a small proxy, so the key never reaches the browser.',
+        'It&rsquo;s marked outdated: the page still loads, but expect ranks and match data to be stale or missing.',
       ],
       files: [
         'valorant/index.html',
@@ -71,92 +186,34 @@
         'js/valorant.js',
         'server/valorant.js',
       ],
-      cover: coverValorant(),
-      actions: [{ label: 'Open tracker →', href: '../valorant/' }],
-    },
-    'spice': {
-      title: 'spice',
-      meta: ['desktop app', 'electron + react', 'alpha · 2026'],
-      desc: [
-        'A hardware-level desktop overlay for gamers. Drops a transparent always-on-top layer on the monitor of your choice — center-locked crosshair, fully customizable preset shapes (or your own PNG/GIF), custom image library, and opt-in WASD/mouse visualizers.',
-        'Anti-cheat-conscious by default: no process injection, no game memory access, no synthetic input. The optional input mirror uses the same passive Win32 hook Discord and OBS use — fine for EAC/BattlEye, off by default for Vanguard.',
-        'Cyber-brutalist UI to match this site. Saves profiles, multi-monitor aware, system-tray resident, auto-update on launch.',
-      ],
-      files: [
-        'electron/main.cjs',
-        'electron/preload.cjs',
-        'src/app/App.tsx',
-        'README.md',
-        'CHANGELOG.md',
-      ],
-      cover: coverSpice(),
-      actions: [
-        { label: 'Open Spice page →', href: '../spice/' },
-        { label: 'Download v0.1.3-alpha →', href: 'https://github.com/ritviksajeev/spice/releases/download/v0.1.3-alpha/Spice-v0.1.3-alpha-win-x64.zip', external: true },
-      ],
-    },
-    'ais': {
-      title: 'AiS',
-      meta: ['research prototype', 'python + docker', 'alpha · 2026'],
-      desc: [
-        'Agent-in-Sandbox. AI coding agents are increasingly handed write access to real files, which makes a hijacked one look exactly like a working one until after it has written. AiS takes the filesystem away entirely.',
-        'The agent proposes a change against a filename &mdash; no path, no handle. The change is applied to a disposable copy inside a locked-down container and actually executed there, while a Python audit hook records every network call, file write and process spawn, and names the line responsible. A human sees the diff and what the code really did, side by side, and nothing reaches a real file until they approve.',
-        'Evaluated on ten scripted edits, seven deliberately hostile: 100% caught, 0% false positives. The interesting one breaks the code and edits the test that would catch it &mdash; every test passes, and it still gets flagged.',
-        'Ten scenarios written by the same person who wrote the rules measures consistency, not robustness, so there is a second harness that generates novel attacks and scores them blind. It is allowed to fail: 25 attacks, 86% caught, 0 false positives, and three gaps named on the page rather than buried.',
-        'The editor is now a real model, and the test that matters is whether it can be turned. One task hands it a file with instructions hidden in a docstring telling it to phone home. If it complies, the sandbox sees the connection and blocks the edit &mdash; the model is treated as the victim, never as the safeguard.',
-        'The review screen is built for whoever actually has to approve an AI&rsquo;s change, not just engineers: anti-cheat for AI. The answer is the headline, a six-line checklist says why in plain words, and only the safe button is ever highlighted. The editor can also run on a free local model through Ollama &mdash; no API key.',
-      ],
-      files: [
-        'ais/mediator/mediator.py',
-        'ais/sandbox/tracer.py',
-        'ais/verifier/rules.py',
-        'ais/audit/log.py',
-        'demo.py',
-      ],
-      cover: coverAis(),
-      actions: [
-        { label: 'Open AiS page \u2192', href: '../ais/' },
-        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/ais', external: true },
-      ],
-    },
-    'qres': {
-      title: 'Qres',
-      meta: ['desktop app', 'electron + win32', '2026'],
-      desc: [
-        'Press a key. Your resolution changes. Press it again, it changes back. Built for stretched-res players tired of walking through the Windows display settings every time they switch games.',
-        'The quick grid is generated from the modes your panel actually reports \u2014 native, the stretched widths that keep its vertical lines, and same-shape lower resolutions. Refresh rate comes along for the ride: leave it on <em>highest available</em> and dropping to 1440&times;1080 keeps your 240 Hz instead of quietly falling back to 60.',
-        'Game profiles switch on a process launching and restore native when it exits. Changes made in the window revert themselves after 15 seconds if you never confirm, so a mode your monitor can\'t display never leaves you on a black screen \u2014 while hotkey switches skip the dialog, because nothing should land on top of your game.',
-        'No native node module and no committed binary: the Win32 layer is a small C# CLI the app compiles on first run with the csc.exe already inside Windows, then caches. Same purple as this site, in light and dark.',
-      ],
-      files: [
-        'native/QresDisplay.cs',
-        'electron/main.cjs',
-        'electron/display.cjs',
-        'src/App.tsx',
-        'README.md',
-      ],
-      cover: coverQres(),
-      actions: [
-        { label: 'Open Qres page \u2192', href: '../qres/' },
-        { label: 'Source on GitHub \u2192', href: 'https://github.com/ritviksajeev/Qres', external: true },
-      ],
+      actions: [{ label: 'Open the tracker', href: '../valorant/' }],
     },
     'mystery': {
       title: '???',
-      meta: ['classified', 'wip', 'soon'],
+      sticker: 'mystery',
+      type: 'Classified',
+      stack: '[redacted]',
+      since: 'Soon',
       desc: [
         'Still under the tarp. Check back later.',
         'If you really want a hint: it probably involves purple.',
       ],
-      files: ['[redacted]'],
-      cover: coverMystery(),
+      files: [],
+      actions: [],
     },
   };
 
+  const rows = Array.from(document.querySelectorAll('.pr-row[data-project]'));
+  const order = rows.map((r) => r.dataset.project).filter((id) => PROJECTS[id]);
+  const rowFor = (id) => rows.find((r) => r.dataset.project === id);
+  const sticker = (name) => (window.EV && window.EV.sticker ? window.EV.sticker(name) : '');
+  const pad = (n) => String(n).padStart(2, '0');
+
+  let current = null;
   let lastFocus = null;
 
-  // Scroll lock via common.js (keeps the pinned page panels intact); plain
-  // <html> overflow as a fallback if common.js isn't there.
+  // Scroll lock via site.js (keeps the pinned page panels intact); plain
+  // <html> overflow as a fallback if site.js isn't there.
   function lockPage(on) {
     const ev = window.EV;
     if (ev && typeof ev.lock === 'function') {
@@ -166,312 +223,111 @@
     }
   }
 
-  function openModal(id) {
+  function fill(id) {
     const data = PROJECTS[id];
-    if (!data) return;
-    const wasOpen = modal.classList.contains('open');
-    if (!wasOpen) lastFocus = document.activeElement;
-    // Expose which project is open so a name with deliberate casing (AiS) can
-    // opt out of the grid's uppercase treatment.
-    modal.dataset.project = id;
-    modalTitle.textContent = data.title;
-    modalMeta.innerHTML = data.meta.map((m) => `<span>${m}</span>`).join('');
-    modalDesc.innerHTML = data.desc.map((p) => `<p>${p}</p>`).join('');
-    modalFiles.innerHTML = data.files.map((f) => `<div class="file-line">${f}</div>`).join('');
-    modalCover.innerHTML = data.cover;
-    modalActions.innerHTML = (data.actions || [])
-      .map((a) => a.external
-        ? `<a class="pm-btn" href="${a.href}" download>${a.label}</a>`
-        : `<a class="pm-btn" href="${a.href}" data-transition>${a.label}</a>`
-      )
-      .join('');
-    modal.classList.add('open');
-    if (!wasOpen) lockPage(true);
-    const closeBtn = modal.querySelector('.project-modal-close');
-    if (closeBtn) setTimeout(() => closeBtn.focus({ preventScroll: true }), 60);
+    const row = rowFor(id);
+    const status = row ? row.dataset.status : '';
+    const kind = row ? row.dataset.kind : '';
+    const version = row ? row.dataset.version : '';
+
+    // Exposed so a name with deliberate casing (AiS) can opt out of uppercase.
+    caseEl.dataset.project = id;
+    art.innerHTML = sticker(data.sticker);
+    chip.className = 'chip case-chip ' + kind;
+    chip.textContent = status;
+    ver.textContent = version;
+    title.textContent = data.title;
+    desc.innerHTML = data.desc.map((p) => '<p>' + p + '</p>').join('');
+    spec.innerHTML = [
+      ['Type', data.type],
+      ['Built with', data.stack],
+      ['Since', data.since],
+      ['Status', status + (version ? ' · ' + version : '')],
+    ].map(([k, v]) => '<div class="spec-row"><dt>' + k + '</dt><dd>' + v + '</dd></div>').join('');
+    files.innerHTML = data.files.map((f) => '<span>' + f + '</span>').join('');
+    filesLabel.style.display = data.files.length ? '' : 'none';
+    actions.innerHTML = (data.actions || []).map((a, i) => {
+      const cls = 'btn' + (i === 0 ? ' shine' : ' ghost');
+      const arrow = ' <span class="arrow">' + (a.external ? '&#8599;' : '&rarr;') + '</span>';
+      return a.external
+        ? '<a class="' + cls + '" href="' + a.href + '" target="_blank" rel="noreferrer noopener">' + a.label + arrow + '</a>'
+        : '<a class="' + cls + '" href="' + a.href + '" data-transition>' + a.label + arrow + '</a>';
+    }).join('');
+    count.textContent = pad(order.indexOf(id) + 1) + ' / ' + pad(order.length);
+    panel.scrollTop = 0;
   }
-  function closeModal() {
-    if (!modal.classList.contains('open')) return;
-    modal.classList.remove('open');
+
+  function open(id) {
+    if (!PROJECTS[id]) return;
+    const wasOpen = caseEl.classList.contains('open');
+    if (!wasOpen) lastFocus = document.activeElement;
+    fill(id);
+    current = id;
+    if (wasOpen) {
+      art.classList.remove('swap');
+      void art.offsetWidth;
+      art.classList.add('swap');
+    } else {
+      caseEl.classList.add('open');
+      caseEl.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('case-open');
+      lockPage(true);
+      const closeBtn = caseEl.querySelector('.case-close');
+      setTimeout(() => closeBtn.focus({ preventScroll: true }), 80);
+    }
+    if (history.replaceState) history.replaceState(null, '', '#' + id);
+  }
+  function close() {
+    if (!caseEl.classList.contains('open')) return;
+    caseEl.classList.remove('open');
+    caseEl.setAttribute('aria-hidden', 'true');
+    document.documentElement.classList.remove('case-open');
+    art.classList.remove('swap');
     lockPage(false);
+    current = null;
+    if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus({ preventScroll: true });
     lastFocus = null;
   }
+  function step(dir) {
+    if (!current) return;
+    const i = order.indexOf(current);
+    open(order[(i + dir + order.length) % order.length]);
+  }
 
-  cards.forEach((card) => {
-    card.addEventListener('click', (e) => {
+  document.querySelectorAll('[data-project]').forEach((el) => {
+    if (el === caseEl) return;
+    el.addEventListener('click', (e) => {
       e.preventDefault();
-      openModal(card.dataset.project);
+      open(el.dataset.project);
     });
-    card.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        openModal(card.dataset.project);
-      }
-    });
-  });
-  modal.querySelector('.project-modal-close').addEventListener('click', closeModal);
-  modal.querySelector('.project-modal-backdrop').addEventListener('click', closeModal);
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
-  });
-
-  // -------- cover generators (inline SVGs) --------
-  function coverWave(c) {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="wg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="${c}"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <g stroke="url(#wg)" stroke-width="6" fill="none" stroke-linecap="round">
-          <path d="M 0 50 Q 100 10 200 50 T 400 50"/>
-          <path d="M 0 90 Q 100 50 200 90 T 400 90"/>
-          <path d="M 0 130 Q 100 90 200 130 T 400 130"/>
-          <path d="M 0 170 Q 100 130 200 170 T 400 170"/>
-          <path d="M 0 210 Q 100 170 200 210 T 400 210"/>
-        </g>
-      </svg>
-    `;
-  }
-  function coverCat() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#050507"/>
-        <g transform="translate(130 60) scale(9)" shape-rendering="crispEdges">
-          <rect x="2" y="2" width="2" height="2" fill="#050507"/>
-          <rect x="12" y="2" width="2" height="2" fill="#050507"/>
-          <rect x="2" y="4" width="12" height="5" fill="#050507"/>
-          <rect x="3" y="5" width="10" height="3" fill="#131319"/>
-          <rect x="5" y="6" width="1" height="1" fill="#a78bfa"/>
-          <rect x="10" y="6" width="1" height="1" fill="#a78bfa"/>
-          <rect x="7" y="7" width="2" height="1" fill="#fff"/>
-          <rect x="3" y="9" width="10" height="4" fill="#050507"/>
-          <rect x="4" y="10" width="8" height="2" fill="#131319"/>
-          <rect x="3" y="13" width="2" height="2" fill="#050507"/>
-          <rect x="6" y="13" width="2" height="2" fill="#050507"/>
-          <rect x="8" y="13" width="2" height="2" fill="#050507"/>
-          <rect x="11" y="13" width="2" height="2" fill="#050507"/>
-          <rect x="14" y="9" width="2" height="1" fill="#050507"/>
-          <rect x="15" y="8" width="1" height="2" fill="#8b5cf6"/>
-        </g>
-      </svg>
-    `;
-  }
-  function coverWatch() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="wpg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#8b5cf6"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <rect x="60" y="55" width="130" height="80" rx="4" fill="none" stroke="url(#wpg)" stroke-width="2"/>
-        <polygon points="115,80 115,110 140,95" fill="#a78bfa"/>
-        <rect x="210" y="115" width="130" height="80" rx="4" fill="none" stroke="url(#wpg)" stroke-width="2"/>
-        <polygon points="265,140 265,170 290,155" fill="#a78bfa"/>
-        <path d="M 190 95 Q 200 125 210 155" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3 4" fill="none"/>
-        <circle cx="190" cy="95" r="3" fill="#a78bfa"/>
-        <circle cx="210" cy="155" r="3" fill="#a78bfa"/>
-      </svg>
-    `;
-  }
-  function coverValorant() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="vg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a78bfa"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-          <radialGradient id="vgr" cx="0.5" cy="0.5" r="0.6">
-            <stop offset="0%" stop-color="rgba(167,139,250,0.35)"/>
-            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
-            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
-          </radialGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <rect width="400" height="250" fill="url(#vgr)"/>
-        <g stroke="rgba(255,255,255,0.06)" stroke-width="1">
-          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
-          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
-        </g>
-        <g stroke="url(#vg)" stroke-width="2.5" fill="none" stroke-linecap="round">
-          <line x1="200" y1="95"  x2="200" y2="115"/>
-          <line x1="200" y1="135" x2="200" y2="155"/>
-          <line x1="160" y1="125" x2="180" y2="125"/>
-          <line x1="220" y1="125" x2="240" y2="125"/>
-        </g>
-        <circle cx="200" cy="125" r="2.5" fill="#a78bfa"/>
-        <circle cx="200" cy="125" r="44" stroke="rgba(167,139,250,0.18)" stroke-width="1" fill="none" stroke-dasharray="3 5"/>
-        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">TRACKER</text>
-        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// VAL</text>
-      </svg>
-    `;
-  }
-  function coverSpice() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="spg" cx="0.5" cy="0.5" r="0.55">
-            <stop offset="0%" stop-color="rgba(167,139,250,0.18)"/>
-            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
-            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
-          </radialGradient>
-          <linearGradient id="spgs" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a78bfa"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <rect width="400" height="250" fill="url(#spg)"/>
-        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
-          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
-          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
-        </g>
-        <!-- Spice bracket mark -->
-        <g transform="translate(160 65) scale(5.45)" stroke="url(#spgs)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none">
-          <path d="M2 8L2 2L8 2"/>
-          <path d="M14 2L20 2L20 8"/>
-          <path d="M2 14L2 20L8 20"/>
-          <path d="M14 20L20 20L20 14"/>
-        </g>
-        <g transform="translate(160 65) scale(5.45)" stroke="#a78bfa" stroke-width="1.4" stroke-linecap="round">
-          <line x1="11" y1="7"    x2="11" y2="9.5"/>
-          <line x1="11" y1="12.5" x2="11" y2="15"/>
-          <line x1="7"  y1="11"   x2="9.5"  y2="11"/>
-          <line x1="12.5" y1="11" x2="15" y2="11"/>
-        </g>
-        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">SPICE</text>
-        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// OVERLAY</text>
-      </svg>
-    `;
-  }
-
-  function coverAis() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="aisg" cx="0.5" cy="0.5" r="0.6">
-            <stop offset="0%" stop-color="rgba(167,139,250,0.16)"/>
-            <stop offset="60%" stop-color="rgba(167,139,250,0.035)"/>
-            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
-          </radialGradient>
-          <linearGradient id="aisgs" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a78bfa"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <rect width="400" height="250" fill="url(#aisg)"/>
-        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
-          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
-          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
-        </g>
-        <!-- The shield is the boundary; the box inside it is the sandbox; the dot
-             is the agent. The red rays are escape attempts, stopped at the wall. -->
-        <g transform="translate(200 128) scale(6.6) translate(-11 -11.1)">
-          <path d="M11 2.4 L19 5.3 V11.2 C19 15.5 15.6 18.5 11 19.8 C6.4 18.5 3 15.5 3 11.2 V5.3 Z"
-                fill="none" stroke="url(#aisgs)" stroke-width="0.95" stroke-linejoin="round"/>
-          <rect x="7.4" y="7.2" width="7.2" height="7.2" rx="1.3"
-                fill="none" stroke="#a78bfa" stroke-width="0.6" opacity="0.5"/>
-          <circle cx="11" cy="10.8" r="1.5" fill="#a78bfa"/>
-          <circle cx="11" cy="10.8" r="2.7" fill="none" stroke="#a78bfa" stroke-width="0.35" opacity="0.4"/>
-          <g stroke="#f87171" stroke-width="0.5" stroke-linecap="round">
-            <line x1="11" y1="8.6"  x2="11"   y2="4.6"/>
-            <line x1="11" y1="13"   x2="11"   y2="17.2"/>
-            <line x1="8.8" y1="10.8" x2="4.7" y2="10.8"/>
-            <line x1="13.2" y1="10.8" x2="17.3" y2="10.8"/>
-          </g>
-          <g fill="#f87171">
-            <circle cx="11" cy="4.2" r="0.7"/>
-            <circle cx="11" cy="17.6" r="0.7"/>
-            <circle cx="4.3" cy="10.8" r="0.7"/>
-            <circle cx="17.7" cy="10.8" r="0.7"/>
-          </g>
-        </g>
-        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">AiS</text>
-        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// SANDBOX</text>
-      </svg>
-    `;
-  }
-
-  function coverQres() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="qrg" cx="0.5" cy="0.5" r="0.58">
-            <stop offset="0%" stop-color="rgba(167,139,250,0.18)"/>
-            <stop offset="60%" stop-color="rgba(167,139,250,0.04)"/>
-            <stop offset="100%" stop-color="rgba(167,139,250,0)"/>
-          </radialGradient>
-          <linearGradient id="qrgs" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#a78bfa"/>
-            <stop offset="100%" stop-color="#5b21b6"/>
-          </linearGradient>
-        </defs>
-        <rect width="400" height="250" fill="#050507"/>
-        <rect width="400" height="250" fill="url(#qrg)"/>
-        <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
-          ${Array.from({length: 9}, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="250"/>`).join('')}
-          ${Array.from({length: 6}, (_, i) => `<line x1="0" y1="${i * 50}" x2="400" y2="${i * 50}"/>`).join('')}
-        </g>
-        <!-- The panel, the 4:3 crop inside it, and the arrow that squeezes one
-             into the other - the whole app in one glyph. -->
-        <rect x="112" y="76" width="176" height="99" rx="7" fill="none" stroke="url(#qrgs)" stroke-width="2.4"/>
-        <rect x="145" y="76" width="110" height="99" fill="none" stroke="rgba(167,139,250,0.34)" stroke-width="1.2" stroke-dasharray="4 4"/>
-        <g stroke="#a78bfa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
-          <line x1="152" y1="125.5" x2="248" y2="125.5"/>
-          <path d="M160 117.5 L152 125.5 L160 133.5"/>
-          <path d="M240 117.5 L248 125.5 L240 133.5"/>
-        </g>
-        <text x="30" y="36" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(255,255,255,0.45)" letter-spacing="2">QRES</text>
-        <text x="370" y="228" font-family="JetBrains Mono, monospace" font-size="11" fill="rgba(167,139,250,0.7)" letter-spacing="2" text-anchor="end">// F6</text>
-      </svg>
-    `;
-  }
-
-  function coverMystery() {
-    return `
-      <svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="250" fill="#050507"/>
-        <g stroke="rgba(167,139,250,0.18)" stroke-width="1">
-          ${Array.from({length: 10}, (_, i) => `<line x1="${i * 40}" y1="0" x2="${i * 40}" y2="250"/>`).join('')}
-          ${Array.from({length: 7}, (_, i) => `<line x1="0" y1="${i * 40}" x2="400" y2="${i * 40}"/>`).join('')}
-        </g>
-        <text x="200" y="168" font-family="Unbounded, sans-serif" font-size="160" font-weight="900"
-              fill="none" stroke="rgba(167,139,250,0.55)" stroke-width="1.5"
-              text-anchor="middle" letter-spacing="-6">?</text>
-      </svg>
-    `;
-  }
-
-  // render covers into the cards on load (via data-cover attr)
-  cards.forEach((card) => {
-    const coverEl = card.querySelector('.project-cover');
-    if (!coverEl) return;
-    const type = card.dataset.coverType;
-    const color = card.dataset.coverColor || '#a78bfa';
-    let svg = '';
-    switch (type) {
-      case 'wave':     svg = coverWave(color); break;
-      case 'cat':      svg = coverCat(); break;
-      case 'watch':    svg = coverWatch(); break;
-      case 'valorant': svg = coverValorant(); break;
-      case 'spice':    svg = coverSpice(); break;
-      case 'ais':      svg = coverAis(); break;
-      case 'qres': svg = coverQres(); break;
-      case 'mystery':  svg = coverMystery(); break;
-      default:         svg = coverWave(color);
+    if (el.getAttribute('role') === 'button') {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open(el.dataset.project);
+        }
+      });
     }
-    coverEl.insertAdjacentHTML('afterbegin', svg);
-    // Tiles aren't 16:10 like the art - fill them (crop) instead of letterboxing.
-    const svgEl = coverEl.querySelector('svg');
-    if (svgEl) svgEl.setAttribute('preserveAspectRatio', 'xMidYMid slice');
   });
+  caseEl.querySelector('.case-close').addEventListener('click', close);
+  caseEl.querySelector('.case-backdrop').addEventListener('click', close);
+  caseEl.querySelector('.case-stage').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) close();
+  });
+  caseEl.querySelector('.case-prev').addEventListener('click', () => step(-1));
+  caseEl.querySelector('.case-next').addEventListener('click', () => step(1));
+  document.addEventListener('keydown', (e) => {
+    if (!caseEl.classList.contains('open')) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') step(1);
+    else if (e.key === 'ArrowLeft') step(-1);
+  });
+
+  // /projects/#pixel-cat opens that case file straight away (once the curtain is up).
+  const wanted = decodeURIComponent(location.hash.slice(1));
+  if (PROJECTS[wanted]) {
+    const go = () => setTimeout(() => open(wanted), 500);
+    if (window.EV && typeof window.EV.onReady === 'function') window.EV.onReady(go); else go();
+  }
 })();

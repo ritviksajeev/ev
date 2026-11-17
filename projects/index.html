@@ -1,212 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-root="../">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="theme-color" content="#050507"/>
-  <meta name="description" content="EvZero — projects and experiments."/>
-  <title>EvZero / Projects</title>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="The EvZero workshop: every project on the shelf: AiS, Spice, Qres, Watchparty, Sketch Fighter and more."/>
+  <title>EvZero / Work</title>
   <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
   <link rel="icon" type="image/png" href="../assets/favicon.png"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Unbounded:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="../css/common.css?v=2.2"/>
-  <link rel="stylesheet" href="../css/projects.css?v=2.4"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.0"/>
+  <link rel="stylesheet" href="../css/projects.css?v=3.0"/>
 </head>
-<body>
+<body data-page="work">
 
   <!-- Page curtain -->
   <div class="loader" aria-hidden="true">
     <div class="loader-brand">evzero</div>
   </div>
 
-  <!-- Background -->
-  <div class="bg-layer" aria-hidden="true">
-    <div class="bg-base"></div>
-    <div class="bg-grid"></div>
-    <div class="bg-vignette"></div>
-    <div class="bg-noise"></div>
-  </div>
-
-  <!-- Nav -->
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner">
-      <a href="../" class="nav-brand" data-transition>evzero</a>
-      <ul class="nav-links">
-        <li><a href="../" data-transition><span class="nl">Home</span><sup>01</sup></a></li>
-        <li><a href="./" class="active" aria-current="page" data-transition><span class="nl">Projects</span><sup>02</sup></a></li>
-        <li><a href="../solren/" data-transition><span class="nl">Solren</span><sup>03</sup></a></li>
-        <li><a href="../contact/" data-transition><span class="nl">Contact</span><sup>04</sup></a></li>
-      </ul>
-      <div class="nav-right">
-        <a href="../contact/" class="nav-cta" data-transition data-magnetic>Get in touch</a>
-      </div>
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" class="active" aria-current="page" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+        <span class="menu-btn-label">Menu</span>
+        <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      </button>
     </div>
-  </nav>
-
-  <div class="section-indicator" aria-hidden="true"></div>
+  </header>
 
   <div class="panels">
   <main class="page panel-group">
 
-    <!-- HERO -->
-    <section class="section hero page-hero panel" data-event="projects-head">
-      <div class="ph">
-        <div class="ph-top intro-fade" style="--id: 0.45s"><span><i class="dot"></i>( Shop / Workshop )</span><span>08 projects</span></div>
-        <h1 class="ph-title">
-          <span class="sr-only">The Workshop</span>
-          <span class="line-mask" aria-hidden="true"><span class="line">The</span></span>
-          <span class="line-mask" aria-hidden="true"><span class="line accent">Workshop</span></span>
+    <!-- 01 / THE PICKER - every project as a sticker. Hover for a name, click to open. -->
+    <section class="section hero work-hero panel" data-chapter="Pick one">
+      <div class="warp" data-warp></div>
+      <div class="ph work-ph">
+        <div class="ph-top intro-fade" style="--id: 0.4s"><span><i class="dot"></i>( Work / The workshop )</span><span>09 on the shelf</span></div>
+
+        <h1 class="ph-title work-title">
+          <span class="sr-only">The workshop</span>
+          <span class="line-mask" aria-hidden="true"><span class="line">The <span class="accent">workshop</span></span></span>
         </h1>
-        <div class="ph-bottom intro-fade" style="--id: 0.8s">
-          <p class="ph-lead">A small shelf of side projects and experiments.</p>
-          <span>Click a tile to open &darr;</span>
+
+        <div class="picker" aria-label="Projects">
+          <button class="pick" type="button" data-project="ais" style="--i: 0; --r: -7deg"><span class="tip">AiS<small>Alpha</small></span><span data-sticker="ais"></span></button>
+          <button class="pick" type="button" data-project="spice" style="--i: 1; --r: 6deg"><span class="tip">Spice<small>Alpha</small></span><span data-sticker="spice"></span></button>
+          <button class="pick" type="button" data-project="qres" style="--i: 2; --r: -4deg"><span class="tip">Qres<small>Shipped</small></span><span data-sticker="qres"></span></button>
+          <button class="pick" type="button" data-project="watchparty" style="--i: 3; --r: 8deg"><span class="tip">Watchparty<small>Live</small></span><span data-sticker="watchparty"></span></button>
+          <button class="pick" type="button" data-project="sketch-fighter" style="--i: 4; --r: -9deg"><span class="tip">Sketch Fighter<small>In dev</small></span><span data-sticker="sketch"></span></button>
+          <button class="pick" type="button" data-project="pixel-cat" style="--i: 5; --r: 5deg"><span class="tip">Pixel cat<small>Live</small></span><span data-sticker="cat"></span></button>
+          <button class="pick" type="button" data-project="evzero-org" style="--i: 6; --r: -5deg"><span class="tip">evzero.org<small>Shipped</small></span><span data-sticker="site"></span></button>
+          <button class="pick" type="button" data-project="valorant-tracker" style="--i: 7; --r: 7deg"><span class="tip">Valorant tracker<small>Outdated</small></span><span data-sticker="tracker"></span></button>
+          <button class="pick" type="button" data-project="mystery" style="--i: 8; --r: -6deg"><span class="tip">???<small>Classified</small></span><span data-sticker="mystery"></span></button>
+        </div>
+
+        <div class="ph-bottom intro-fade" style="--id: 1.5s">
+          <p class="ph-lead">Nine side projects, <span class="serif">all built from zero.</span> Two in alpha, four shipped, one playable, one past its prime and one I&rsquo;m not allowed to talk about.</p>
+          <span>Hover for a name &middot; click to open &darr;</span>
         </div>
       </div>
     </section>
 
-    <!-- GRID -->
-    <section class="section projects-sec panel" data-event="projects-grid">
-      <div class="section-inner">
-        <div class="sec-bar"><span><i class="dot"></i>(01)</span><span>(Index)</span><span>2024 &mdash; <span data-year>2026</span></span></div>
+    <!-- 02 / INDEX - the same nine, in order -->
+    <section class="section index-sec panel" data-chapter="Index">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Index</span><span class="k-line"></span><span class="k-meta">2025 / <span data-year>2026</span></span></div>
 
-        <div class="projects-grid">
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Everything, <span class="accent">in order.</span></h2>
+          <div class="sec-aside reveal"><p>Same shelf, less chaos. Every row opens the full case file: what it is, how it&rsquo;s built, where the code lives.</p></div>
+        </div>
 
-          <div class="project-card reveal" data-cat="live" data-project="evzero-org" data-cover-type="wave" data-cover-color="#8b5cf6" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Shipped</span>
-              <span class="project-price">v2.1</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 01</div>
-              <div class="project-title">evzero.org</div>
-              <div class="project-desc">Personal site with smooth-scroll sections, a pixel cat, and obsessive purple theming. Built from scratch.</div>
-              <div class="project-tags"><span>html</span><span>css</span><span>js</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">View files <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+        <div class="pr-list">
+
+          <div class="pr-row reveal" data-project="ais" data-status="Alpha" data-kind="live" data-version="v0.1.6" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 01</span>
+            <span class="pr-stk" data-sticker="ais" aria-hidden="true"></span>
+            <span class="pr-title keep-case">AiS</span>
+            <span class="pr-desc">Agent-in-Sandbox. AI editing agents never touch real files. Proposed edits run inside a disposable container, and a person approves them on a plain security-check screen. Anti-cheat for AI.</span>
+            <span class="pr-tags">python &middot; docker &middot; security</span>
+            <span class="pr-status"><span class="chip live">Alpha</span><span class="pr-ver">v0.1.6</span></span>
           </div>
 
-          <div class="project-card reveal d1" data-cat="live" data-project="pixel-cat" data-cover-type="cat" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Shipped</span>
-              <span class="project-price">Live</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 02</div>
-              <div class="project-title">pixel-cat</div>
-              <div class="project-desc">The cat wandering every page of this site. Naps, stalks your cursor, pounces when it gets close, and meows when you click it.</div>
-              <div class="project-tags"><span>js</span><span>svg</span><span>pixel art</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">View files <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="spice" data-status="Alpha" data-kind="live" data-version="v0.1.3" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 02</span>
+            <span class="pr-stk" data-sticker="spice" aria-hidden="true"></span>
+            <span class="pr-title">Spice</span>
+            <span class="pr-desc">A desktop overlay for gamers. Crosshairs, custom images and input visualizers over any game, on any monitor. Anti-cheat-conscious by default.</span>
+            <span class="pr-tags">electron &middot; react &middot; win32</span>
+            <span class="pr-status"><span class="chip live">Alpha</span><span class="pr-ver">v0.1.3</span></span>
           </div>
 
-          <div class="project-card reveal" data-cat="live" data-project="watchparty" data-cover-type="watch" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Shipped</span>
-              <span class="project-price">Live</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 03</div>
-              <div class="project-title">watchparty</div>
-              <div class="project-desc">Frame-sync video across browsers. YouTube + Twitch straight on the site; extension unlocks Netflix and other DRM-locked players.</div>
-              <div class="project-tags"><span>web</span><span>extension</span><span>ws</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">View files <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="qres" data-status="Shipped" data-kind="live" data-version="v1.0.3" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 03</span>
+            <span class="pr-stk" data-sticker="qres" aria-hidden="true"></span>
+            <span class="pr-title">Qres</span>
+            <span class="pr-desc">Press a key, your resolution changes. Stretched-res toggling, refresh-rate control and game profiles, from the tray.</span>
+            <span class="pr-tags">electron &middot; c# &middot; win32</span>
+            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">v1.0.3</span></span>
           </div>
 
-          <div class="project-card reveal d1" data-cat="outdated" data-project="valorant-tracker" data-cover-type="valorant" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge old">Outdated</span>
-              <span class="project-price">v0.1</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 04</div>
-              <div class="project-title">valorant-tracker</div>
-              <div class="project-desc">Riot ID in, rank card and recent match log out. Henrik's API, proxied server-side so the key never touches the browser.</div>
-              <div class="project-tags"><span>web</span><span>api</span><span>val</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">View files <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="watchparty" data-status="Shipped" data-kind="live" data-version="Live" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 04</span>
+            <span class="pr-stk" data-sticker="watchparty" aria-hidden="true"></span>
+            <span class="pr-title">Watchparty</span>
+            <span class="pr-desc">Frame-synced video across browsers. YouTube and Twitch right on the site; the extension unlocks Netflix and other locked-down players.</span>
+            <span class="pr-tags">web &middot; extension &middot; websockets</span>
+            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">Live</span></span>
           </div>
 
-          <div class="project-card reveal" data-cat="live" data-project="spice" data-cover-type="spice" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Alpha</span>
-              <span class="project-price">v0.1.3</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 05</div>
-              <div class="project-title">spice</div>
-              <div class="project-desc">Hardware-level desktop overlay for gamers. Floats crosshairs, custom images, and input visualizers over any active game on any monitor. Anti-cheat-conscious by default.</div>
-              <div class="project-tags"><span>electron</span><span>react</span><span>win32</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">Open page <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="sketch-fighter" data-status="In dev" data-kind="wip" data-version="Playable" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 05</span>
+            <span class="pr-stk" data-sticker="sketch" aria-hidden="true"></span>
+            <span class="pr-title">Sketch Fighter</span>
+            <span class="pr-desc">Draw a fighting-game stage on an index card, photograph it, and fight on it seconds later. The sample stages are playable in the browser now.</span>
+            <span class="pr-tags">flask &middot; phaser &middot; opencv</span>
+            <span class="pr-status"><span class="chip wip">In dev</span><span class="pr-ver">Playable</span></span>
           </div>
 
-          <div class="project-card reveal d1" data-cat="live" data-project="ais" data-cover-type="ais" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Alpha</span>
-              <span class="project-price">v0.1.6</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 06</div>
-              <div class="project-title">AiS</div>
-              <div class="project-desc">Agent-in-Sandbox. AI editing agents never touch real files &mdash; proposed edits run inside a disposable container, and a person approves them on a plain security-check screen &mdash; anti-cheat for AI.</div>
-              <div class="project-tags"><span>python</span><span>docker</span><span>security</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">Open page <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="pixel-cat" data-status="Shipped" data-kind="live" data-version="Live" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 06</span>
+            <span class="pr-stk" data-sticker="cat" aria-hidden="true"></span>
+            <span class="pr-title">Pixel cat</span>
+            <span class="pr-desc">The cat wandering every page of this site. Naps, stalks your cursor, pounces when it gets close, and meows when you click it.</span>
+            <span class="pr-tags">js &middot; svg &middot; pixel art</span>
+            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">Live</span></span>
           </div>
 
-          <div class="project-card reveal" data-cat="live" data-project="qres" data-cover-type="qres" data-cursor-label="View" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge live">Shipped</span>
-              <span class="project-price">v1.0.0</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 07</div>
-              <div class="project-title">Qres</div>
-              <div class="project-desc">Press a key, your resolution changes. Stretched-res toggling, refresh-rate control and game profiles, from the tray.</div>
-              <div class="project-tags"><span>electron</span><span>c#</span><span>win32</span></div>
-              <div class="project-foot">
-                <span class="project-year">2026</span>
-                <span class="project-go">Open page <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="evzero-org" data-status="Shipped" data-kind="live" data-version="v3.0" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 07</span>
+            <span class="pr-stk" data-sticker="site" aria-hidden="true"></span>
+            <span class="pr-title">evzero.org</span>
+            <span class="pr-desc">The site you&rsquo;re on. Warp-field heroes, a sticker menu, pages that slide over each other, and an obsessive amount of purple. No framework.</span>
+            <span class="pr-tags">html &middot; css &middot; js</span>
+            <span class="pr-status"><span class="chip live">Shipped</span><span class="pr-ver">v3.0</span></span>
           </div>
 
-          <div class="project-card mystery reveal d1" data-cat="wip" data-project="mystery" data-cover-type="mystery" data-cursor-label="???" role="button" tabindex="0">
-            <div class="project-cover">
-              <span class="project-stock-badge wip">Classified</span>
-              <span class="project-price">? ? ?</span>
-            </div>
-            <div class="project-body">
-              <div class="project-index">/ 08</div>
-              <div class="project-title">???</div>
-              <div class="project-desc">Work in progress. Something quiet, cooking in the background. More when it's ready.</div>
-              <div class="project-tags"><span>classified</span><span>soon</span></div>
-              <div class="project-foot">
-                <span class="project-year">soon</span>
-                <span class="project-go">Locked <span class="arr">&rarr;</span></span>
-              </div>
-            </div>
+          <div class="pr-row reveal" data-project="valorant-tracker" data-status="Outdated" data-kind="old" data-version="v0.1" role="button" tabindex="0" data-cursor-label="View">
+            <span class="pr-idx">/ 08</span>
+            <span class="pr-stk" data-sticker="tracker" aria-hidden="true"></span>
+            <span class="pr-title">Valorant tracker</span>
+            <span class="pr-desc">Riot ID in, rank card and recent match log out. Henrik&rsquo;s API, proxied server-side so the key never touches the browser.</span>
+            <span class="pr-tags">web &middot; api &middot; val</span>
+            <span class="pr-status"><span class="chip old">Outdated</span><span class="pr-ver">v0.1</span></span>
+          </div>
+
+          <div class="pr-row reveal" data-project="mystery" data-status="Classified" data-kind="wip" data-version="? ? ?" role="button" tabindex="0" data-cursor-label="???">
+            <span class="pr-idx">/ 09</span>
+            <span class="pr-stk" data-sticker="mystery" aria-hidden="true"></span>
+            <span class="pr-title">???</span>
+            <span class="pr-desc">Something quiet, cooking in the background. More when it&rsquo;s ready.</span>
+            <span class="pr-tags">classified &middot; soon</span>
+            <span class="pr-status"><span class="chip wip">Classified</span><span class="pr-ver">? ? ?</span></span>
           </div>
 
         </div>
@@ -216,61 +169,82 @@
   </main>
 
   <!-- Footer -->
-  <footer class="site-footer panel">
+  <footer class="site-footer panel" data-chapter="Say hi">
     <div class="footer-inner">
-      <div class="sec-bar"><span><i class="dot"></i>(&infin;)</span><span>(You)</span><span>evzero.org</span></div>
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / work</span></div>
       <div class="footer-top">
         <div class="footer-cta">
-          <h2 class="footer-title" data-split>Wanna <span class="accent">connect?</span></h2>
-          <p class="footer-sub reveal">Jump into a project, a stream, or just say hi. Easier to find than you think.</p>
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
           <div class="reveal d1"><a class="footer-mail" href="mailto:evzeroholder@gmail.com">evzeroholder@gmail.com</a></div>
           <div class="footer-actions reveal d2">
-            <a href="../contact/" class="btn" data-transition data-magnetic>Contact me <span class="arrow">&rarr;</span></a>
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
             <a href="../" class="btn ghost" data-transition data-magnetic>Back home <span class="arrow">&rarr;</span></a>
           </div>
         </div>
-        <div class="footer-col reveal d2">
-          <nav class="footer-nav" aria-label="Footer">
-            <a href="../" data-transition><span>Home</span><sup>01</sup></a>
-            <a href="./" data-transition><span>Projects</span><sup>02</sup></a>
-            <a href="../solren/" data-transition><span>Solren</span><sup>03</sup></a>
-            <a href="../contact/" data-transition><span>Contact</span><sup>04</sup></a>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
           </nav>
-          <div class="footer-socials">
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../sketch/">Sketch Fighter</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
             <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
             <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
             <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
-          </div>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
         </div>
       </div>
-      <div class="footer-bottom"><span>evzero.org / projects</span><span>&copy; <span data-year>2026</span> evzero</span></div>
-      <div class="footer-mark" aria-hidden="true"><span class="footer-mark-text" data-fit><span class="ev">EV</span><span class="zero">ZERO</span></span></div>
+      <div class="footer-bottom"><span>evzero.org / v3.0</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="spice" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
     </div>
   </footer>
   </div>
 
-  <!-- Project modal (outside the panels so it layers above the nav) -->
-  <div class="project-modal" role="dialog" aria-modal="true" aria-label="Project details">
-    <div class="project-modal-backdrop"></div>
-    <div class="project-modal-panel">
-      <button class="project-modal-close" aria-label="Close">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-      <div class="project-modal-cover pm-cover"></div>
-      <div class="project-modal-body" data-lenis-prevent>
-        <div class="pm-eyebrow">// Case file</div>
-        <h3 class="pm-title">...</h3>
-        <div class="meta pm-meta"></div>
-        <div class="pm-desc"></div>
-        <div class="file-list pm-files"></div>
-        <div class="pm-actions"></div>
+  <!-- Case file - the picked sticker on the left, its spec sheet on the right.
+       Lives outside .panels so position: fixed stays anchored to the screen. -->
+  <div class="case" id="case" role="dialog" aria-modal="true" aria-labelledby="case-title" aria-hidden="true">
+    <div class="case-backdrop"></div>
+    <div class="case-stage">
+      <div class="case-art" aria-hidden="true"></div>
+      <div class="case-nav">
+        <button type="button" class="case-prev" aria-label="Previous project">&lsaquo;</button>
+        <span class="case-count">01 / 09</span>
+        <button type="button" class="case-next" aria-label="Next project">&rsaquo;</button>
       </div>
     </div>
+    <article class="case-panel" data-lenis-prevent>
+      <button type="button" class="case-close" aria-label="Close">&times;</button>
+      <div class="case-top"><span class="chip case-chip"></span><span class="case-ver"></span></div>
+      <h2 class="case-title" id="case-title"></h2>
+      <div class="case-desc"></div>
+      <dl class="spec case-spec"></dl>
+      <div class="case-files-label">Files worth opening</div>
+      <div class="case-files"></div>
+      <div class="case-actions"></div>
+    </article>
   </div>
 
-  <script src="../js/vendor/lenis.min.js?v=2.2"></script>
-  <script src="../js/common.js?v=2.2"></script>
-  <script src="../js/cat.js?v=2.2"></script>
-  <script src="../js/projects.js?v=2.4"></script>
+  <script src="../js/vendor/lenis.min.js?v=3.0"></script>
+  <script src="../js/site.js?v=3.0"></script>
+  <script src="../js/cat.js?v=3.0"></script>
+  <script src="../js/projects.js?v=3.0"></script>
 </body>
 </html>

@@ -1,380 +1,303 @@
 /* ============================================
-   Projects page (v2)
-   12.studio-style full-bleed tiles, case-file modal
+   Work page (v3)
+   A sticker picker (Avara): every project is a
+   die-cut mark. Hover for its name, click and it
+   zooms left while its spec sheet opens on the
+   right. Below: the same list as plain rows.
    ============================================ */
 
-.projects-sec .section-inner { max-width: 1440px; }
+/* --------- PICKER --------- */
+.section.hero.work-hero { justify-content: center; }
+.work-ph { gap: clamp(18px, 3vw, 36px); }
+.work-title { font-size: clamp(30px, 6.4vw, 96px); }
 
-/* grid of project tiles - hairline gaps */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--white-rule);
-  border: 1px solid var(--white-rule);
+.picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(10px, 3vh, 34px) 0;
 }
-
-.project-card {
+.pick {
   position: relative;
-  display: block;
-  aspect-ratio: 16 / 11;
-  min-height: 380px;
-  background: var(--bg-0);
-  overflow: hidden;
-  isolation: isolate;
-  outline-offset: -2px;
-  transition: background 0.6s var(--ease-out);
+  flex: 0 1 clamp(84px, 11.4vw, 168px);
+  margin: 0 -0.6%;
+  outline-offset: 6px;
 }
-.project-card:hover,
-.project-card:focus-visible { background: var(--bg-1); }
+.pick .stk {
+  transform: rotate(var(--r, 0deg));
+  transition: transform 0.55s var(--ease-spring), opacity 0.4s var(--ease-out);
+}
+html.js:not(.is-ready) .pick .stk { transform: scale(0) rotate(-40deg); }
+html.is-ready .pick .stk { animation: pickIn 1s var(--ease-spring) calc(0.5s + var(--i, 0) * 0.07s) backwards; }
+@keyframes pickIn {
+  from { transform: scale(0) rotate(-40deg); }
+  to   { transform: rotate(var(--r, 0deg)); }
+}
+.pick:hover,
+.pick:focus-visible { z-index: 2; }
+.pick:hover .stk,
+.pick:focus-visible .stk { transform: rotate(0deg) scale(1.16) translateY(-7%); }
+.picker:hover .pick:not(:hover) .stk { opacity: 0.38; }
 
-.project-cover {
-  position: absolute;
-  inset: 0 0 24% 0;
-  overflow: hidden;
-  background: var(--bg-0);
+/* --------- INDEX ROWS --------- */
+.pr-list { border-top: 1px solid var(--white-rule); }
+.pr-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px 54px minmax(0, 1.1fr) minmax(0, 1.7fr) minmax(0, 0.9fr) auto;
+  align-items: center;
+  gap: clamp(12px, 2vw, 28px);
+  padding: clamp(14px, 1.7vw, 22px) 0;
+  border-bottom: 1px solid var(--white-rule);
+  isolation: isolate;
+  cursor: pointer;
 }
-.project-cover svg {
-  width: 100%;
-  height: 100%;
-  opacity: 0.8;
-  transform: scale(1.001);
-  transition: transform 1.4s var(--ease-expo), opacity 0.6s var(--ease-out);
-}
-.project-card:hover .project-cover svg,
-.project-card:focus-visible .project-cover svg {
-  opacity: 1;
-  transform: scale(1.06);
-}
-.project-cover::after {
+.pr-row::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 45%, var(--bg-0) 100%);
-  pointer-events: none;
-  z-index: 1;
+  inset: 0 calc(var(--gutter) * -0.5);
+  z-index: -1;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, rgba(138, 120, 240, 0.16), rgba(138, 120, 240, 0.03));
+  opacity: 0;
+  scale: 0.985 0.8;
+  transition: opacity 0.5s var(--ease-out), scale 0.7s var(--ease-expo);
 }
-.project-card:hover .project-cover::after { background: linear-gradient(180deg, transparent 45%, var(--bg-1) 100%); }
-
-.project-stock-badge {
-  position: absolute;
-  top: 16px; left: 16px;
-  padding: 5px 10px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--white);
-  background: rgba(5, 5, 7, 0.85);
-  border: 1px solid var(--white-line);
-  border-radius: var(--radius-sm);
-  backdrop-filter: blur(8px);
-  z-index: 2;
-}
-.project-stock-badge.live { color: #6aff9a; border-color: rgba(106, 255, 154, 0.35); }
-.project-stock-badge.wip  { color: #ffcc6a; border-color: rgba(255, 204, 106, 0.35); }
-.project-stock-badge.idea { color: var(--purple-bright); border-color: rgba(167, 139, 250, 0.4); }
-.project-stock-badge.old  { color: var(--white-dim); border-color: rgba(255, 255, 255, 0.18); }
-
-.project-price {
-  position: absolute;
-  top: 16px; right: 16px;
-  padding: 5px 10px;
+.pr-row:hover::before,
+.pr-row:focus-visible::before { opacity: 1; scale: 1; }
+.pr-idx {
   font-family: var(--font-mono);
   font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: var(--white);
-  background: rgba(5, 5, 7, 0.85);
-  border: 1px solid var(--white-line);
-  border-radius: var(--radius-sm);
-  backdrop-filter: blur(8px);
-  z-index: 2;
-}
-
-.project-body {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: clamp(18px, 2.4vw, 32px);
-}
-.project-index {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.6px;
   color: var(--white-faint);
-  text-transform: uppercase;
 }
-.project-title {
+.pr-stk .stk {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+  transition: transform 0.6s var(--ease-spring);
+}
+.pr-row:hover .pr-stk .stk { transform: rotate(-12deg) scale(1.2); }
+.pr-title {
   font-family: var(--font-display);
-  font-size: clamp(26px, 3vw, 46px);
-  font-weight: 600;
-  line-height: 1;
+  font-size: clamp(18px, 2.3vw, 32px);
+  font-weight: 500;
+  line-height: 1.05;
   letter-spacing: -0.04em;
   text-transform: uppercase;
-  color: var(--white);
-  transition: color 0.4s var(--ease-out), transform 0.8s var(--ease-expo);
-  overflow-wrap: anywhere;
+  transition: translate 0.8s var(--ease-expo), color 0.4s var(--ease-out);
 }
-.project-card:hover .project-title { color: var(--purple-bright); transform: translateX(8px); }
-.project-desc {
-  max-width: 540px;
+.pr-title.keep-case { text-transform: none; }
+.pr-row:hover .pr-title { translate: 10px 0; color: var(--lavender); }
+.pr-desc {
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--white-dim);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
-.project-tags {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-.project-tags span {
-  padding: 4px 8px;
+.pr-tags {
   font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
+  font-size: 10px;
+  letter-spacing: 1.2px;
   text-transform: uppercase;
   color: var(--white-faint);
-  border: 1px solid var(--white-line);
-  border-radius: var(--radius-sm);
 }
-.project-foot {
+.pr-status {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 14px;
-  margin-top: 4px;
-  border-top: 1px solid var(--white-line);
-}
-.project-go {
-  display: inline-flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--white-dim);
-  transition: color 0.4s var(--ease-out);
+  min-width: 96px;
 }
-.project-go .arr {
-  display: inline-block;
-  transition: transform 0.4s var(--ease-out);
-}
-.project-card:hover .project-go { color: var(--purple-bright); }
-.project-card:hover .project-go .arr { transform: translateX(4px); }
-.project-year {
+.pr-ver {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--white-faint);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--white);
 }
 
-/* ============================================
-   Case-file modal
-   ============================================ */
-.project-modal {
+/* --------- CASE FILE --------- */
+.case {
   position: fixed;
   inset: 0;
   z-index: 300;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px;
-  opacity: 0;
-  pointer-events: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
   visibility: hidden;
-  transition: opacity 0.5s var(--ease-out), visibility 0s linear 0.5s;
+  pointer-events: none;
+  transition: visibility 0s linear 0.7s;
 }
-.project-modal.open {
-  opacity: 1;
-  pointer-events: auto;
+.case.open {
   visibility: visible;
-  transition: opacity 0.5s var(--ease-out), visibility 0s linear 0s;
+  pointer-events: auto;
+  transition: visibility 0s linear 0s;
 }
-.project-modal-backdrop {
+.case-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(5, 5, 7, 0.88);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background:
+    radial-gradient(ellipse 50% 60% at 28% 50%, rgba(76, 58, 168, 0.26), transparent 70%),
+    #030304;
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out);
 }
-.project-modal-panel {
+.case.open .case-backdrop { opacity: 1; }
+
+.case-stage {
   position: relative;
-  width: 100%;
-  max-width: 760px;
-  max-height: 86vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background: var(--bg-1);
-  border: 1px solid rgba(167, 139, 250, 0.32);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6), 0 0 80px rgba(139, 92, 246, 0.1);
-  clip-path: inset(10% 0 0 0 round var(--radius-lg));
-  transform: translateY(24px);
-  transition: transform 0.8s var(--ease-expo), clip-path 0.8s var(--ease-expo);
-}
-.project-modal.open .project-modal-panel {
-  transform: none;
-  clip-path: inset(0 0 0 0 round var(--radius-lg));
-}
-
-.project-modal-cover {
-  position: relative;
-  flex-shrink: 0;
-  height: 230px;
-  background: var(--bg-0);
-  border-bottom: 1px solid var(--white-line);
-  overflow: hidden;
-}
-.project-modal-cover svg { width: 100%; height: 100%; }
-.project-modal-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(5, 5, 7, 0.85) 100%);
-}
-
-.project-modal-body {
-  padding: 28px 32px 32px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-.project-modal-body .pm-eyebrow {
-  margin-bottom: 12px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--purple-bright);
-}
-.project-modal-body h3 {
-  margin-bottom: 18px;
-  font-family: var(--font-display);
-  font-size: clamp(30px, 4vw, 44px);
-  font-weight: 600;
-  line-height: 0.95;
-  letter-spacing: -0.04em;
-  text-transform: uppercase;
-}
-.project-modal-body .meta {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-}
-.project-modal-body .meta span {
-  padding: 5px 10px;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--white-dim);
-  border: 1px solid var(--white-line);
-  border-radius: var(--radius-sm);
-}
-.project-modal-body p {
-  margin-bottom: 12px;
-  font-size: 14px;
-  line-height: 1.75;
-  color: var(--white-dim);
-}
-.project-modal-body .file-list {
-  margin-top: 22px;
-  padding: 20px;
-  background: var(--bg-0);
-  border: 1px solid var(--white-line);
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.9;
-  color: var(--white-dim);
-}
-.project-modal-body .file-list .file-line::before {
-  content: "› ";
-  color: var(--purple-bright);
-}
-.project-modal-body .pm-actions {
-  margin-top: 22px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.project-modal-body .pm-actions:empty { display: none; }
-.project-modal-body .pm-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 13px 20px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--bg-0);
-  background: var(--white);
-  border: 1px solid var(--white);
-  border-radius: var(--radius-sm);
-  transition: background 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
-}
-.project-modal-body .pm-btn:hover {
-  background: var(--purple-bright);
-  border-color: var(--purple-bright);
-}
-.project-modal-body .pm-btn + .pm-btn {
-  color: var(--white);
-  background: transparent;
-  border-color: var(--glass-border);
-}
-.project-modal-body .pm-btn + .pm-btn:hover {
-  color: var(--bg-0);
-  background: var(--white);
-  border-color: var(--white);
-}
-
-.project-modal-close {
-  position: absolute;
-  top: 16px; right: 16px;
-  z-index: 3;
-  width: 34px;
-  height: 34px;
-  display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--white);
-  background: rgba(5, 5, 7, 0.85);
-  border: 1px solid var(--white-line);
-  border-radius: 50%;
-  backdrop-filter: blur(10px);
-  transition: border-color 0.4s var(--ease-out), color 0.4s var(--ease-out), transform 0.6s var(--ease-expo);
+  padding: var(--gutter);
+  min-height: 0;
 }
-.project-modal-close:hover {
-  border-color: var(--purple-bright);
-  color: var(--purple-bright);
-  transform: rotate(90deg);
+.case-art {
+  width: min(74%, 62vh);
+  opacity: 0;
+  transform: scale(0.3) rotate(-30deg);
+  transition: transform 0.5s var(--ease-in-out), opacity 0.35s var(--ease-out);
+}
+.case.open .case-art {
+  opacity: 1;
+  transform: none;
+  transition: transform 1s var(--ease-spring) 0.12s, opacity 0.4s var(--ease-out) 0.12s;
+}
+.case-art.swap { animation: caseSwap 0.7s var(--ease-spring); }
+@keyframes caseSwap {
+  from { transform: scale(0.5) rotate(18deg); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.case-art .stk { filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.7)) drop-shadow(0 0 80px rgba(138, 120, 240, 0.35)); }
+
+.case-nav {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(22px, 5vh, 46px);
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--white-rule);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+}
+.case.open .case-nav { opacity: 1; transition-delay: 0.5s; }
+.case-nav button {
+  display: grid;
+  place-items: center;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--white-dim);
+  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out);
+}
+.case-nav button:hover { background: rgba(255, 255, 255, 0.12); color: var(--white); }
+.case-count {
+  min-width: 64px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--white-faint);
+  font-variant-numeric: tabular-nums;
 }
 
-/* responsive */
-@media (max-width: 900px) {
-  .projects-grid { grid-template-columns: 1fr; }
-  .project-card { aspect-ratio: 4 / 3.4; min-height: 360px; }
+.case-panel {
+  position: relative;
+  margin: 12px 12px 12px 0;
+  padding: clamp(28px, 4vw, 60px);
+  border-radius: 28px;
+  border: 1px solid var(--white-line);
+  background: #0b0b0f;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  translate: 105% 0;
+  transition: translate 0.6s var(--ease-in-out);
+}
+.case.open .case-panel { translate: 0 0; transition: translate 0.9s var(--ease-expo) 0.05s; }
+.case-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--white-rule);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--white-dim);
+  transition: background 0.3s var(--ease-out), color 0.3s var(--ease-out), rotate 0.6s var(--ease-expo);
+}
+.case-close:hover { background: var(--white); color: var(--bg-0); rotate: 90deg; }
+.case-top { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.case-ver {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--white-dim);
+}
+.case-title {
+  margin-bottom: 22px;
+  font-size: clamp(34px, 4.6vw, 68px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+.case[data-project="ais"] .case-title { text-transform: none; }
+.case-desc p {
+  margin-bottom: 14px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--white-dim);
+}
+.case-desc p:first-child { font-size: 17px; color: var(--white); }
+.case-desc em { font-style: normal; color: var(--lavender); }
+.case-spec { margin: 26px 0; }
+.case-files-label {
+  margin-bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--white-faint);
+}
+.case-files { display: flex; flex-wrap: wrap; gap: 6px; }
+.case-files span {
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(180, 165, 255, 0.08);
+  border: 1px solid rgba(180, 165, 255, 0.16);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--lavender);
+}
+.case-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.case-actions:empty { display: none; }
+
+/* --------- responsive --------- */
+@media (max-width: 1000px) {
+  .pr-row { grid-template-columns: 40px 46px minmax(0, 1fr) minmax(0, 1.5fr) auto; }
+  .pr-tags { display: none; }
+}
+@media (max-width: 860px) {
+  .picker { flex-wrap: wrap; row-gap: 6px; }
+  .pick { flex: 0 0 30%; margin: 0; }
+  .case { grid-template-columns: 1fr; grid-template-rows: 34vh minmax(0, 1fr); }
+  .case-art { width: min(46%, 26vh); }
+  .case-nav { bottom: 8px; }
+  .case-panel { margin: 0 8px 8px; border-radius: 22px; translate: 0 105%; }
 }
 @media (max-width: 640px) {
-  .project-card { aspect-ratio: auto; min-height: 420px; }
-  .project-modal { padding: 14px; }
-  .project-modal-cover { height: 160px; }
-  .project-modal-body { padding: 22px 20px 24px; }
+  .pr-row { grid-template-columns: 38px minmax(0, 1fr) auto; }
+  .pr-idx, .pr-desc { display: none; }
 }
-
-/* AiS is written with a deliberate lowercase i. Project names are otherwise
-   uppercased across the grid, which would render it "AIS". */
-.project-card[data-project="ais"] .project-title,
-.project-modal[data-project="ais"] .pm-title { text-transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html.is-ready .pick .stk { animation: none; }
+  .case-art, .case.open .case-art, .case-panel, .case.open .case-panel { transition-duration: 0.01s; transition-delay: 0s; }
+  .case-art.swap { animation: none; }
+}
