@@ -29,6 +29,70 @@
 .resume-actions .btn { min-height: 44px; }
 
 .paper { padding: clamp(26px, 5vw, 68px); }
+
+/* the "public copy" note above the sheet */
+.classified {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 14px;
+  padding: 16px 18px 16px 16px;
+}
+.classified p { font-size: 14px; line-height: 1.6; color: var(--white-dim); }
+.classified .btn { min-height: 42px; white-space: nowrap; }
+.classified-stamp {
+  padding: 6px 10px;
+  border: 1.5px solid var(--bad);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--bad);
+  rotate: -4deg;
+}
+
+/* redaction bars: there is no data underneath, they just email me */
+.redact {
+  position: relative;
+  display: inline-block;
+  width: var(--w, 7em);
+  height: 1.1em;
+  vertical-align: -0.18em;
+  border-radius: 2px;
+  background:
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.07) 0 4px, transparent 4px 8px),
+    #2e2a3d;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  transition: box-shadow 0.3s var(--ease-out);
+}
+.redact::after {
+  content: "redacted";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(243, 240, 234, 0.5);
+  transition: color 0.3s var(--ease-out);
+}
+.redact:hover { box-shadow: inset 0 0 0 1px rgba(180, 165, 255, 0.6); }
+.redact:hover::after { content: "ask me"; color: var(--purple-bright); }
+.paper-note {
+  margin-top: clamp(20px, 2.6vw, 30px);
+  padding-top: 16px;
+  border-top: 1px dashed var(--white-rule);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.4px;
+  color: var(--white-faint);
+}
+.paper-note a { color: var(--purple-bright); }
 .paper-head {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
@@ -188,6 +252,7 @@
 .paper-skills dd { color: var(--white-dim); }
 
 @media (max-width: 760px) {
+  .classified { grid-template-columns: 1fr; justify-items: start; }
   .paper-head { grid-template-columns: 1fr; }
   .paper-sec { grid-template-columns: 1fr; }
   .paper-sec > h2 { grid-row: auto; }
@@ -251,7 +316,11 @@
   .paper-item li, .paper-list li { padding-left: 11pt; }
   .paper-item ul, .paper-list { gap: 1pt; }
   .paper-skills div { padding: 1pt 0; grid-template-columns: 92pt minmax(0, 1fr); gap: 8pt; }
-  .site-footer.panel { display: none !important; }
+  .site-footer.panel, .classified { display: none !important; }
+  .redact { background: #111 !important; box-shadow: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .redact::after { content: none; }
+  .paper-note { margin-top: 6pt; padding-top: 4pt; font-size: 7pt; color: #666 !important; }
+  .paper-note a { color: #4c3aa8 !important; }
   /* the printable width trips the narrow-screen rules above; restore the two-column sheet */
   .paper-head { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: end; }
   .paper-sec > h2 { grid-row: 1 / span 20; }

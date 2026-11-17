@@ -60,7 +60,8 @@
   <main class="page panel-group">
 
     <!-- RESUME - one page. "Save as PDF" prints just the sheet (see css/resume.css).
-         Phone number deliberately left off the public page. -->
+         Personal details (location, phone) are redacted on the public copy:
+         the real values are not in this file at all. Each bar emails Ritvik. -->
     <section class="section resume-sec panel">
       <div class="wrap resume-wrap">
 
@@ -75,6 +76,12 @@
           </div>
         </div>
 
+        <div class="classified glow intro-fade" style="--id: 0.5s">
+          <span class="classified-stamp">Public copy</span>
+          <p>A few personal details are blacked out here. Want the full r&eacute;sum&eacute;, or just want to get to know me? Reach out and I&rsquo;ll send it over.</p>
+          <a class="btn ghost" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request">Request the full version <span class="arrow">&rarr;</span></a>
+        </div>
+
         <article class="paper glow intro-fade" style="--id: 0.55s">
           <header class="paper-head">
             <div>
@@ -82,7 +89,8 @@
               <p class="paper-role">Cybersecurity student at Rider University. <span class="serif">I build the tools I wish existed.</span></p>
             </div>
             <ul class="paper-contact">
-              <li><span>Based in</span>Lawrenceville, NJ</li>
+              <li><span>Based in</span><a class="redact" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" style="--w: 8.5em" title="Redacted on the public copy. Click to ask me for it." aria-label="Location redacted. Email me for the full r&eacute;sum&eacute;."></a></li>
+              <li><span>Phone</span><a class="redact" href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request" style="--w: 7.5em" title="Redacted on the public copy. Click to ask me for it." aria-label="Phone number redacted. Email me for the full r&eacute;sum&eacute;."></a></li>
               <li><span>Email</span><a href="mailto:r@evzero.org">r@evzero.org</a></li>
               <li><span>Site</span><a href="https://evzero.org">evzero.org</a></li>
               <li><span>GitHub</span><a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">github.com/ritviksajeev</a></li>
@@ -93,14 +101,14 @@
             <h2>Education</h2>
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3>Rider University<span>Lawrenceville, NJ</span></h3>
+                <h3>Rider University</h3>
                 <span class="paper-meta">Expected May 2027</span>
               </div>
               <p class="paper-line">B.S. Cybersecurity &middot; GPA 3.94</p>
             </div>
             <div class="paper-item">
               <div class="paper-item-head">
-                <h3>Thakur College of Science and Commerce<span>Mumbai, India</span></h3>
+                <h3>Thakur College of Science and Commerce</h3>
                 <span class="paper-meta">2023 to 2025</span>
               </div>
               <p class="paper-line">B.S. Computer Science</p>
@@ -209,6 +217,8 @@
               <div><dt>Desktop, web &amp; cloud</dt><dd>Electron, React, Node.js/Express, WebSockets, REST APIs, Docker, Git, GitHub Pages, Railway</dd></div>
             </dl>
           </section>
+
+          <footer class="paper-note">Public copy: personal details redacted. Full version on request at <a href="mailto:r@evzero.org?subject=Full%20r%C3%A9sum%C3%A9%20request">r@evzero.org</a>.</footer>
         </article>
 
       </div>
