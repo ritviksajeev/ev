@@ -63,16 +63,6 @@
       "permanent": true
     },
     {
-      "source": "/clipped/download/windows",
-      "destination": "https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe",
-      "permanent": false
-    },
-    {
-      "source": "/clipped/download/windows/",
-      "destination": "https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe",
-      "permanent": false
-    },
-    {
       "source": "/wife",
       "destination": "/wife/",
       "permanent": true

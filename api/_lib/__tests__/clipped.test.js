@@ -1,4 +1,4 @@
-// node --test api/_lib/__tests__/   (the leading underscore keeps this out of Vercel's routes)
+// node --test api/_lib/__tests__/*.test.js   (the leading underscore keeps this out of Vercel's routes)
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert');

@@ -9,7 +9,12 @@
 (function () {
   'use strict';
 
-  const API = '/api/clipped/';
+  // The licence server can live on any host; clipped/api.json (same origin) says where.
+  const API = fetch('/clipped/api.json', { cache: 'no-store' })
+    .then((r) => r.json())
+    .then((j) => (/^https:\/\//.test(j.api || '') || /^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(j.api || '') ? j.api.replace(/\/+$/, '') + '/' : null))
+    .catch(() => null);
+  const DOWN = 'Free days aren’t switched on yet. Check back soon, or see the plans on evzero.org/clipped/buy.';
   const $ = (sel) => document.querySelector(sel);
   const q = new URLSearchParams(location.search);
   const device = q.get('d') || '';
@@ -27,6 +32,7 @@
     $('[data-crumb]').textContent = 'Watermark';
     $('[data-title]').innerHTML = 'Lose the <span class="serif accent">watermark.</span>';
     $('[data-lead]').textContent = 'A few short ads and this Short re-renders clean. Two a day on the free plan.';
+    $('[data-done] .pd-note').textContent = 'It comes off by itself. If clipped doesn’t pick it up within a few seconds, copy this and paste it under the Short in Review:';
   }
 
   const dots = (done, total) => {
@@ -73,7 +79,7 @@
   });
 
   const claim = async (session, watched) => {
-    const res = await fetch(API + 'free-claim/', {
+    const res = await fetch((await API) + 'free-claim/', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session, watched, nonce }),
     });
     const data = await res.json().catch(() => ({}));
@@ -97,8 +103,11 @@
     try {
       const params = new URLSearchParams({ device, mode });
       if (mode === 'wm') { params.set('key', q.get('k') || ''); params.set('n', q.get('n') || ''); }
-      const res = await fetch(API + 'free-start/?' + params);
-      start = await res.json();
+      const api = await API;
+      if (!api) throw new Error(DOWN);
+      let res;
+      try { res = await fetch(api + 'free-start/?' + params); } catch (e) { throw new Error('Couldn’t reach the clipped server. Check your connection and reload.'); }
+      start = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(start.error || 'Free days are taking a break. Try again soon.');
     } catch (e) {
       status(e.message);

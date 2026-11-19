@@ -6,7 +6,11 @@
 (function () {
   'use strict';
 
-  const API = '/api/clipped/';
+  // The licence server can live on any host; clipped/api.json (same origin) says where.
+  const API = fetch('/clipped/api.json', { cache: 'no-store' })
+    .then((r) => r.json())
+    .then((j) => (/^https:\/\//.test(j.api || '') || /^http:\/\/(127\.0\.0\.1|localhost)[:/]/.test(j.api || '') ? j.api.replace(/\/+$/, '') + '/' : null))
+    .catch(() => null);
   const PRICES = { USD: '$2.99', INR: '₹249' }; // must match the Razorpay plans' amounts
   const $ = (sel) => document.querySelector(sel);
   const msg = $('.buy-msg');
@@ -21,7 +25,9 @@
     msg.classList.add('pop');
   };
   const post = async (path, body) => {
-    const res = await fetch(API + path + '/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const api = await API;
+    if (!api) throw new Error('Accounts are being set up. Try again soon, or email r@evzero.org.');
+    const res = await fetch(api + path + '/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || 'Something went wrong. Try again in a minute.');
     return data;
@@ -58,7 +64,7 @@
   document.querySelectorAll('[data-currency]').forEach((b) => b.addEventListener('click', () => setCurrency(b.dataset.currency)));
   setCurrency(currency);
 
-  fetch(API + 'config/').then((r) => r.json()).then((c) => {
+  API.then((api) => (api ? fetch(api + 'config/').then((r) => r.json()) : Promise.reject())).then((c) => {
     config = c;
     const cur = (c.pro && c.pro.currencies) || {};
     if (cur.USD && !cur.INR) setCurrency('USD');

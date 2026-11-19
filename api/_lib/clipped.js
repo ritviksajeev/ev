@@ -1,22 +1,27 @@
 /* ============================================
    clipped licence server: shared code.
 
-   Runs as Vercel functions next to evzero.org. It holds the one secret that
-   can make clipped keys (CLIPPED_SIGNING_KEY, an Ed25519 private key), keeps
-   track of Pro subscriptions and the computer each one is active on, and
-   hands out free day keys after the ads.
+   Holds the one secret that can make clipped keys (CLIPPED_SIGNING_KEY, an
+   Ed25519 private key), keeps track of Pro subscriptions and the computer each
+   one is active on, and hands out free day keys after the ads.
 
-   Environment (Vercel → Project → Settings → Environment Variables):
+   Runs anywhere Node 20+ runs: as Vercel functions (api/clipped/*.js), or as
+   one small server with `node api/_lib/serve.js` (Railway, Render, a VPS...).
+   The app and the pages find it through the site's clipped/api.json, so it
+   can live on any host and move without an app update.
+
+   Environment:
      CLIPPED_SIGNING_KEY       Ed25519 private key, PEM (the .pem evzero keeps)
      KV_REST_API_URL / KV_REST_API_TOKEN
                                Upstash Redis (Vercel Marketplace → Upstash);
                                UPSTASH_REDIS_REST_URL / _TOKEN also work
      RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET     Razorpay API keys
-     RAZORPAY_WEBHOOK_SECRET                   set on the Razorpay webhook
      RAZORPAY_PLAN_USD / RAZORPAY_PLAN_INR     plan ids (plan_...) per currency
      CLIPPED_ADS_REQUIRED      ads per free unlock (default 3)
      CLIPPED_ADS_ENABLED       "1" once rewarded ads are live (Google Ad Manager)
      CLIPPED_ADS_UNIT          the rewarded ad unit path, e.g. /1234567/clipped_rewarded
+     CLIPPED_ALLOWED_ORIGINS   extra browser origins allowed to call the API (CORS)
+     PORT                      for serve.js (default 8787)
 
    Formats must match clipped/licensing.py byte for byte:
      licence keys  CLIP-XXXXX-...  Crockford base32 of payload || Ed25519 signature
@@ -232,11 +237,17 @@ async function proKeyFor(subId) {
 
 // ---------------------------------------------------------------- HTTP helpers
 
+const MAX_BODY = 16 * 1024; // every request here is a few hundred bytes
 async function readRaw(req) {
   if (typeof req.body === 'string') return req.body;
   if (Buffer.isBuffer(req.body)) return req.body.toString('utf8');
   const chunks = [];
-  for await (const chunk of req) chunks.push(Buffer.from(chunk));
+  let size = 0;
+  for await (const chunk of req) {
+    size += chunk.length;
+    if (size > MAX_BODY) throw new ApiError(413, 'too_big', 'That request is too big.');
+    chunks.push(Buffer.from(chunk));
+  }
   return Buffer.concat(chunks).toString('utf8');
 }
 async function readJson(req) {
@@ -250,9 +261,29 @@ function send(res, status, data) {
   res.setHeader('Cache-Control', 'no-store');
   res.end(JSON.stringify(data));
 }
+// The pages on evzero.org call this API from the browser, and it may live on another
+// host (see clipped/api.json in the site), so those origins get CORS. The app isn't a
+// browser and doesn't need it. Add more with CLIPPED_ALLOWED_ORIGINS (comma-separated).
+function allowedOrigins() {
+  const extra = (process.env.CLIPPED_ALLOWED_ORIGINS || '').split(',').map((o) => o.trim()).filter(Boolean);
+  return new Set(['https://evzero.org', 'https://www.evzero.org', ...extra]);
+}
+function cors(req, res) {
+  const origin = req.headers && req.headers.origin;
+  res.setHeader('Vary', 'Origin');
+  if (origin && allowedOrigins().has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Max-Age', '86400');
+  }
+}
+
 // Wrap a handler: one method, errors as {error, code}, never a stack trace.
 function handler(method, fn) {
   return async (req, res) => {
+    cors(req, res);
+    if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }
     if (req.method !== method) return send(res, 405, { error: `Use ${method}.`, code: 'method' });
     try {
       send(res, 200, await fn(req, res));
