@@ -100,6 +100,30 @@
         { label: 'Source on GitHub', href: 'https://github.com/ritviksajeev/Qres', external: true },
       ],
     },
+    'clipped': {
+      title: 'clipped',
+      sticker: 'clipped',
+      type: 'Desktop app',
+      stack: 'Python · React · ffmpeg',
+      since: '2026',
+      desc: [
+        'Twitch clips in, YouTube Shorts out. clipped watches the Twitch categories you pick, finds what&rsquo;s trending right now (or the top of the last 24 hours), and turns each clip into a vertical Short with word-by-word captions burned in.',
+        'Speech-to-text runs on your own computer with faster-whisper, so every caption lands on the word. The video is reframed to 9:16, dead air is trimmed, a thumbnail is cut and a title is written, by templates for free or by Gemini, Claude, OpenRouter or a local Ollama model if you connect one.',
+        'Every Short waits in a review queue until you approve it, or switch on autopilot and it uploads on your schedule. It always credits the streamer and links the original clip, and it never posts the same moment twice.',
+        'No clipped server exists. Your Twitch and YouTube keys live in the Windows keychain and only ever go to the service they belong to.',
+      ],
+      files: [
+        'clipped/engine.py',
+        'clipped/optimizer/ranking.py',
+        'clipped/pipeline/runner.py',
+        'clipped/desktop.py',
+        'frontend/src/App.jsx',
+      ],
+      actions: [
+        { label: 'Open the clipped page', href: '../clipped/' },
+        { label: 'Download for Windows', href: 'https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe', external: true },
+      ],
+    },
     'watchparty': {
       title: 'Watchparty',
       sticker: 'watchparty',

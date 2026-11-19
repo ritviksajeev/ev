@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en" data-root="../">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#09090b"/>
+  <meta name="description" content="clipped finds trending Twitch clips, burns in word-by-word captions, reframes them to 9:16 and uploads them to your YouTube channel as Shorts. Free, open source, runs on your PC."/>
+  <title>clipped: Twitch clips to YouTube Shorts / EvZero</title>
+  <link rel="canonical" href="https://evzero.org/clipped/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="EvZero"/>
+  <meta property="og:title" content="clipped: Twitch clips to YouTube Shorts / EvZero"/>
+  <meta property="og:description" content="clipped finds trending Twitch clips, burns in word-by-word captions, reframes them to 9:16 and uploads them to your YouTube channel as Shorts. Free, open source, runs on your PC."/>
+  <meta property="og:url" content="https://evzero.org/clipped/"/>
+  <meta property="og:image" content="https://evzero.org/assets/og-clipped.png"/>
+  <meta property="og:image:width" content="1200"/>
+  <meta property="og:image:height" content="630"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:image" content="https://evzero.org/assets/og-clipped.png"/>
+  <script>(function(d){var h=d.documentElement;h.classList.add('js');window.evzFailsafe=setTimeout(function(){h.classList.add('is-ready')},7000)})(document);</script>
+  <link rel="icon" type="image/png" href="../assets/favicon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../css/site.css?v=3.5"/>
+  <link rel="stylesheet" href="../css/product.css?v=3.5"/>
+</head>
+<body data-page="clipped">
+
+  <!-- Page curtain -->
+  <div class="loader" aria-hidden="true">
+    <div class="loader-brand">evzero</div>
+  </div>
+
+  <!-- Top bar (site.js builds the sticker menu and the chapter dock) -->
+  <header class="topbar">
+    <a href="../" class="brand" data-transition>evzero</a>
+    <div class="topbar-right">
+      <nav class="topnav" aria-label="Primary">
+        <a href="../projects/" data-transition><span data-scramble>Work</span></a>
+        <a href="../contact/" data-transition><span data-scramble>Contact</span></a>
+      </nav>
+      <div class="topbar-tools">
+        <button class="palette-btn" type="button" aria-label="Search the site">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <button class="sound-btn" type="button" aria-pressed="false" aria-label="Turn sound on">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path class="wave" d="M15.5 9a4.2 4.2 0 0 1 0 6M18.2 6.5a8 8 0 0 1 0 11"/><path class="mute" d="M16 9.8l4.4 4.4M20.4 9.8L16 14.2"/></svg>
+        </button>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-menu" data-magnetic="0.2">
+          <span class="menu-btn-label">Menu</span>
+          <span class="menu-btn-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="panels">
+  <main class="page panel-group">
+
+    <!-- HERO -->
+    <section class="section hero pd-hero panel" data-chapter="clipped">
+      <div class="warp" data-warp></div>
+      <div class="wrap">
+        <div class="pd-grid">
+          <div class="pd-text">
+            <div class="pd-crumb intro-fade" style="--id: 0.3s"><i class="dot"></i><a href="../projects/" data-transition>Work</a><span>/</span><span>clipped</span></div>
+            <h1 class="pd-title">
+              <span class="pd-stk" data-sticker="clipped" aria-hidden="true"></span>
+              <span class="line-mask"><span class="line keep-case">clipped</span></span>
+            </h1>
+            <div class="chips intro-fade" style="--id: 0.7s">
+              <span class="chip accent">v0.1.0</span>
+              <span class="chip">Windows &middot; x64</span>
+              <span class="chip">MIT</span>
+            </div>
+            <p class="pd-lead intro-fade" style="--id: 0.8s">
+              Twitch clips in. YouTube Shorts out. <span class="serif">While you sleep, if you let it.</span>
+            </p>
+            <p class="pd-sub intro-fade" style="--id: 0.85s">
+              It finds what&rsquo;s trending in the games you pick, burns in word-by-word captions, reframes it to 9:16, writes the title, credits the streamer and uploads it to your channel. You approve each one, or put it on autopilot.
+            </p>
+            <div class="pd-cta intro-fade" style="--id: 0.9s">
+              <a href="https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe" class="btn shine big" rel="noreferrer noopener" data-magnetic="0.15">
+                <span aria-hidden="true">&darr;</span>
+                <span class="btn-col">Download<small>Windows x64 &middot; installer</small></span>
+              </a>
+              <a href="https://github.com/ritviksajeev/clipped" class="btn ghost big" target="_blank" rel="noreferrer noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.16-.02-2.1-3.2.7-3.87-1.36-3.87-1.36-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.79 0c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+                Source on GitHub
+              </a>
+            </div>
+            <p class="pd-note intro-fade" style="--id: 1s">
+              No admin needed &middot; Your keys stay in the Windows keychain &middot; <a href="https://github.com/ritviksajeev/clipped/releases" target="_blank" rel="noreferrer noopener">macOS &amp; Linux builds</a>
+            </p>
+          </div>
+
+          <!-- Right: the app window, rebuilt in markup -->
+          <div class="pd-visual intro-fade" style="--id: 0.6s" aria-hidden="true">
+            <div class="cl-mock">
+              <div class="cl-mock-bar">
+                <span class="cl-mock-brand"><span class="cl-mock-logo" data-sticker="clipped"></span><b>clipped</b><em>v0.1.0</em></span>
+                <span class="cl-mock-win"><i></i><i></i><i></i></span>
+              </div>
+              <div class="cl-mock-body">
+                <div class="cl-mock-rail"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+                <div class="cl-mock-main">
+                  <div class="cl-mock-engine">
+                    <span class="cl-mock-live">Engine on</span>
+                    <span class="cl-mock-mono">Trending &middot; last 6h</span>
+                  </div>
+
+                  <div class="cl-mock-eyebrow"><span><span class="num">02 /</span> Review queue</span><span>3 ready</span></div>
+                  <div class="cl-mock-shorts">
+                    <div class="cl-short split active">
+                      <span class="cl-short-cam"></span>
+                      <span class="cl-short-cap"><span style="--w: 0">no</span> <span style="--w: 1">way</span> <span style="--w: 2">he</span> <span style="--w: 3">hit</span> <span style="--w: 4">that</span></span>
+                      <span class="cl-short-meta">Valorant &middot; 41k</span>
+                    </div>
+                    <div class="cl-short blur">
+                      <span class="cl-short-cap"><span>wait</span> <span>for</span> <b>it</b></span>
+                      <span class="cl-short-meta">GTA VI &middot; 18k</span>
+                    </div>
+                    <div class="cl-short crop">
+                      <span class="cl-short-cap"><b>clutch</b></span>
+                      <span class="cl-short-meta">CS2 &middot; 9k</span>
+                    </div>
+                  </div>
+
+                  <div class="cl-mock-pick">
+                    <span class="cl-mock-title">He hit the 1v4 with a pistol?! <small>hype &middot; @streamer</small></span>
+                    <span class="cl-mock-acts"><span class="ok">Approve</span><span>Skip</span></span>
+                  </div>
+
+                  <div class="cl-mock-log">
+                    <span><em>06:02</em> Valorant: 12 new, 88 filtered out</span>
+                    <span><em>06:03</em> Rendered 41s of video in 14s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section panel" data-chapter="What it does">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Pipeline</span><span class="k-line"></span><span class="k-meta">06 steps</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Clip in. <span class="accent">Short out.</span></h2>
+          <div class="sec-aside reveal"><p>Every Short goes through the same six steps, on your computer, in about the time it takes to watch it.</p></div>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat glow reveal">
+            <div class="feat-num">01</div>
+            <h3>Find the heat</h3>
+            <p>Pick the Twitch categories you care about and choose how it hunts: <em>trending now</em> ranks the last few hours by how fast clips are picking up views, <em>top of the last 24 hours</em> takes the biggest. Rankings are re-checked before every render, so a clip that went cold gets dropped.</p>
+          </div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">02</div>
+            <h3>Never twice</h3>
+            <p>Every clip is remembered. The same moment clipped by someone else, or too close to something you posted last week, is skipped. The log tells you why: <code>88 filtered out (62 under 50 views&hellip;)</code>.</p>
+          </div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">03</div>
+            <h3>Hear every word</h3>
+            <p>Speech-to-text runs on your own PC with faster-whisper, word by word. It uses your NVIDIA GPU when it can and quietly falls back to the CPU when it can&rsquo;t. No audio leaves your machine.</p>
+          </div>
+          <div class="feat glow reveal">
+            <div class="feat-num">04</div>
+            <h3>Captions that pop</h3>
+            <p>Big bold captions with the current word lit up, kept out of the Shorts buttons. Your font, colours and position. Reframed to 9:16 three ways: blurred fill, facecam over gameplay, or a straight crop.</p>
+          </div>
+          <div class="feat glow reveal d1">
+            <div class="feat-num">05</div>
+            <h3>A hook up front</h3>
+            <p>Dead air is trimmed and the best moment flashes forward as a teaser, with two seconds of hook text on top, so the first frame is never someone loading in.</p>
+          </div>
+          <div class="feat glow reveal d2">
+            <div class="feat-num">06</div>
+            <h3>Titled, credited, posted</h3>
+            <p>Two or three title styles to pick from, a description that always credits the streamer and links the clip, a thumbnail, then straight to your YouTube channel. It tracks your daily API quota and stops before it runs out.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODES -->
+    <section class="section panel" data-chapter="Review or autopilot">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Two modes</span><span class="k-line"></span><span class="k-meta">Per game, if you like</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>You approve, <span class="accent">or it flies.</span></h2>
+          <div class="sec-aside reveal"><p>Start in review. When you trust what it picks, flip a game to autopilot and let the schedule do the rest.</p></div>
+        </div>
+
+        <div class="split-grid">
+          <div class="split-card glow reveal">
+            <span class="tag good">Review queue</span>
+            <h3>Nothing goes up until you say so.</h3>
+            <ul>
+              <li>Keeps rendering in the background until <b>20 Shorts</b> are waiting (you set the number)</li>
+              <li>A 9:16 preview of each, with every title style side by side</li>
+              <li>Edit anything, approve, or skip. The next one is already rendered</li>
+            </ul>
+          </div>
+          <div class="split-card glow reveal d1">
+            <span class="tag opt">Autopilot</span>
+            <h3>Picks, renders and posts on a schedule.</h3>
+            <ul>
+              <li>Uploads every 2 hours by default, or any interval you like</li>
+              <li>A daily cap per game, so one category can&rsquo;t take over your channel</li>
+              <li>Learns which title style gets your channel the most views and leans into it</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UNDER THE HOOD -->
+    <section class="section panel" data-chapter="Under the hood">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(03)</span><span class="k-name">Under the hood</span><span class="k-line"></span><span class="k-meta">No clipped server</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Your keys. <span class="accent">Your machine.</span></h2>
+          <div class="sec-aside reveal">
+            <p>clipped is an app, not a service. It talks to Twitch and YouTube with your own free developer keys, and there is no account to make with me.</p>
+          </div>
+        </div>
+
+        <div class="steps three">
+          <div class="step glow reveal">
+            <div class="step-num">01</div>
+            <h3>A real window</h3>
+            <p>A frameless native window with its own title bar, a tray icon, and a sticker rail down the side. Close it while the engine runs and it keeps working from the tray.</p>
+          </div>
+          <div class="step glow reveal d1">
+            <div class="step-num">02</div>
+            <h3>Python + ffmpeg inside</h3>
+            <p>The engine, faster-whisper and an ffmpeg build with <code>libass</code> for the captions all ship in the installer (the speech model downloads on first use). No Python to install, no console windows popping up.</p>
+          </div>
+          <div class="step glow reveal d2">
+            <div class="step-num">03</div>
+            <h3>AI titles, optional</h3>
+            <p>Free templates by default. Paste a free <b>Gemini</b> key, sign in with Anthropic for <b>Claude</b>, connect <b>OpenRouter</b> with one click, or run a local <b>Ollama</b> model for free.</p>
+          </div>
+        </div>
+
+        <div class="callout glow reveal">
+          <div class="callout-mark">&check;</div>
+          <div>
+            <h3>Keys never leave home</h3>
+            Your Twitch, YouTube and AI keys are stored in the Windows Credential Manager and only ever sent to the service they belong to. Every description credits the streamer and links the original clip, and a model can&rsquo;t remove that. Whether reposting a clip is OK is up to the streamer and the platforms, so review mode is the default.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETUP + DOWNLOAD -->
+    <section class="section panel" data-chapter="Get it">
+      <div class="wrap">
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(04)</span><span class="k-name">Setup</span><span class="k-line"></span><span class="k-meta">About 15 minutes, once</span></div>
+
+        <div class="sec-head">
+          <h2 class="sec-title" data-split>Three steps, <span class="accent">all free.</span></h2>
+          <div class="sec-aside reveal">
+            <p>The app walks you through each one with a guide built in. You only do this once.</p>
+          </div>
+        </div>
+
+        <div class="steps three">
+          <div class="step glow reveal">
+            <span class="tag">Twitch</span>
+            <p>Register a free app at <code>dev.twitch.tv</code> and paste the Client ID and Secret into <em>Settings &rarr; Connections</em>. About 3 minutes.</p>
+          </div>
+          <div class="step glow reveal d1">
+            <span class="tag">YouTube</span>
+            <p>Make your own Google Cloud project and OAuth client, then click <em>Connect YouTube</em>. About 10 minutes. That&rsquo;s roughly six uploads a day on the free quota.</p>
+          </div>
+          <div class="step glow reveal d2">
+            <span class="tag">Go</span>
+            <p>Add the games you want, press the big button, and approve your first Shorts from the review queue.</p>
+          </div>
+        </div>
+
+        <div class="spec pd-spec reveal">
+          <div class="spec-row"><span class="k">OS</span><span class="v">Windows 10 / 11 (x64). macOS and Linux builds on the releases page.</span></div>
+          <div class="spec-row"><span class="k">Perms</span><span class="v">No admin. No code-signing yet &rarr; SmartScreen may warn on first run &middot; &ldquo;More info &rarr; Run anyway&rdquo;.</span></div>
+          <div class="spec-row"><span class="k">Data</span><span class="v"><code>%LOCALAPPDATA%\clipped</code> &middot; updating or uninstalling never touches it</span></div>
+          <div class="spec-row"><span class="k">GPU</span><span class="v">Optional. NVIDIA with CUDA 12 speeds up transcription; everything works on the CPU.</span></div>
+          <div class="spec-row"><span class="k">License</span><span class="v">MIT &middot; source is on GitHub</span></div>
+        </div>
+
+        <div class="pd-bottom-cta reveal">
+          <a href="https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe" class="btn shine big" rel="noreferrer noopener" data-magnetic="0.15">
+            <span aria-hidden="true">&darr;</span>
+            <span class="btn-col">Download clipped v0.1.0<small>Windows x64 &middot; installer</small></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer panel" data-chapter="Say hi">
+    <div class="footer-inner">
+      <div class="kicker"><span class="k-idx"><i class="dot"></i>(&infin;)</span><span class="k-name">Your move</span><span class="k-line"></span><span class="k-meta">evzero.org / clipped</span></div>
+      <div class="footer-top">
+        <div class="footer-cta">
+          <h2 class="footer-title" data-split>Got an idea? <span class="accent">Say hi.</span></h2>
+          <p class="footer-sub reveal">Collabs, bug reports, job offers, cat pictures. I read all of it, and I reply faster than is probably healthy.</p>
+          <div class="reveal d1"><a class="footer-mail" href="mailto:r@evzero.org">r@evzero.org</a></div>
+          <div class="footer-actions reveal d2">
+            <a href="../contact/" class="btn shine" data-transition data-magnetic>Start a conversation <span class="arrow">&rarr;</span></a>
+            <a href="../projects/" class="btn ghost" data-transition data-magnetic>All projects <span class="arrow">&rarr;</span></a>
+          </div>
+        </div>
+        <div class="footer-cols reveal d2">
+          <nav class="footer-col" aria-label="Site">
+            <h3>Site</h3>
+            <a href="../" data-transition>Home</a>
+            <a href="../projects/" data-transition>Work</a>
+            <a href="../contact/" data-transition>Contact</a>
+            <a href="../resume/" data-transition>R&eacute;sum&eacute;</a>
+          </nav>
+          <nav class="footer-col" aria-label="Projects">
+            <h3>Projects</h3>
+            <a href="../ais/" data-transition>AiS</a>
+            <a href="../spice/" data-transition>Spice</a>
+            <a href="../qres/" data-transition>Qres</a>
+            <a href="../clipped/" data-transition>clipped</a>
+            <a href="../watchparty/" data-transition>Watchparty</a>
+            <a href="../projects/#pixel-cat" data-transition>Pixel cat</a>
+          </nav>
+          <nav class="footer-col" aria-label="Elsewhere">
+            <h3>Elsewhere</h3>
+            <a href="https://youtube.com/@evzero" target="_blank" rel="noreferrer noopener">YouTube</a>
+            <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>
+            <a href="https://twitch.tv/evzero" target="_blank" rel="noreferrer noopener">Twitch</a>
+            <a href="https://github.com/ritviksajeev" target="_blank" rel="noreferrer noopener">GitHub</a>
+          </nav>
+        </div>
+      </div>
+      <div class="footer-bottom"><span>evzero.org / v3.1</span><span>Built from absolute zero</span><span>&copy; <span data-year>2026</span> evzero</span></div>
+      <div class="wordpill" aria-hidden="true">
+        <span class="wordpill-clip"><span class="wordpill-text" data-fit="rise"><span class="ev">EV</span><span class="zero">ZERO</span></span></span>
+        <span class="toss" data-sticker="cat" style="--x: 12%; --y: 22%; --r: -14deg"></span>
+        <span class="toss" data-sticker="ais" style="--x: 36%; --y: 84%; --r: 9deg; --bd: -2s"></span>
+        <span class="toss" data-sticker="home" style="--x: 61%; --y: 12%; --r: 12deg; --bd: -4s"></span>
+        <span class="toss" data-sticker="clipped" style="--x: 88%; --y: 74%; --r: -8deg; --bd: -1s"></span>
+      </div>
+    </div>
+  </footer>
+  </div>
+
+  <script src="../js/vendor/lenis.min.js?v=3.5"></script>
+  <script src="../js/site.js?v=3.5"></script>
+  <script src="../js/cat.js?v=3.5"></script>
+</body>
+</html>
