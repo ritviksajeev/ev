@@ -5,8 +5,9 @@
    Ed25519 private key), keeps track of Pro subscriptions and the computer each
    one is active on, and hands out free day keys after the ads.
 
-   Runs anywhere Node 20+ runs: as Vercel functions (api/clipped/*.js), or as
-   one small server with `node api/_lib/serve.js` (Railway, Render, a VPS...).
+   Runs on Cloudflare Workers (workers/clipped-api, the live setup), as Vercel
+   functions (api/clipped/*.js), or as one Node 20+ process with
+   `node api/_lib/serve.js` (Railway, Render, a VPS...).
    The app and the pages find it through the site's clipped/api.json, so it
    can live on any host and move without an app update.
 
@@ -83,16 +84,28 @@ const b64url = (buf) => Buffer.from(buf).toString('base64url');
 
 // ---------------------------------------------------------------- signing
 
+// The .pem however it was pasted: as is, with "\\n" for line breaks, squashed onto one line
+// (dashboards' secret fields often do that), or just the base64 between the two markers.
+function normalizePem(raw) {
+  const text = String(raw || '').replace(/\\n/g, '\n').trim();
+  if (!text) return '';
+  const m = text.match(/-----BEGIN PRIVATE KEY-----([\s\S]*?)-----END PRIVATE KEY-----/);
+  const body = (m ? m[1] : text).replace(/\s+/g, '');
+  if (!/^[A-Za-z0-9+/]+={0,2}$/.test(body)) throw new ApiError(503, 'not_configured', "The signing key setting isn't a valid key.");
+  return `-----BEGIN PRIVATE KEY-----\n${body.match(/.{1,64}/g).join('\n')}\n-----END PRIVATE KEY-----\n`;
+}
 let cachedKey = null;
+let cachedPublic = null;
 function privateKey() {
   if (cachedKey) return cachedKey;
-  const pem = (process.env.CLIPPED_SIGNING_KEY || '').replace(/\\n/g, '\n').trim();
+  const pem = normalizePem(process.env.CLIPPED_SIGNING_KEY);
   if (!pem) throw notConfigured('Key signing');
   cachedKey = crypto.createPrivateKey(pem);
   return cachedKey;
 }
 function publicKey() {
-  return crypto.createPublicKey(privateKey());
+  if (!cachedPublic) cachedPublic = crypto.createPublicKey(privateKey());
+  return cachedPublic;
 }
 const sign = (data) => crypto.sign(null, Buffer.from(data), privateKey());
 const verify = (data, sig) => crypto.verify(null, Buffer.from(data), publicKey(), sig);
@@ -173,10 +186,16 @@ async function kv(...command) {
   if (kvOverride) return kvOverride(command);
   const cfg = kvConfig();
   if (!cfg) throw notConfigured('Storage');
-  const res = await fetch(cfg.url, {
-    method: 'POST', headers: { Authorization: `Bearer ${cfg.token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(command.map(String)),
-  });
+  let res;
+  try {
+    res = await fetch(cfg.url, {
+      method: 'POST', headers: { Authorization: `Bearer ${cfg.token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(command.map(String)),
+    });
+  } catch (err) {
+    console.error('storage unreachable', err && err.message);
+    throw new ApiError(502, 'storage', 'Storage is having a moment. Try again.');
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok || data.error) throw new ApiError(502, 'storage', 'Storage is having a moment. Try again.');
   return data.result;
@@ -196,9 +215,15 @@ function razorpay() {
 let fetchOverride = null;
 async function rzp(method, path, body) {
   const { auth } = razorpay();
-  const res = await (fetchOverride || fetch)(`https://api.razorpay.com/v1${path}`, {
-    method, headers: { Authorization: auth, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined,
-  });
+  let res;
+  try {
+    res = await (fetchOverride || fetch)(`https://api.razorpay.com/v1${path}`, {
+      method, headers: { Authorization: auth, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch (err) {
+    console.error('razorpay unreachable', err && err.message);
+    throw new ApiError(502, 'payments', "Couldn't reach Razorpay. Your payment is safe; try again in a minute.");
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new ApiError(502, 'payments', (data.error && data.error.description) || 'Razorpay refused the request.');
   return data;
@@ -299,10 +324,10 @@ module.exports = {
   ApiError, notConfigured, now, DAY, PRO_DEVICES, MOVES_PER_30_DAYS, CERT_DAYS, GRACE, WATERMARK_REMOVALS, ACTIVE,
   b32encode, b32decode, issueKey, parseKey, signToken, readToken, validDevice,
   kv, kvGetJson, kvSetJson, hasKv, razorpay, rzp, hmac, safeEqual, saveSubscription, proKeyFor,
-  readRaw, readJson, send, handler,
+  readRaw, readJson, send, handler, normalizePem,
   _test: {
     setKv: (fn) => { kvOverride = fn; },
     setFetch: (fn) => { fetchOverride = fn; },
-    resetKey: () => { cachedKey = null; },
+    resetKey: () => { cachedKey = null; cachedPublic = null; },
   },
 };

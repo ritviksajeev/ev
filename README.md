@@ -54,6 +54,9 @@ website-evzero/
 │   ├── favicon.png         ← the tab icon every page links to
 │   ├── og*.png             ← link-preview images (1200×630) for Discord, LinkedIn, X
 │   └── ais-review.webp     ← screenshot on the AiS page
+├── api/                    ← clipped licence server: handlers (api/clipped) + shared code (api/_lib)
+├── workers/clipped-api/    ← runs that server on Cloudflare Workers (see its README)
+├── clipped/api.json        ← where the clipped app and pages find the licence server
 ├── CNAME                   ← GitHub Pages custom domain
 ├── _redirects              ← Netlify clean-URL redirects
 ├── vercel.json             ← Vercel clean-URL config

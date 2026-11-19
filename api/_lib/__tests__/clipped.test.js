@@ -119,7 +119,7 @@ test('a free day: ads first, one key per computer per day, handed to the waiting
   assert.strictEqual((await call('activate', { method: 'POST', body: { key: got.body.value, device: DEV_B } })).body.code, 'other_device');
 });
 
-test('watermark removals: two per day key, each once', async () => {
+test('watermark removals: two per day key, counted by the server', async () => {
   const { id } = L.issueKey({ plan: 'day', device: DEV_A, expires: Math.floor(clock / 1000) + 9999 });
   const claim = async (n) => {
     const s = await call('free-start', { url: `/x?device=${DEV_A}&mode=wm&key=${id}&n=${n}` });
@@ -128,8 +128,14 @@ test('watermark removals: two per day key, each once', async () => {
   };
   const one = await claim(1);
   assert.strictEqual(L.readToken(one.body.value, 'wm').n, 1);
+  // An app that lost track (reinstalled mid-day) asks for 1 again: it gets the other one
+  const two = await claim(1);
+  assert.strictEqual(two.status, 200);
+  assert.strictEqual(L.readToken(two.body.value, 'wm').n, 2);
+  assert.strictEqual(two.body.n, 2);
+  // Then both are spent, whichever it asks for
+  assert.strictEqual((await claim(2)).body.code, 'used');
   assert.strictEqual((await claim(1)).body.code, 'used');
-  assert.strictEqual((await claim(2)).status, 200);
   assert.strictEqual((await call('free-start', { url: `/x?device=${DEV_A}&mode=wm&key=${id}&n=3` })).status, 400);
 });
 
@@ -206,6 +212,22 @@ test('Cancel Pro: needs the paying email, stops payments, keeps Pro to the end o
   assert.strictEqual((await call('activate', { method: 'POST', body: { key, device: DEV_A } })).status, 200);
   advance(5 * L.DAY);
   assert.strictEqual((await call('activate', { method: 'POST', body: { key, device: DEV_A } })).body.code, 'inactive');
+});
+
+test('the signing key works however the .pem was pasted', () => {
+  const pem = process.env.CLIPPED_SIGNING_KEY;
+  const body = pem.replace(/-----[A-Z ]+-----/g, '').replace(/\s+/g, '');
+  const want = L.parseKey(L.issueKey({ plan: 'pro' }).key).plan;
+  for (const pasted of [pem, pem.replace(/\n/g, '\\n'), pem.replace(/\n/g, ' '), body, `  ${pem}  `]) {
+    process.env.CLIPPED_SIGNING_KEY = pasted;
+    L._test.resetKey();
+    assert.strictEqual(L.parseKey(L.issueKey({ plan: 'pro' }).key).plan, want);
+  }
+  process.env.CLIPPED_SIGNING_KEY = 'not a key!';
+  L._test.resetKey();
+  assert.throws(() => L.issueKey({ plan: 'pro' }), /signing key setting/);
+  process.env.CLIPPED_SIGNING_KEY = pem;
+  L._test.resetKey();
 });
 
 test('config says what is ready', async () => {

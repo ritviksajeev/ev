@@ -36,9 +36,13 @@ const upstash = http.createServer((req, res) => {
   });
 });
 
+// CLIPPED_API_URL=https://… runs the same checks against a running server instead (the
+// Worker under `wrangler dev`, or a real deployment that has storage but no payments).
+const EXTERNAL = (process.env.CLIPPED_API_URL || '').replace(/\/+$/, '');
 let base;
 let server;
 test.before(async () => {
+  if (EXTERNAL) { base = EXTERNAL; return; }
   await new Promise((r) => upstash.listen(0, '127.0.0.1', r));
   process.env.KV_REST_API_URL = `http://127.0.0.1:${upstash.address().port}`;
   process.env.KV_REST_API_TOKEN = 't0ken';
@@ -46,7 +50,7 @@ test.before(async () => {
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   base = `http://127.0.0.1:${server.address().port}`;
 });
-test.after(() => { server.close(); upstash.close(); });
+test.after(() => { if (server) server.close(); if (upstash.listening) upstash.close(); });
 
 const get = (p, headers) => fetch(base + p, { headers });
 const post = (p, body, headers = {}) => fetch(base + p, { method: 'POST', headers: { 'Content-Type': 'application/json', ...headers }, body: typeof body === 'string' ? body : JSON.stringify(body) });
@@ -100,5 +104,5 @@ test('a free day end to end through Upstash: start, wait, claim, pick up once, a
   const other = await post('/clipped/activate/', { key, device: 'f'.repeat(16) });
   assert.strictEqual((await other.json()).code, 'other_device');
   // Held in storage: one live free day per computer
-  assert.ok([...store.keys()].some((k) => k === `free:${device}`));
+  if (!EXTERNAL) assert.ok([...store.keys()].some((k) => k === `free:${device}`));
 });

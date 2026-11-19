@@ -1,0 +1,13 @@
+{
+  "name": "clipped-api",
+  "private": true,
+  "description": "The clipped licence server on Cloudflare Workers (same handlers as api/clipped/)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test ../../api/_lib/__tests__/*.test.js"
+  },
+  "devDependencies": {
+    "wrangler": "4.157.0"
+  }
+}
