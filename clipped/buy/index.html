@@ -4,13 +4,13 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#09090b"/>
-  <meta name="description" content="Get a clipped licence key: $2.99 a month, or $32 once for life. Twitch clips to YouTube Shorts and Instagram Reels, on autopilot."/>
-  <title>Get clipped: $2.99 a month or $32 for life / EvZero</title>
+  <meta name="description" content="clipped: a free day any day (a few ads, small watermark), or Pro for $2.99 a month with no watermark. Twitch clips to YouTube Shorts and Instagram Reels."/>
+  <title>Get clipped: free with ads, or Pro for $2.99 a month / EvZero</title>
   <link rel="canonical" href="https://evzero.org/clipped/buy/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="EvZero"/>
-  <meta property="og:title" content="Get clipped: $2.99 a month or $32 for life / EvZero"/>
-  <meta property="og:description" content="Get a clipped licence key: $2.99 a month, or $32 once for life."/>
+  <meta property="og:title" content="Get clipped: free with ads, or Pro for $2.99 a month / EvZero"/>
+  <meta property="og:description" content="Free with ads, or Pro for $2.99 a month."/>
   <meta property="og:url" content="https://evzero.org/clipped/buy/"/>
   <meta property="og:image" content="https://evzero.org/assets/og-clipped.png"/>
   <meta property="og:image:width" content="1200"/>
@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="../../css/site.css?v=3.5"/>
-  <link rel="stylesheet" href="../../css/product.css?v=3.6"/>
+  <link rel="stylesheet" href="../../css/product.css?v=3.7"/>
 </head>
 <body data-page="clipped">
 
@@ -69,62 +69,68 @@
             <span class="pd-stk" data-sticker="clipped" aria-hidden="true"></span>
             <span class="line-mask"><span class="line">Get <span class="serif accent">clipped.</span></span></span>
           </h1>
-          <p class="pd-lead intro-fade" style="--id: 0.7s">One licence key unlocks the whole app. Pay monthly, <span class="serif">or once and keep it.</span></p>
+          <p class="pd-lead intro-fade" style="--id: 0.7s">Try it free for a day, any day. <span class="serif">Go Pro when it earns its keep.</span></p>
         </div>
 
         <div class="plans intro-fade" style="--id: 0.85s">
           <article class="plan glow">
-            <div class="plan-top"><span class="tag">Monthly</span></div>
-            <div class="plan-price"><b>$2.99</b><span>/ month</span></div>
-            <p class="plan-sub">Cancel any time. Your key renews with each payment.</p>
+            <div class="plan-top"><span class="tag">Free</span><span class="plan-save neutral">watch a few ads</span></div>
+            <div class="plan-price"><b>$0</b><span>/ day</span></div>
+            <p class="plan-sub">A free key for 24 hours, made for your computer. Get a new one whenever you want another day.</p>
             <ul class="plan-list">
-              <li>Everything in clipped</li>
-              <li>YouTube Shorts and Instagram Reels</li>
-              <li>AI titles with Gemini, Claude, OpenRouter or Ollama</li>
-              <li>Updates while you're subscribed</li>
+              <li>Everything in clipped for a day</li>
+              <li>A small &ldquo;clipped &middot; evzero.org&rdquo; watermark on Shorts</li>
+              <li>Remove it from 2 Shorts a day for a few more ads</li>
+              <li>Keys are single-use and stay on your computer</li>
             </ul>
-            <button class="btn ghost big plan-btn" type="button" data-plan="monthly">Start monthly <span class="arrow">&rarr;</span></button>
+            <a class="btn ghost big plan-btn" href="#free-how">Get a free day <span class="arrow">&darr;</span></a>
           </article>
 
           <article class="plan best glow">
-            <span class="plan-badge" aria-hidden="true">Best value</span>
-            <div class="plan-top"><span class="tag good">Lifetime</span><span class="plan-save" data-save-chip>save $39.76 over 2 years</span></div>
-            <div class="plan-price"><b>$32</b><span>once</span></div>
-            <p class="plan-sub">Pays for itself in 11 months. Yours for good after that.</p>
+            <span class="plan-badge" aria-hidden="true">No watermark</span>
+            <div class="plan-top"><span class="tag good">Pro</span>
+              <span class="currency" role="group" aria-label="Currency">
+                <button type="button" data-currency="USD" aria-pressed="true">USD</button><button type="button" data-currency="INR" aria-pressed="false">INR</button>
+              </span>
+            </div>
+            <div class="plan-price"><b data-price>$2.99</b><span>/ month</span></div>
+            <p class="plan-sub">Cancel any time. Cards from anywhere; UPI and Indian cards in rupees.</p>
             <ul class="plan-list">
-              <li>Everything in monthly</li>
-              <li>Every future update included</li>
-              <li>No renewals, ever</li>
-              <li>One payment, one key, done</li>
+              <li>No watermark, no ads, no daily keys</li>
+              <li>YouTube Shorts and Instagram Reels on autopilot</li>
+              <li>AI titles with Gemini, Claude, OpenRouter or Ollama</li>
+              <li>Every update while you're subscribed</li>
             </ul>
-            <button class="btn shine big plan-btn" type="button" data-plan="lifetime">Get lifetime <span class="arrow">&rarr;</span></button>
+            <button class="btn shine big plan-btn" type="button" data-subscribe>Go Pro <span class="arrow">&rarr;</span></button>
           </article>
         </div>
         <p class="buy-msg" role="status" aria-live="polite" hidden></p>
-        <p class="pd-note buy-note intro-fade" style="--id: 1s">Your key arrives right after checkout &middot; paste it into clipped once &middot; it's checked on your PC, never online</p>
+
+        <div class="key-box glow" data-key-box hidden>
+          <span class="tag good">Your Pro key</span>
+          <code class="key-text" data-key-text></code>
+          <div class="key-actions">
+            <button class="btn shine" type="button" data-copy-key>Copy key</button>
+            <a class="btn ghost" href="/clipped/download/windows" rel="noreferrer noopener">Download clipped <span class="arrow">&darr;</span></a>
+          </div>
+          <p class="pd-note">Paste it on clipped's welcome screen (&ldquo;I have a key&rdquo;). Save it somewhere too: it's also kept in this browser.</p>
+        </div>
+        <p class="pd-note buy-note intro-fade" style="--id: 1s">Payments by Razorpay &middot; Pro runs on one computer at a time &middot; <a href="../terms/">Terms</a> &middot; <a href="../refunds/">Refunds</a> &middot; <a href="../privacy/">Privacy</a></p>
       </div>
     </section>
 
-    <!-- SAVINGS -->
-    <section class="section panel" data-chapter="Savings">
+    <!-- HOW THE FREE DAY WORKS -->
+    <section class="section panel" data-chapter="Free day" id="free-how">
       <div class="wrap">
-        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Do the maths</span><span class="k-line"></span><span class="k-meta">Monthly vs lifetime</span></div>
+        <div class="kicker"><span class="k-idx"><i class="dot"></i>(01)</span><span class="k-name">Free day</span><span class="k-line"></span><span class="k-meta">Three steps</span></div>
         <div class="sec-head">
-          <h2 class="sec-title" data-split>How long will <span class="accent">you clip?</span></h2>
-          <div class="sec-aside reveal"><p>Drag it. Lifetime overtakes monthly in month 11; everything after that is money you keep.</p></div>
+          <h2 class="sec-title" data-split>Free days start <span class="accent">in the app.</span></h2>
+          <div class="sec-aside reveal"><p>The key is made for your computer, so it starts from clipped itself.</p></div>
         </div>
-
-        <div class="saver glow reveal">
-          <div class="saver-top">
-            <label class="saver-label" for="months"><b data-months>24</b> <span data-months-word>months</span></label>
-            <input id="months" class="saver-range" type="range" min="1" max="48" value="24" step="1" aria-describedby="saver-result"/>
-            <div class="saver-scale" aria-hidden="true"><span>1 mo</span><span>1 yr</span><span>2 yrs</span><span>3 yrs</span><span>4 yrs</span></div>
-          </div>
-          <div class="saver-bars" aria-hidden="true">
-            <div class="saver-row"><span class="saver-name">Monthly</span><span class="saver-track"><i class="saver-bar monthly" data-bar-monthly></i></span><b data-total-monthly>$71.76</b></div>
-            <div class="saver-row"><span class="saver-name">Lifetime</span><span class="saver-track"><i class="saver-bar lifetime" data-bar-lifetime></i></span><b>$32.00</b></div>
-          </div>
-          <p class="saver-result" id="saver-result" data-result>Lifetime saves you <b>$39.76</b> (55%).</p>
+        <div class="steps three">
+          <div class="step glow reveal"><div class="step-num">01</div><h3>Download clipped</h3><p>Install it on Windows 10 or 11. <a class="ulink" href="/clipped/download/windows">Download</a></p></div>
+          <div class="step glow reveal d1"><div class="step-num">02</div><h3>&ldquo;Get a free day&rdquo;</h3><p>On the welcome screen. This site opens on a page with a few short ads.</p></div>
+          <div class="step glow reveal d2"><div class="step-num">03</div><h3>Back to clipped</h3><p>It unlocks by itself for 24 hours. Tomorrow, do it again, or go Pro.</p></div>
         </div>
       </div>
     </section>
@@ -135,26 +141,38 @@
         <div class="kicker"><span class="k-idx"><i class="dot"></i>(02)</span><span class="k-name">Questions</span><span class="k-line"></span><span class="k-meta">Short answers</span></div>
         <div class="faq reveal">
           <details class="faq-item glow" open>
-            <summary>Where's my key?</summary>
-            <p>It arrives right after checkout. Open clipped, paste it on the welcome screen, done. Keys are long on purpose: they're signed by evzero, so they can't be guessed or made up.</p>
+            <summary>Where's my Pro key?</summary>
+            <p>It appears right here after checkout, and this browser remembers it. Lost it? Use &ldquo;Find my key&rdquo; at the bottom of this page with the subscription id from Razorpay's email (it starts with <code>sub_</code>) and the email you paid with.</p>
           </details>
           <details class="faq-item glow">
-            <summary>Does clipped phone home to check my key?</summary>
-            <p>No. The key is checked on your computer, offline. clipped only ever talks to Twitch, YouTube, Instagram and the AI you choose.</p>
+            <summary>Can I use Pro on two computers?</summary>
+            <p>One at a time. To switch, sign out in Settings &rarr; Licence on the old one, or pick &ldquo;Move Pro to this computer&rdquo; on the new one (up to 3 moves a month). That's what keeps one subscription from being shared around.</p>
           </details>
           <details class="faq-item glow">
-            <summary>What happens when a monthly key runs out?</summary>
-            <p>clipped asks for a key again. Your settings, games and review queue are all still there when you paste the next one.</p>
+            <summary>Does clipped need the internet to check my key?</summary>
+            <p>Pro checks in with evzero.org about once a day and keeps working for a week offline. Free day keys are checked on your computer. Only the key and an anonymous id for your computer are sent.</p>
           </details>
           <details class="faq-item glow">
-            <summary>Can I switch from monthly to lifetime?</summary>
-            <p>Any time: get a lifetime key, paste it in, and cancel the monthly plan.</p>
+            <summary>How do I cancel?</summary>
+            <p>Right here: <a href="#manage">Cancel Pro</a> below, with the subscription id from Razorpay&rsquo;s email and the email you paid with. Or email <a href="mailto:r@evzero.org">r@evzero.org</a>. Payments stop straight away and Pro keeps working until the end of the month you paid for. See the <a href="../refunds/">refund policy</a>.</p>
           </details>
           <details class="faq-item glow">
-            <summary>What do I need besides the key?</summary>
-            <p>A Windows 10 or 11 PC and free Twitch developer keys (about 3 minutes, the app shows you how). YouTube and Instagram are optional: without them you download each Short and post it yourself.</p>
+            <summary>What do I need besides a key?</summary>
+            <p>A Windows 10 or 11 PC and free Twitch developer keys (about 3 minutes; the app shows you how). YouTube and Instagram are optional: without them you download each Short and post it yourself.</p>
           </details>
         </div>
+
+        <form class="lookup glow reveal" id="manage" data-lookup>
+          <h3>Your Pro subscription</h3>
+          <p class="lookup-help">The subscription id is in Razorpay&rsquo;s email (it starts with <code>sub_</code>); use the email you paid with.</p>
+          <div class="lookup-row">
+            <input name="subscription_id" placeholder="sub_…" autocomplete="off" aria-label="Subscription id" required/>
+            <input name="email" type="email" placeholder="you@example.com" autocomplete="email" aria-label="Email" required/>
+            <button class="btn ghost" type="submit" value="find">Find my key</button>
+            <button class="btn ghost danger" type="submit" value="cancel">Cancel Pro</button>
+          </div>
+          <p class="lookup-msg" data-lookup-msg role="status" aria-live="polite"></p>
+        </form>
       </div>
     </section>
 
@@ -214,7 +232,7 @@
 
   <script src="../../js/vendor/lenis.min.js?v=3.5"></script>
   <script src="../../js/site.js?v=3.5"></script>
-  <script src="../../js/clipped-buy.js?v=1"></script>
+  <script src="../../js/clipped-buy.js?v=3"></script>
   <script src="../../js/cat.js?v=3.5"></script>
 </body>
 </html>

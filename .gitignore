@@ -19,3 +19,10 @@ spice/Spice-*/
 
 # sealed-page sources (plaintext) - never commit; see tools/seal.mjs
 .private/
+
+# licence signing keys and local env: never commit
+*.pem
+*signing-key*
+.env
+.env.*
+.vercel

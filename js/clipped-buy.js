@@ -1,59 +1,139 @@
 /* ============================================
-   clipped / buy: the savings slider and the
-   checkout buttons. Checkout links are filled in
-   once payments are set up (see CHECKOUT).
+   clipped / buy: Pro checkout with Razorpay (USD
+   for everyone, INR for India), the key shown
+   afterwards, and "find my key".
    ============================================ */
 (function () {
   'use strict';
 
-  // Hosted checkout pages, one per plan. Empty until payments go live.
-  const CHECKOUT = { monthly: '', lifetime: '' };
-  const MONTHLY = 2.99;
-  const LIFETIME = 32;
-  const money = (v) => '$' + v.toFixed(2);
+  const API = '/api/clipped/';
+  const PRICES = { USD: '$2.99', INR: '₹249' }; // must match the Razorpay plans' amounts
+  const $ = (sel) => document.querySelector(sel);
+  const msg = $('.buy-msg');
+  let config = null;
 
-  // ---- savings slider
-  const range = document.getElementById('months');
-  if (range) {
-    const $ = (sel) => document.querySelector(sel);
-    const update = () => {
-      const m = Number(range.value);
-      const monthly = MONTHLY * m;
-      const max = Math.max(monthly, LIFETIME);
-      $('[data-months]').textContent = m;
-      $('[data-months-word]').textContent = m === 1 ? 'month' : 'months';
-      $('[data-total-monthly]').textContent = money(monthly);
-      $('[data-bar-monthly]').style.width = (monthly / max) * 100 + '%';
-      $('[data-bar-lifetime]').style.width = (LIFETIME / max) * 100 + '%';
-      range.style.setProperty('--fill', ((m - 1) / (Number(range.max) - 1)) * 100 + '%');
-      const diff = monthly - LIFETIME;
-      const result = $('[data-result]');
-      if (diff > 0.005) {
-        result.innerHTML = 'Lifetime saves you <b>' + money(diff) + '</b> (' + Math.round((diff / monthly) * 100) + '%).';
-        result.classList.remove('neutral');
+  const say = (html) => {
+    if (!msg) return;
+    msg.hidden = false;
+    msg.innerHTML = html;
+    msg.classList.remove('pop');
+    void msg.offsetWidth;
+    msg.classList.add('pop');
+  };
+  const post = async (path, body) => {
+    const res = await fetch(API + path + '/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Something went wrong. Try again in a minute.');
+    return data;
+  };
+
+  // ---- the key, once there is one
+  const showKey = (key) => {
+    const box = $('[data-key-box]');
+    if (!box || !key) return;
+    $('[data-key-text]').textContent = key;
+    box.hidden = false;
+    try { localStorage.setItem('clipped-pro-key', key); } catch (e) { /* private mode */ }
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  const copy = $('[data-copy-key]');
+  if (copy) copy.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText($('[data-key-text]').textContent); copy.textContent = 'Copied'; } catch (e) { copy.textContent = 'Select and copy it'; }
+    setTimeout(() => { copy.textContent = 'Copy key'; }, 2400);
+  });
+  try {
+    const saved = localStorage.getItem('clipped-pro-key');
+    if (saved) { $('[data-key-text]').textContent = saved; $('[data-key-box]').hidden = false; }
+  } catch (e) { /* storage blocked */ }
+
+  // ---- currency
+  let currency = 'USD';
+  try { if (/Kolkata|Calcutta/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)) currency = 'INR'; } catch (e) { /* old browser */ }
+  const setCurrency = (c) => {
+    currency = c;
+    document.querySelectorAll('[data-currency]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.currency === c)));
+    const price = $('[data-price]');
+    if (price) price.textContent = PRICES[c];
+  };
+  document.querySelectorAll('[data-currency]').forEach((b) => b.addEventListener('click', () => setCurrency(b.dataset.currency)));
+  setCurrency(currency);
+
+  fetch(API + 'config/').then((r) => r.json()).then((c) => {
+    config = c;
+    const cur = (c.pro && c.pro.currencies) || {};
+    if (cur.USD && !cur.INR) setCurrency('USD');
+    if (cur.INR && !cur.USD) setCurrency('INR');
+    if (!(cur.USD && cur.INR)) document.querySelectorAll('.currency').forEach((el) => { el.hidden = true; });
+  }).catch(() => {});
+
+  // ---- Razorpay checkout
+  const loadRazorpay = () => new Promise((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = resolve;
+    s.onerror = () => reject(new Error("Couldn't load Razorpay. Check your connection or ad blocker."));
+    document.head.appendChild(s);
+  });
+
+  const subscribe = $('[data-subscribe]');
+  if (subscribe) subscribe.addEventListener('click', async () => {
+    if (!config || !config.pro || !config.pro.ready) {
+      say('Pro checkout opens very soon. Want it today? Email <a href="mailto:r@evzero.org?subject=clipped%20Pro">r@evzero.org</a>, or start with a <a href="#free-how">free day</a>.');
+      return;
+    }
+    subscribe.disabled = true;
+    try {
+      const [order] = await Promise.all([post('checkout', { currency }), loadRazorpay()]);
+      const rzp = new window.Razorpay({
+        key: order.razorpay_key_id,
+        subscription_id: order.subscription_id,
+        name: 'clipped',
+        description: 'Pro · monthly',
+        theme: { color: '#8a78f0' },
+        handler: async (resp) => {
+          say('Payment received. Making your key…');
+          try {
+            showKey((await post('checkout-verify', resp)).license_key);
+            say('You&rsquo;re Pro. Your key is below.');
+          } catch (e) {
+            say(e.message + ' Your payment is safe: use &ldquo;Find my key&rdquo; below in a minute.');
+          }
+        },
+        modal: { ondismiss: () => { subscribe.disabled = false; } },
+      });
+      rzp.on('payment.failed', (r) => say('The payment didn&rsquo;t go through: ' + ((r.error && r.error.description) || 'try another card or UPI') + '.'));
+      rzp.open();
+    } catch (e) {
+      say(e.message);
+    } finally {
+      subscribe.disabled = false;
+    }
+  });
+
+  // ---- your subscription: find my key, or cancel
+  const lookup = $('[data-lookup]');
+  const day = (t) => new Date(t * 1000).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+  if (lookup) lookup.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const out = $('[data-lookup-msg]');
+    const action = (e.submitter && e.submitter.value) || 'find';
+    const data = { ...Object.fromEntries(new FormData(lookup)), action };
+    if (action === 'cancel' && !window.confirm('Cancel Pro? No more payments will be taken, and Pro keeps working until the end of the month you’ve paid for.')) return;
+    out.textContent = action === 'cancel' ? 'Cancelling…' : 'Looking…';
+    lookup.querySelectorAll('button').forEach((b) => { b.disabled = true; });
+    try {
+      const r = await post('key-lookup', data);
+      if (action === 'cancel') {
+        out.textContent = 'Cancelled. No more payments will be taken' + (r.paid_until > Date.now() / 1000 ? '; Pro keeps working until ' + day(r.paid_until) + '.' : '.');
       } else {
-        const left = Math.ceil(LIFETIME / MONTHLY) - m;
-        result.innerHTML = 'Monthly is cheaper for now: lifetime pulls ahead in <b>' + left + ' more month' + (left === 1 ? '' : 's') + '</b>.';
-        result.classList.add('neutral');
+        showKey(r.license_key);
+        out.textContent = 'Found it. It’s at the top of the page.';
       }
-    };
-    range.addEventListener('input', update);
-    update();
-  }
-
-  // ---- checkout
-  const msg = document.querySelector('.buy-msg');
-  document.querySelectorAll('[data-plan]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const url = CHECKOUT[btn.dataset.plan];
-      if (url) { window.location.href = url; return; }
-      if (!msg) return;
-      msg.hidden = false;
-      msg.innerHTML = 'Checkout opens very soon. Want a key today? Email <a href="mailto:r@evzero.org?subject=clipped%20' +
-        btn.dataset.plan + '%20key">r@evzero.org</a> or ask in the <a href="https://discord.gg/hrN8ye6nrF" target="_blank" rel="noreferrer noopener">Discord</a>.';
-      msg.classList.remove('pop');
-      void msg.offsetWidth;
-      msg.classList.add('pop');
-    });
+    } catch (err) {
+      out.textContent = err.message;
+    } finally {
+      lookup.querySelectorAll('button').forEach((b) => { b.disabled = false; });
+    }
   });
 })();

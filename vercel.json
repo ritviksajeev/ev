@@ -43,6 +43,26 @@
       "permanent": true
     },
     {
+      "source": "/clipped/free",
+      "destination": "/clipped/free/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/terms",
+      "destination": "/clipped/terms/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/privacy",
+      "destination": "/clipped/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/refunds",
+      "destination": "/clipped/refunds/",
+      "permanent": true
+    },
+    {
       "source": "/clipped/download/windows",
       "destination": "https://github.com/ritviksajeev/clipped/releases/latest/download/clipped-windows-x64-setup.exe",
       "permanent": false

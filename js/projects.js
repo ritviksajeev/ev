@@ -121,7 +121,7 @@
       ],
       actions: [
         { label: 'Open the clipped page', href: '../clipped/' },
-        { label: 'Get a key · from $2.99', href: '../clipped/buy/' },
+        { label: 'Free day or Pro · $2.99/mo', href: '../clipped/buy/' },
       ],
     },
     'watchparty': {
