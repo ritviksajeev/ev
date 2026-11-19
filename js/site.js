@@ -1369,6 +1369,7 @@
       { group: 'Projects', label: 'Spice', hint: 'overlay for gamers', stk: 'spice', key: 'spice', words: 'crosshair overlay', run: go('spice/') },
       { group: 'Projects', label: 'Qres', hint: 'one key, new resolution', stk: 'qres', key: 'qres', words: 'stretched resolution hotkey', run: go('qres/') },
       { group: 'Projects', label: 'clipped', hint: 'Twitch clips to YouTube Shorts', stk: 'clipped', key: 'clipped', words: 'shorts youtube twitch clips captions autopilot', run: go('clipped/') },
+      { group: 'Projects', label: 'Get clipped', hint: '$2.99 a month or $32 for life', stk: 'clipped', words: 'buy price licence key lifetime monthly', run: go('clipped/buy/') },
       { group: 'Projects', label: 'Watchparty', hint: 'same frame, two couches', stk: 'watchparty', key: 'watchparty', words: 'watch together youtube twitch netflix', run: go('watchparty/') },
       { group: 'Projects', label: 'Pixel cat', hint: 'the one stalking your cursor', stk: 'cat', words: 'cat pet', run: go('projects/#pixel-cat') },
       { group: 'Projects', label: 'Valorant tracker', hint: 'outdated', stk: 'tracker', key: 'tracker', words: 'val rank', run: go('valorant/') },
