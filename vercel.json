@@ -38,6 +38,31 @@
       "permanent": true
     },
     {
+      "source": "/clipped/buy",
+      "destination": "/clipped/buy/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/free",
+      "destination": "/clipped/free/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/terms",
+      "destination": "/clipped/terms/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/privacy",
+      "destination": "/clipped/privacy/",
+      "permanent": true
+    },
+    {
+      "source": "/clipped/refunds",
+      "destination": "/clipped/refunds/",
+      "permanent": true
+    },
+    {
       "source": "/wife",
       "destination": "/wife/",
       "permanent": true

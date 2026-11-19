@@ -1,0 +1,4 @@
+{
+  "api": "",
+  "_": "Where the clipped licence server lives (api/_lib/serve.js or the Vercel functions). The app and the clipped pages read this; empty means not live yet."
+}
