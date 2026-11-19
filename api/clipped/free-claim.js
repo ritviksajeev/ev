@@ -27,11 +27,18 @@ module.exports = L.handler('POST', async (req) => {
       result = { kind: 'day', value: key, expires };
     }
   } else {
+    // The server is the one that counts: the slot the app asked for, else the other one
+    // (an app reinstalled mid-day doesn't know which it already spent).
+    let n = s.n;
     if (L.hasKv()) {
-      const used = await L.kv('SET', `wm:${s.k}:${s.n}`, '1', 'NX', 'EX', 2 * L.DAY);
-      if (used === null) throw new L.ApiError(409, 'used', `You've already unlocked watermark removal ${s.n} for today's key.`);
+      const order = [s.n, ...Array.from({ length: L.WATERMARK_REMOVALS }, (_, i) => i + 1).filter((x) => x !== s.n)];
+      n = null;
+      for (const slot of order) {
+        if (await L.kv('SET', `wm:${s.k}:${slot}`, '1', 'NX', 'EX', 2 * L.DAY) !== null) { n = slot; break; }
+      }
+      if (n === null) throw new L.ApiError(409, 'used', `You've used both free watermark removals for this free day. Pro has no watermark at all.`);
     }
-    result = { kind: 'wm', value: L.signToken({ t: 'wm', v: 1, k: s.k, n: s.n, d: s.d, x: t + 2 * L.DAY }), n: s.n };
+    result = { kind: 'wm', value: L.signToken({ t: 'wm', v: 1, k: s.k, n, d: s.d, x: t + 2 * L.DAY }), n };
   }
   const nonce = String(body.nonce || '');
   if (/^[0-9a-f]{32}$/.test(nonce) && L.hasKv()) await L.kvSetJson(`pickup:${nonce}`, result, 900);

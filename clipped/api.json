@@ -1,4 +1,4 @@
 {
   "api": "",
-  "_": "Where the clipped licence server lives (api/_lib/serve.js or the Vercel functions). The app and the clipped pages read this; empty means not live yet."
+  "_": "Where the clipped licence server lives: https://clipped-api.<subdomain>.workers.dev/clipped once it's deployed (see workers/clipped-api/README.md). The app and the clipped pages read this; empty means not live yet."
 }

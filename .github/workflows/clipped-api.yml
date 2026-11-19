@@ -1,0 +1,63 @@
+name: clipped-api
+
+# Tests the clipped licence server and deploys it to Cloudflare Workers
+# (workers/clipped-api). Deploying needs two repository secrets:
+#   CLOUDFLARE_API_TOKEN   a token made from the "Edit Cloudflare Workers" template
+#   CLOUDFLARE_ACCOUNT_ID  from the Cloudflare dashboard (Workers & Pages, right side)
+# Without them it only tests. Set the repository variable CLIPPED_API_URL
+# (e.g. https://clipped-api.you.workers.dev) to check the live server after deploying.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+      - "workers/clipped-api/**"
+      - ".github/workflows/clipped-api.yml"
+  pull_request:
+    paths:
+      - "api/**"
+      - "workers/clipped-api/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clipped-api-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: workers/clipped-api/package-lock.json
+      - name: Test the handlers and the server
+        run: node --test api/_lib/__tests__/*.test.js
+      - name: Install wrangler
+        working-directory: workers/clipped-api
+        run: npm ci
+      - name: Bundle the Worker
+        working-directory: workers/clipped-api
+        run: npx wrangler deploy --dry-run --outdir dist
+      - name: Deploy to Cloudflare
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != ''
+        working-directory: workers/clipped-api
+        run: npx wrangler deploy
+      - name: Check the live server
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != '' && vars.CLIPPED_API_URL != ''
+        env:
+          API: ${{ vars.CLIPPED_API_URL }}
+        run: |
+          sleep 5
+          curl -fsS "$API/health"; echo
+          curl -fsS "$API/clipped/config/" | tee config.json; echo
+          node -e "const c=require('./config.json'); if(!c.free.ready){console.error('Free days are not ready: set CLIPPED_SIGNING_KEY and the Upstash settings on the Worker.'); process.exit(1)}"
