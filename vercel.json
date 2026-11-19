@@ -33,6 +33,11 @@
       "permanent": true
     },
     {
+      "source": "/clipped",
+      "destination": "/clipped/",
+      "permanent": true
+    },
+    {
       "source": "/wife",
       "destination": "/wife/",
       "permanent": true

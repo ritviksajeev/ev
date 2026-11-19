@@ -593,6 +593,7 @@ html.reveal-on .shelf.is-in .slab {
 }
 .slab:nth-child(1) { --i: 0; } .slab:nth-child(2) { --i: 1; } .slab:nth-child(3) { --i: 2; }
 .slab:nth-child(4) { --i: 3; } .slab:nth-child(5) { --i: 4; } .slab:nth-child(6) { --i: 5; }
+.slab:nth-child(7) { --i: 6; }
 html.reveal-on .shelf.is-in .slab:hover,
 html.reveal-on .shelf.is-in .slab:focus-visible,
 .slab:hover {
@@ -668,7 +669,7 @@ html.reveal-on .shelf.is-in .slab:focus-visible,
   color: var(--c2);
   white-space: nowrap;
 }
-/* six covers, one family */
+/* seven covers, one family */
 .slab.t-violet {
   --f: repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 16px), linear-gradient(120deg, #7c4ff0, #3f1d9e);
   --t: linear-gradient(180deg, #5a31c8, #8f6cf7);
@@ -700,6 +701,11 @@ html.reveal-on .shelf.is-in .slab:focus-visible,
   --f: conic-gradient(rgba(138, 120, 240, 0.2) 25%, transparent 0 50%, rgba(138, 120, 240, 0.2) 0 75%, transparent 0) 0 0 / 16px 16px, #060509;
   --t: linear-gradient(180deg, #0b0912, #1c1730);
   --s: #030305;
+}
+.slab.t-clip {   /* a film strip */
+  --f: linear-gradient(90deg, rgba(11, 7, 20, 0.5) 0 12px, transparent 12px) 10px 7px / 26px 7px repeat-x, linear-gradient(90deg, rgba(11, 7, 20, 0.5) 0 12px, transparent 12px) 10px calc(100% - 7px) / 26px 7px repeat-x, radial-gradient(ellipse 50% 160% at 80% 50%, rgba(220, 214, 255, 0.32), transparent 70%), linear-gradient(120deg, #8a78f0, #4c3aa8);
+  --t: linear-gradient(180deg, #4c3aa8, #a493ff);
+  --s: #32247a;
 }
 
 /* --------- METHOD --------- */

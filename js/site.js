@@ -260,6 +260,17 @@
             <rect x="40" y="55" width="120" height="74" rx="9" fill="${INK}" stroke="none"/>
             <path d="M70 92H130M83 79L70 92L83 105M117 79L130 92L117 105" fill="none" stroke="${WHITE}"/>`,
     },
+    clipped: {   // a Short, with a play button and a caption bar
+      cut: '<rect x="50" y="18" width="100" height="164" rx="24" transform="rotate(-8 100 100)"/>',
+      art: `<g transform="rotate(-8 100 100)">
+              <rect x="50" y="18" width="100" height="164" rx="24" fill="${P1}"/>
+              <rect x="64" y="36" width="72" height="96" rx="12" fill="${INK}" stroke="${LAV}" stroke-width="5"/>
+              <path d="M90 66L114 84L90 102Z" fill="${WHITE}" stroke="none"/>
+              <rect x="62" y="144" width="76" height="20" rx="10" fill="${LAV}"/>
+              <rect x="70" y="150" width="22" height="8" rx="4" fill="${DEEP}" stroke="none"/>
+              <rect x="98" y="150" width="32" height="8" rx="4" fill="${P2}" stroke="none"/>
+            </g>`,
+    },
     watchparty: {   // two screens, one frame
       cut: '<rect x="22" y="34" width="114" height="80" rx="15"/><rect x="64" y="86" width="114" height="80" rx="15"/>',
       art: `<rect x="22" y="34" width="114" height="80" rx="15" fill="${DEEP}"/>
@@ -350,7 +361,7 @@
   // --------------------------------------------
   const MENU_PAGES = [
     { key: 'home',    label: 'Home',    note: 'start',      href: '',          r: -7 },
-    { key: 'work',    label: 'Work',    note: '9 on shelf', href: 'projects/', r: 5 },
+    { key: 'work',    label: 'Work',    note: '10 on shelf', href: 'projects/', r: 5 },
     { key: 'contact', label: 'Say hi',  note: 'reach me',   href: 'contact/',  r: -4 },
     { key: 'resume',  label: 'R\u00e9sum\u00e9',  note: 'one page',   href: 'resume/',   r: 6 },
   ];
@@ -358,6 +369,7 @@
     { key: 'ais',        label: 'AiS',            href: 'ais/',        r: -6 },
     { key: 'spice',      label: 'Spice',          href: 'spice/',      r: 7 },
     { key: 'qres',       label: 'Qres',           href: 'qres/',       r: -4 },
+    { key: 'clipped',    label: 'clipped',        href: 'clipped/',    r: 5 },
     { key: 'watchparty', label: 'Watchparty',     href: 'watchparty/', r: 6 },
     { key: 'tracker',    label: 'Tracker',        href: 'valorant/',   r: 4 },
   ];
@@ -1350,12 +1362,13 @@
     };
     const ITEMS = [
       { group: 'Pages', label: 'Home', hint: 'start here', stk: 'home', key: 'home', run: go('') },
-      { group: 'Pages', label: 'Work', hint: 'all nine projects', stk: 'work', key: 'work', run: go('projects/') },
+      { group: 'Pages', label: 'Work', hint: 'all ten projects', stk: 'work', key: 'work', run: go('projects/') },
       { group: 'Pages', label: 'Say hi', hint: 'contact', stk: 'contact', key: 'contact', words: 'email discord message', run: go('contact/') },
       { group: 'Pages', label: 'Résumé', hint: 'one page, printable', stk: 'resume', key: 'resume', words: 'resume cv hire internship', run: go('resume/') },
       { group: 'Projects', label: 'AiS', hint: 'anti-cheat for AI agents', stk: 'ais', key: 'ais', words: 'sandbox security agent', run: go('ais/') },
       { group: 'Projects', label: 'Spice', hint: 'overlay for gamers', stk: 'spice', key: 'spice', words: 'crosshair overlay', run: go('spice/') },
       { group: 'Projects', label: 'Qres', hint: 'one key, new resolution', stk: 'qres', key: 'qres', words: 'stretched resolution hotkey', run: go('qres/') },
+      { group: 'Projects', label: 'clipped', hint: 'Twitch clips to YouTube Shorts', stk: 'clipped', key: 'clipped', words: 'shorts youtube twitch clips captions autopilot', run: go('clipped/') },
       { group: 'Projects', label: 'Watchparty', hint: 'same frame, two couches', stk: 'watchparty', key: 'watchparty', words: 'watch together youtube twitch netflix', run: go('watchparty/') },
       { group: 'Projects', label: 'Pixel cat', hint: 'the one stalking your cursor', stk: 'cat', words: 'cat pet', run: go('projects/#pixel-cat') },
       { group: 'Projects', label: 'Valorant tracker', hint: 'outdated', stk: 'tracker', key: 'tracker', words: 'val rank', run: go('valorant/') },
@@ -1506,7 +1519,7 @@
   function initBuildLog() {
     const host = $('[data-buildlog]');
     if (!host) return;
-    const REPOS = ['ais', 'spice', 'Qres', 'ev'];
+    const REPOS = ['ais', 'spice', 'Qres', 'clipped', 'ev'];
     const SKIP = /^merge |\bwip\b|private|seal|solren/i;   // housekeeping commits nobody needs to read
     const KEY = 'evz-buildlog-v2';
     const TTL = 20 * 60 * 1000;

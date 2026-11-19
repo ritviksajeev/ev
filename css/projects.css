@@ -248,7 +248,8 @@ html.is-ready .pick .stk { animation: pickIn 1s var(--ease-spring) calc(0.5s + v
   letter-spacing: -0.045em;
   overflow-wrap: anywhere;
 }
-.case[data-project="ais"] .case-title { text-transform: none; }
+.case[data-project="ais"] .case-title,
+.case[data-project="clipped"] .case-title { text-transform: none; }
 .case-desc p {
   margin-bottom: 14px;
   font-size: 15px;
